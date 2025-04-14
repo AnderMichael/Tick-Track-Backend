@@ -1,0 +1,211 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model department {
+  id         Int    @id @default(autoincrement())
+  name       String
+  is_deleted Boolean @default(false)
+
+  // Relación 1:N con user
+  users user[]
+}
+
+model user {
+  id             Int     @id @default(autoincrement())
+  firstName      String
+  fatherLastName String
+  motherLastName String
+  isAvailable    Boolean  @default(true)
+  upbCode        Int
+  is_deleted     Boolean  @default(false)
+  is_confirmed   Boolean  @default(false)
+  hashed_password  String   @default("TickTrackNewUser")
+
+  // Llave foránea a role (1:N)
+  role_id Int
+  role    role @relation(fields: [role_id], references: [id])
+
+  // Llave foránea a department (1:N)
+  department_id Int
+  department    department @relation(fields: [department_id], references: [id])
+
+  // Relación 1:1 con students (opcional, si es un estudiante)
+  students students?
+
+  // Relación 1:1 con administratives (opcional, si es un administrativo)
+  administratives administratives?
+
+  // Relación 1:N con user_state_history
+  user_state_history user_state_history[]
+}
+
+model role {
+  id         Int    @id @default(autoincrement())
+  name       String
+  is_deleted Boolean @default(false)
+
+  // Relación 1:N con user
+  users user[]
+
+  // Relación M:N con permission por tabla intermedia role_permission
+  role_permission role_permission[]
+}
+
+model permission {
+  id         Int    @id @default(autoincrement())
+  name       String
+  is_deleted Boolean @default(false)
+
+  // Relación M:N con role
+  role_permission role_permission[]
+}
+
+model role_permission {
+  role_id       Int
+  permission_id Int
+  is_deleted    Boolean @default(false)
+
+  // Relaciones
+  role       role       @relation(fields: [role_id], references: [id])
+  permission permission @relation(fields: [permission_id], references: [id])
+
+  @@id([role_id, permission_id])
+}
+
+model students {
+  id         Int  @id
+  user       user @relation(fields: [id], references: [id])
+
+  semester   Int
+  is_deleted Boolean @default(false)
+
+  // Relación 1:N con commitment
+  commitment commitment[]
+  // Relación 1:N con inscriptions
+  inscriptions inscriptions[]
+}
+
+model administratives {
+  id         Int  @id
+  user       user @relation(fields: [id], references: [id])
+
+  upbRole    String
+  is_deleted Boolean @default(false)
+
+  // Relación 1:N con works
+  works works[]
+}
+
+model commitment {
+  id         Int       @id @default(autoincrement())
+  student_id Int
+  student    students  @relation(fields: [student_id], references: [id])
+
+  is_current Boolean
+  is_deleted Boolean  @default(false)
+
+  // Relación 1:1 con service_details (opcional)
+  service_details service_details?
+}
+
+model service_details {
+  id               Int          @id
+  scholarship_id   Int
+  scholarship      scholarship  @relation(fields: [scholarship_id], references: [id])
+  percentage       Float
+  hoursPerSemester Int
+  totalHours       Int
+  is_deleted       Boolean      @default(false)
+
+  // Relación 1:1 con commitment (id -> commitment.id)
+  commitment commitment @relation(fields: [id], references: [id])
+}
+
+model scholarship {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  is_deleted  Boolean @default(false)
+
+  // Relación 1:N con service_details
+  service_details service_details[]
+}
+
+model semester {
+  id         Int    @id @default(autoincrement())
+  name       String
+  start_date String
+  end_date   String
+  is_deleted Boolean @default(false)
+
+  // Relación 1:N con inscriptions
+  inscriptions inscriptions[]
+  // Relación 1:N con works
+  works works[]
+}
+
+model inscriptions {
+  id          Int      @id @default(autoincrement())
+  student_id  Int
+  student     students @relation(fields: [student_id], references: [id])
+
+  semester_id Int
+  semester    semester @relation(fields: [semester_id], references: [id])
+
+  created_at  String
+  is_deleted  Boolean @default(false)
+}
+
+model works {
+  id                Int             @id @default(autoincrement())
+  title             String
+  description       String
+  date_begin        String
+  date_end          String
+  administrative_id Int
+  administrative    administratives @relation(fields: [administrative_id], references: [id])
+  semester_id       Int
+  semester          semester        @relation(fields: [semester_id], references: [id])
+  is_deleted        Boolean         @default(false)
+
+  // Relaciones 1:N
+  works_history works_history[]
+  transactions  transactions[]
+}
+
+model works_history {
+  id         Int   @id @default(autoincrement())
+  work_id    Int
+  work       works @relation(fields: [work_id], references: [id])
+
+  status     String
+  date       String
+  is_deleted Boolean @default(false)
+}
+
+model transactions {
+  id                     Int   @id @default(autoincrement())
+  work_id                Int
+  work                   works @relation(fields: [work_id], references: [id])
+  date                   String
+  hours                  Int
+  comment_student        String
+  comment_administrative String
+  is_deleted             Boolean @default(false)
+}
+
+model user_state_history {
+  id         Int  @id @default(autoincrement())
+  user_id    Int
+  user       user @relation(fields: [user_id], references: [id])
+
+  status     String
+  date       String
+  is_deleted Boolean @default(false)
+}
