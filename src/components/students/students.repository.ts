@@ -1,14 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-import { prisma } from 'src/config/prisma.client';
+import { Injectable } from '@nestjs/common';
+import { CustomPrismaClientType, prisma } from 'src/config/prisma.client';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { BcryptUtils } from '../users/utils/bcrypt';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
-import { BcryptUtils } from '../users/utils/bcrypt';
 
 @Injectable()
 export class StudentsRepository {
-    private prisma: PrismaClient;
+    private prisma: CustomPrismaClientType;
     private bcryptUtils: BcryptUtils;
 
     constructor() {
@@ -41,10 +40,6 @@ export class StudentsRepository {
         const skip = (page - 1) * limit;
 
         const where = {
-            is_deleted: false,
-            students: {
-                is_deleted: false,
-            },
             ...(search && {
                 upbCode: {
                     equals: parseInt(search),
@@ -83,11 +78,6 @@ export class StudentsRepository {
                 department: true,
             },
         });
-
-        if (!student || student.is_deleted || student.students?.is_deleted) {
-            throw new NotFoundException(`Student with upbCode ${upbCode} not found`);
-        }
-
         return student;
     }
 
@@ -96,7 +86,7 @@ export class StudentsRepository {
         const student = await this.findOne(upbCode);
 
         await this.prisma.students.update({
-            where: { id: student.id },
+            where: { id: student?.id },
             data: { semester },
         });
 
@@ -115,7 +105,7 @@ export class StudentsRepository {
         const student = await this.findOne(upbCode);
 
         await this.prisma.students.update({
-            where: { id: student.id },
+            where: { id: student?.id },
             data: { is_deleted: true },
         });
 

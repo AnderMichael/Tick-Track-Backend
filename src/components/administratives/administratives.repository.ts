@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-import { prisma } from 'src/config/prisma.client';
+import { CustomPrismaClientType, prisma } from 'src/config/prisma.client';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { BcryptUtils } from '../users/utils/bcrypt';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
@@ -8,7 +7,7 @@ import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
 
 @Injectable()
 export class AdministrativeRepository {
-    private prisma: PrismaClient;
+    private prisma: CustomPrismaClientType;
     private bcryptUtils: BcryptUtils;
 
     constructor() {
@@ -40,10 +39,6 @@ export class AdministrativeRepository {
         const skip = (page - 1) * limit;
 
         const where = {
-            is_deleted: false,
-            administratives: {
-                is_deleted: false,
-            },
             ...(search && {
                 upbCode: {
                     equals: parseInt(search),

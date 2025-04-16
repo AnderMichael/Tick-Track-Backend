@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -9,8 +9,16 @@ import { StudentsRepository } from './students.repository';
 export class StudentsService {
   constructor(private readonly repository: StudentsRepository) { }
 
-  create(dto: CreateStudentDto) {
-    return this.repository.create(dto);
+  async create(dto: CreateStudentDto) {
+    const { upbCode } = dto;
+    const student = await this.repository.findOne(upbCode);
+
+    if (student) {
+      throw new BadRequestException('Student already exists');
+    }
+    
+    const newStudent = this.repository.create(dto); 
+    return new StudentModel(newStudent);
   }
 
   async findAll(pagination: PaginationDto) {
@@ -26,11 +34,24 @@ export class StudentsService {
     return new StudentModel(user);
   }
 
-  update(upbCode: number, dto: UpdateStudentDto) {
-    return this.repository.update(upbCode, dto);
+  async update(upbCode: number, dto: UpdateStudentDto) {
+    const student = await this.repository.findOne(upbCode);
+
+    if (!student) {
+      throw new NotFoundException('Student not exists');
+    }
+    const updatedStudent = this.repository.update(upbCode, dto);
+    return new StudentModel(updatedStudent);
   }
 
-  remove(upbCode: number) {
-    return this.repository.softDelete(upbCode);
+  async remove(upbCode: number) {
+    const student = await this.repository.findOne(upbCode);
+
+    if (!student) {
+      throw new NotFoundException('Student not exists');
+    }
+
+    const deletedStudent = this.repository.softDelete(upbCode); 
+    return new StudentModel(deletedStudent);
   }
 }
