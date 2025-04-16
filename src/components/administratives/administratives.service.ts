@@ -1,32 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { PaginationDto } from '../common/dto/pagination.dto';
+import { AdministrativeRepository } from './administratives.repository';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
 import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
+import { AdministrativeModel } from './models/administratives.model';
 
 @Injectable()
 export class AdministrativesService {
-  private readonly usersService: UsersService;
-  constructor(usersService: UsersService) {
-    this.usersService = usersService;
+  constructor(private readonly repository: AdministrativeRepository) { }
+
+  create(dto: CreateAdministrativeDto) {
+    return this.repository.create(dto);
   }
 
-  create(createAdministrativeDto: CreateAdministrativeDto) {
-    return 'This action adds a new administrative';
+  async findAll(pagination: PaginationDto) {
+    const result = await this.repository.findAll(pagination);
+    return {
+      ...result,
+      data: AdministrativeModel.fromMany(result.data),
+    };
   }
 
-  findAll() {
-    return `This action returns all administratives`;
+  async findOne(upbCode: number) {
+    const user = await this.repository.findOne(upbCode);
+    return new AdministrativeModel(user);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} administrative`;
+  update(upbCode: number, dto: UpdateAdministrativeDto) {
+    return this.repository.update(upbCode, dto);
   }
 
-  update(id: number, updateAdministrativeDto: UpdateAdministrativeDto) {
-    return `This action updates a #${id} administrative`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} administrative`;
+  remove(upbCode: number) {
+    return this.repository.softDelete(upbCode);
   }
 }

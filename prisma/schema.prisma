@@ -19,12 +19,15 @@ model department {
 model user {
   id             Int     @id @default(autoincrement())
   firstName      String
+  secondName     String
   fatherLastName String
   motherLastName String
+  email          String
   isAvailable    Boolean  @default(true)
-  upbCode        Int
+  upbCode        Int      @unique
   is_deleted     Boolean  @default(false)
   is_confirmed   Boolean  @default(false)
+  phone          String
   hashed_password  String   @default("TickTrackNewUser")
 
   // Llave foránea a role (1:N)

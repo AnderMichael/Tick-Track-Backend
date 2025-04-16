@@ -15,12 +15,24 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
   });
-  
+
   const apiRoot = `/api/v${version}`;
 
   app.setGlobalPrefix(apiRoot);
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true,
+    },
+    validationError: {
+      target: false,
+      value: false,
+    },
+  }));
+  
   app.useGlobalFilters(new HttpExceptionFilter());
   setupSwagger(app);
   await app.listen(port);

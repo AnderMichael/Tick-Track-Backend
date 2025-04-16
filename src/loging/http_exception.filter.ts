@@ -24,8 +24,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
                 ? exception.getStatus()
                 : HttpStatus.INTERNAL_SERVER_ERROR;
 
+        const message = this.extractMessage(exception);
+
         const logMessage = {
-            message: exception.message,
+            message,
             statusCode: status,
             method: request.method,
             path: request.url,
@@ -37,4 +39,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
         response.status(status).json(logMessage);
     }
 
+    private extractMessage(exception: any): string | string[] {
+        if (exception instanceof HttpException) {
+            const res = exception.getResponse();
+            if (typeof res === 'object' && res['message']) {
+                return res['message']; // ya es un array de errores
+            }
+            return exception.message;
+        }
+
+        return 'Internal server error';
+    }
 }

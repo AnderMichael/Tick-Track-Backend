@@ -1,34 +1,48 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { PaginationDto } from '../common/dto/pagination.dto';
 import { AdministrativesService } from './administratives.service';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
 import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
 
 @Controller('administratives')
 export class AdministrativesController {
-  constructor(private readonly administrativesService: AdministrativesService) {}
+  constructor(private readonly service: AdministrativesService) { }
 
   @Post()
-  create(@Body() createAdministrativeDto: CreateAdministrativeDto) {
-    return this.administrativesService.create(createAdministrativeDto);
+  create(@Body() dto: CreateAdministrativeDto) {
+    return this.service.create(dto);
   }
 
   @Get()
-  findAll() {
-    return this.administrativesService.findAll();
+  findAll(@Query() pagination: PaginationDto) {
+    return this.service.findAll(pagination);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.administrativesService.findOne(+id);
+  @Get(':upbCode')
+  findOne(@Param('upbCode', ParseIntPipe) upbCode: number) {
+    return this.service.findOne(upbCode);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAdministrativeDto: UpdateAdministrativeDto) {
-    return this.administrativesService.update(+id, updateAdministrativeDto);
+  @Patch(':upbCode')
+  update(
+    @Param('upbCode', ParseIntPipe) upbCode: number,
+    @Body() dto: UpdateAdministrativeDto,
+  ) {
+    return this.service.update(upbCode, dto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.administrativesService.remove(+id);
+  @Delete(':upbCode')
+  remove(@Param('upbCode', ParseIntPipe) upbCode: number) {
+    return this.service.remove(upbCode);
   }
 }

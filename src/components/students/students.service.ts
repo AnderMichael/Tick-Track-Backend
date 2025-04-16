@@ -1,32 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { StudentModel } from './models/student.model';
+import { StudentsRepository } from './students.repository';
 
 @Injectable()
 export class StudentsService {
-  private readonly usersService: UsersService;
-  constructor(usersService: UsersService) {
-    this.usersService = usersService;
-  }
-  
-  create(createStudentDto: CreateStudentDto) {
-    return 'This action adds a new student';
+  constructor(private readonly repository: StudentsRepository) { }
+
+  create(dto: CreateStudentDto) {
+    return this.repository.create(dto);
   }
 
-  findAll() {
-    return `This action returns all students`;
+  async findAll(pagination: PaginationDto) {
+    const result = await this.repository.findAll(pagination);
+    return {
+      ...result,
+      data: StudentModel.fromMany(result.data),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} student`;
+  async findOne(upbCode: number) {
+    const user = await this.repository.findOne(upbCode);
+    return new StudentModel(user);
   }
 
-  update(id: number, updateStudentDto: UpdateStudentDto) {
-    return `This action updates a #${id} student`;
+  update(upbCode: number, dto: UpdateStudentDto) {
+    return this.repository.update(upbCode, dto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} student`;
+  remove(upbCode: number) {
+    return this.repository.softDelete(upbCode);
   }
 }

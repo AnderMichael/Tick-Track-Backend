@@ -11,12 +11,15 @@ CREATE TABLE "department" (
 CREATE TABLE "user" (
     "id" SERIAL NOT NULL,
     "firstName" TEXT NOT NULL,
+    "secondName" TEXT NOT NULL,
     "fatherLastName" TEXT NOT NULL,
     "motherLastName" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
     "isAvailable" BOOLEAN NOT NULL DEFAULT true,
     "upbCode" INTEGER NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "is_confirmed" BOOLEAN NOT NULL DEFAULT false,
+    "phone" TEXT NOT NULL,
     "hashed_password" TEXT NOT NULL DEFAULT 'TickTrackNewUser',
     "role_id" INTEGER NOT NULL,
     "department_id" INTEGER NOT NULL,
@@ -171,6 +174,9 @@ CREATE TABLE "user_state_history" (
 
     CONSTRAINT "user_state_history_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_upbCode_key" ON "user"("upbCode");
 
 -- AddForeignKey
 ALTER TABLE "user" ADD CONSTRAINT "user_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

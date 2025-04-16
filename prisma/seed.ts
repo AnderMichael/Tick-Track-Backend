@@ -98,10 +98,13 @@ async function main() {
   const userStudent1 = await prisma.user.create({
     data: {
       firstName: 'Carlos',
+      secondName: "Marin",
+      phone: "548393900",
+      email: "carlosmarin1@upb.edu",
       fatherLastName: 'Pérez',
       motherLastName: 'Gómez',
       isAvailable: true,
-      upbCode: 'STU001',
+      upbCode: 63428,
       role_id: studentRole.id,
       department_id: depLaPaz.id,
     },
@@ -118,9 +121,12 @@ async function main() {
   const userStudent2 = await prisma.user.create({
     data: {
       firstName: 'Lucía',
+      secondName: "Carla",
+      phone: "548393900",
+      email: "luciacarla1@upb.edu",
       fatherLastName: 'Sandoval',
       motherLastName: 'Rojas',
-      upbCode: 'STU002',
+      upbCode: 63003,
       role_id: studentRole.id,
       department_id: depCochabamba.id,
     },
@@ -136,9 +142,12 @@ async function main() {
   const userSup = await prisma.user.create({
     data: {
       firstName: 'Juan',
+      secondName: "Carlos",
+      phone: "548393900",
+      email: "juancarlos1@upb.edu",
       fatherLastName: 'Supervisor',
       motherLastName: '',
-      upbCode: 'SUP001',
+      upbCode: 43267,
       role_id: supervisorRole.id,
       department_id: depSantaCruz.id,
     },
@@ -155,9 +164,12 @@ async function main() {
   const userOfficer = await prisma.user.create({
     data: {
       firstName: 'Ana',
+      secondName: "Carla",
+      phone: "123456789",
+      email: "anacarla1@upb.edu",
       fatherLastName: 'Scholar',
       motherLastName: 'Ofc',
-      upbCode: 'SCH001',
+      upbCode: 43247,
       role_id: scholarshipOfficerRole.id,
       department_id: depLaPaz.id,
     },
@@ -175,7 +187,10 @@ async function main() {
       firstName: 'Silvia',
       fatherLastName: 'Admin',
       motherLastName: 'Master',
-      upbCode: 'ADM001',
+      upbCode: 32147,
+      secondName: "Carla",
+      phone: "123456789",
+      email: "silviacarla1@upb.edu",
       role_id: adminRole.id,
       department_id: depCochabamba.id,
     },

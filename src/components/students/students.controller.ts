@@ -1,35 +1,48 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { StudentsService } from './students.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { StudentsService } from './students.service';
 
 @Controller('students')
 export class StudentsController {
-  constructor(private readonly studentsService: StudentsService) {}
+  constructor(private readonly service: StudentsService) { }
 
   @Post()
-  create(@Body() createStudentDto: CreateStudentDto) {
-    
-    return this.studentsService.create(createStudentDto);
+  create(@Body() dto: CreateStudentDto) {
+    return this.service.create(dto);
   }
 
   @Get()
-  findAll() {
-    return this.studentsService.findAll();
+  findAll(@Query() pagination: PaginationDto) {
+    return this.service.findAll(pagination);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.studentsService.findOne(+id);
+  @Get(':upbCode')
+  findOne(@Param('upbCode', ParseIntPipe) upbCode: number) {
+    return this.service.findOne(upbCode);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
-    return this.studentsService.update(+id, updateStudentDto);
+  @Patch(':upbCode')
+  update(
+    @Param('upbCode', ParseIntPipe) upbCode: number,
+    @Body() dto: UpdateStudentDto,
+  ) {
+    return this.service.update(upbCode, dto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.studentsService.remove(+id);
+  @Delete(':upbCode')
+  remove(@Param('upbCode', ParseIntPipe) upbCode: number) {
+    return this.service.remove(upbCode);
   }
 }
