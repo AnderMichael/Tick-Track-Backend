@@ -24,7 +24,7 @@ model user {
   motherLastName String
   email          String
   isAvailable    Boolean  @default(true)
-  upbCode        Int      @unique
+  upbCode        Int      
   is_deleted     Boolean  @default(false)
   is_confirmed   Boolean  @default(false)
   phone          String

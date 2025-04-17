@@ -1,3 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
+import { softDeleteExtension } from './prisma.extension';
 
-export const prisma = new PrismaClient();
+const prisma = new PrismaClient().$extends(softDeleteExtension);
+
+export type CustomPrismaClientType = typeof prisma;
+export { prisma };

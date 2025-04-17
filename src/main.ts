@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { configVariables } from './config/environment.config';
 import { setupSwagger } from './config/swagger.config';
-import { HttpExceptionFilter } from './loging/http_exception.filter';
+import { HttpExceptionFilter } from './helpers/http_exception.filter';
 
 const { version, port } = configVariables;
 
@@ -24,9 +24,6 @@ async function bootstrap() {
     whitelist: true,
     forbidNonWhitelisted: true,
     transform: true,
-    transformOptions: {
-      enableImplicitConversion: true,
-    },
     validationError: {
       target: false,
       value: false,
