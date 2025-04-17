@@ -40,16 +40,7 @@ export class StudentsRepository {
     const { page = 1, limit = 10, search } = pagination;
     const skip = (page - 1) * limit;
 
-    const where = {
-      students: {
-        isNot: null,
-      },
-      ...(search && {
-        upbCode: {
-          equals: parseInt(search),
-        },
-      }),
-    };
+    const where = pagination.buildWhere();
 
     const [data, total] = await Promise.all([
       this.prisma.user.findMany({
