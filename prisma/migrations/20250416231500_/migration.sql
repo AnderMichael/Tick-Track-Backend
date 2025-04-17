@@ -175,9 +175,6 @@ CREATE TABLE "user_state_history" (
     CONSTRAINT "user_state_history_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "user_upbCode_key" ON "user"("upbCode");
-
 -- AddForeignKey
 ALTER TABLE "user" ADD CONSTRAINT "user_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -225,3 +222,8 @@ ALTER TABLE "transactions" ADD CONSTRAINT "transactions_work_id_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "user_state_history" ADD CONSTRAINT "user_state_history_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddIndexUPBCode
+CREATE UNIQUE INDEX user_upbcode_unique_not_deleted
+ON "user" ("upbCode")
+WHERE is_deleted = false;

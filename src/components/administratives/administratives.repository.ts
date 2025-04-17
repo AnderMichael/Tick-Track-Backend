@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CustomPrismaClientType, prisma } from 'src/config/prisma.client';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { AdministrativePaginationDto } from '../common/dto/user.pagination.dto';
 import { BcryptUtils } from '../users/utils/bcrypt';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
 import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
@@ -12,10 +12,11 @@ export class AdministrativeRepository {
 
     constructor() {
         this.prisma = prisma;
+        this.bcryptUtils = new BcryptUtils();
     }
 
-    async create(createDto: CreateAdministrativeDto) {
-        const { upbRole, ...userData } = createDto;
+    async create(dto: CreateAdministrativeDto) {
+        const { upbRole, ...userData } = dto;
         const defaultHashedPassword = await this.bcryptUtils.getDefaultPassword();
 
         return this.prisma.user.create({
@@ -34,11 +35,14 @@ export class AdministrativeRepository {
         });
     }
 
-    async findAll(pagination: PaginationDto) {
+    async findAll(pagination: AdministrativePaginationDto) {
         const { page = 1, limit = 10, search } = pagination;
         const skip = (page - 1) * limit;
 
         const where = {
+            administratives: {
+                isNot: null,
+            },
             ...(search && {
                 upbCode: {
                     equals: parseInt(search),
@@ -69,33 +73,32 @@ export class AdministrativeRepository {
     }
 
     async findOne(upbCode: number) {
-        const admin = await this.prisma.user.findUnique({
-            where: { upbCode },
+        return this.prisma.user.findFirst({
+            where: {
+                administratives: {
+                    isNot: null,
+                },
+                upbCode,
+            },
             include: {
                 administratives: true,
                 role: true,
                 department: true,
             },
         });
-
-        if (!admin || admin.is_deleted || admin.administratives?.is_deleted) {
-            throw new NotFoundException(`Administrative with upbCode ${upbCode} not found`);
-        }
-
-        return admin;
     }
 
-    async update(upbCode: number, updateDto: UpdateAdministrativeDto) {
-        const { upbRole, ...userData } = updateDto;
+    async update(upbCode: number, dto: UpdateAdministrativeDto) {
+        const { upbRole, ...userData } = dto;
         const admin = await this.findOne(upbCode);
 
         await this.prisma.administratives.update({
-            where: { id: admin.id },
+            where: { id: admin?.id },
             data: { upbRole },
         });
 
         return this.prisma.user.update({
-            where: { upbCode },
+            where: { id: admin?.id },
             data: { ...userData },
             include: {
                 administratives: true,
@@ -109,12 +112,12 @@ export class AdministrativeRepository {
         const admin = await this.findOne(upbCode);
 
         await this.prisma.administratives.update({
-            where: { id: admin.id },
+            where: { id: admin?.id },
             data: { is_deleted: true },
         });
 
         await this.prisma.user.update({
-            where: { upbCode },
+            where: { id: admin?.id },
             data: { is_deleted: true },
         });
 

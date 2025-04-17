@@ -9,7 +9,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentsService } from './students.service';
@@ -24,7 +24,7 @@ export class StudentsController {
   }
 
   @Get()
-  findAll(@Query() pagination: PaginationDto) {
+  findAll(@Query() pagination: StudentPaginationDto) {
     return this.service.findAll(pagination);
   }
 

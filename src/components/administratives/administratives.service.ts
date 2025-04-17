@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { AdministrativePaginationDto } from '../common/dto/user.pagination.dto';
 import { AdministrativeRepository } from './administratives.repository';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
 import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
@@ -7,14 +7,22 @@ import { AdministrativeModel } from './models/administratives.model';
 
 @Injectable()
 export class AdministrativesService {
-  constructor(private readonly repository: AdministrativeRepository) { }
+  constructor(private readonly administrativeRepository: AdministrativeRepository) { }
 
-  create(dto: CreateAdministrativeDto) {
-    return this.repository.create(dto);
+  async create(dto: CreateAdministrativeDto) {
+    const { upbCode } = dto;
+    const admin = await this.administrativeRepository.findOne(upbCode);
+
+    if (admin) {
+      throw new BadRequestException('Administrative already exists');
+    }
+
+    const newAdmin = await this.administrativeRepository.create(dto);
+    return new AdministrativeModel(newAdmin);
   }
 
-  async findAll(pagination: PaginationDto) {
-    const result = await this.repository.findAll(pagination);
+  async findAll(pagination: AdministrativePaginationDto) {
+    const result = await this.administrativeRepository.findAll(pagination);
     return {
       ...result,
       data: AdministrativeModel.fromMany(result.data),
@@ -22,15 +30,34 @@ export class AdministrativesService {
   }
 
   async findOne(upbCode: number) {
-    const user = await this.repository.findOne(upbCode);
-    return new AdministrativeModel(user);
+    const admin = await this.administrativeRepository.findOne(upbCode);
+
+    if (!admin) {
+      throw new NotFoundException('Administrative not exists');
+    }
+
+    return new AdministrativeModel(admin);
   }
 
-  update(upbCode: number, dto: UpdateAdministrativeDto) {
-    return this.repository.update(upbCode, dto);
+  async update(upbCode: number, dto: UpdateAdministrativeDto) {
+    const admin = await this.administrativeRepository.findOne(upbCode);
+
+    if (!admin) {
+      throw new NotFoundException('Administrative not exists');
+    }
+
+    const updated = await this.administrativeRepository.update(upbCode, dto);
+    return new AdministrativeModel(updated);
   }
 
-  remove(upbCode: number) {
-    return this.repository.softDelete(upbCode);
+  async remove(upbCode: number) {
+    const admin = await this.administrativeRepository.findOne(upbCode);
+
+    if (!admin) {
+      throw new NotFoundException('Administrative not exists');
+    }
+
+    const removed = await this.administrativeRepository.softDelete(upbCode);
+    return removed;
   }
 }
