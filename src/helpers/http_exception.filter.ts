@@ -1,0 +1,53 @@
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import * as path from 'path';
+import * as winston from 'winston';
+
+@Catch()
+export class HttpExceptionFilter implements ExceptionFilter {
+    private logger: winston.Logger;
+    constructor() {
+        const logFilePath = path.join('logs', 'error.log');
+        this.logger = winston.createLogger({
+            level: 'error',
+            format: winston.format.json(),
+            transports: [new winston.transports.File({ filename: logFilePath })],
+        });
+    }
+
+    catch(exception: any, host: ArgumentsHost) {
+        const ctx = host.switchToHttp();
+        const response = ctx.getResponse();
+        const request = ctx.getRequest();
+
+        const status =
+            exception instanceof HttpException
+                ? exception.getStatus()
+                : HttpStatus.INTERNAL_SERVER_ERROR;
+
+        const message = this.extractMessage(exception);
+
+        const logMessage = {
+            message,
+            statusCode: status,
+            method: request.method,
+            path: request.url,
+            timestamp: new Date().toISOString(),
+        };
+
+        this.logger.error(logMessage);
+
+        response.status(status).json(logMessage);
+    }
+
+    private extractMessage(exception: any): string | string[] {
+        if (exception instanceof HttpException) {
+            const res = exception.getResponse();
+            if (typeof res === 'object' && res['message']) {
+                return res['message']; // ya es un array de errores
+            }
+            return exception.message;
+        }
+
+        return 'Internal server error';
+    }
+}

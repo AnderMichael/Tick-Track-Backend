@@ -1,0 +1,118 @@
+import { Injectable } from '@nestjs/common';
+import { prisma, CustomPrismaClientType } from 'src/config/prisma.client';
+import { BcryptUtils } from '../users/utils/bcrypt';
+import { PaginationDto } from '../common/dto/pagination.dto';
+import { CreateStudentDto } from './dto/create-student.dto';
+import { UpdateStudentDto } from './dto/update-student.dto';
+import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
+
+@Injectable()
+export class StudentsRepository {
+  private prisma: CustomPrismaClientType;
+  private bcryptUtils: BcryptUtils;
+
+  constructor() {
+    this.prisma = prisma;
+    this.bcryptUtils = new BcryptUtils();
+  }
+
+  async create(dto: CreateStudentDto) {
+    const { semester, ...userData } = dto;
+    const defaultHashedPassword = await this.bcryptUtils.getDefaultPassword();
+
+    return this.prisma.user.create({
+      data: {
+        ...userData,
+        hashed_password: defaultHashedPassword,
+        students: {
+          create: { semester },
+        },
+      },
+      include: {
+        students: true,
+        role: true,
+        department: true,
+      },
+    });
+  }
+
+  async findAll(pagination: StudentPaginationDto) {
+    const { page = 1, limit = 10, search } = pagination;
+    const skip = (page - 1) * limit;
+
+    const where = pagination.buildWhere();
+
+    const [data, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where,
+        include: {
+          students: true,
+          role: true,
+          department: true,
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
+  }
+
+  async findOne(upbCode: number) {
+    return this.prisma.user.findFirst({
+      where: {
+        students: {
+          isNot: null,
+        },
+        upbCode,
+      },
+      include: {
+        students: true,
+        role: true,
+        department: true,
+      },
+    });
+  }
+
+  async update(upbCode: number, dto: UpdateStudentDto) {
+    const { semester, ...userData } = dto;
+    const student = await this.findOne(upbCode);
+
+    await this.prisma.students.update({
+      where: { id: student?.id },
+      data: { semester },
+    });
+
+    return this.prisma.user.update({
+      where: { id: student?.id },
+      data: { ...userData },
+      include: {
+        students: true,
+        role: true,
+        department: true,
+      },
+    });
+  }
+
+  async softDelete(upbCode: number) {
+    const student = await this.findOne(upbCode);
+
+    await this.prisma.students.update({
+      where: { id: student?.id },
+      data: { is_deleted: true },
+    });
+
+    await this.prisma.user.update({
+      where: { id: student?.id },
+      data: { is_deleted: true },
+    });
+
+    return { message: 'Student marked as deleted' };
+  }
+}
