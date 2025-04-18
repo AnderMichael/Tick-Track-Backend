@@ -14,6 +14,17 @@ export class UserRepository {
             where: {
                 upbCode: upbCode,
             },
+            include: {
+                role: {
+                    include: {
+                        role_permission: {
+                            include: {
+                                permission: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
     }
 }

@@ -13,6 +13,7 @@ export class JWTUtils {
     public generateToken(payload: UserInfo): string {
         return jwt.sign(payload, secret, {
             expiresIn: parseInt(expiresIn, 10),
+            encoding: 'utf8',
         });
     }
 

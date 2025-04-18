@@ -8,12 +8,13 @@ import { AuthModule } from './components/auth/auth.module';
 import { StudentsModule } from './components/students/students.module';
 import { UserModule } from './components/users/user.module';
 import { LoggingInterceptor } from './loging/loging.interceptor';
+import { SemestersModule } from './components/semesters/semesters.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '.env',
-  }), StudentsModule, AdministrativesModule, AuthModule, UserModule],
+  }), StudentsModule, AdministrativesModule, AuthModule, UserModule, SemestersModule],
   controllers: [AppController],
   providers: [AppService, {
     provide: APP_INTERCEPTOR,

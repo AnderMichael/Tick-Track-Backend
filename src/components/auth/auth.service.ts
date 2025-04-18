@@ -1,16 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from '../users/user.service';
+import { BcryptUtils } from '../users/utils/bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-import { BcryptUtils } from '../users/utils/bcrypt';
 import { JWTUtils } from './utils/JWTUtils';
 
 @Injectable()
 export class AuthService {
-  private bcryptUtils : BcryptUtils;
-  private jwtUtils : JWTUtils;
+  private bcryptUtils: BcryptUtils;
+  private jwtUtils: JWTUtils;
 
-  constructor(private readonly userService: UserService) { 
+  constructor(private readonly userService: UserService) {
     this.bcryptUtils = new BcryptUtils();
     this.jwtUtils = new JWTUtils();
   }
@@ -31,6 +31,7 @@ export class AuthService {
         department_id: user.department_id,
         role_id: user.role_id,
         upbCode: user.upbCode,
+        permissions: user.role.role_permission.map((rolePermission) => rolePermission.permission.name),
       });
 
       return token;

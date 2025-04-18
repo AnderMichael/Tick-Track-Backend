@@ -222,8 +222,3 @@ ALTER TABLE "transactions" ADD CONSTRAINT "transactions_work_id_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "user_state_history" ADD CONSTRAINT "user_state_history_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddIndexUPBCode
-CREATE UNIQUE INDEX user_upbcode_unique_not_deleted
-ON "user" ("upbCode")
-WHERE is_deleted = false;
