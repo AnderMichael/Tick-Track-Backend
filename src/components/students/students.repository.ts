@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { prisma, CustomPrismaClientType } from 'src/config/prisma.client';
+import { CustomPrismaClientType, prisma } from 'src/config/prisma.client';
+import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
 import { BcryptUtils } from '../users/utils/bcrypt';
-import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
-import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
 
 @Injectable()
 export class StudentsRepository {

@@ -1,11 +1,42 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { UserService } from '../users/user.service';
+import { LoginDto } from './dto/login.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { BcryptUtils } from '../users/utils/bcrypt';
+import { JWTUtils } from './utils/JWTUtils';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  private bcryptUtils : BcryptUtils;
+  private jwtUtils : JWTUtils;
+
+  constructor(private readonly userService: UserService) { 
+    this.bcryptUtils = new BcryptUtils();
+    this.jwtUtils = new JWTUtils();
+  }
+
+  async obtainToken(loginDto: LoginDto) {
+    try {
+      const { upbCode, password } = loginDto;
+      const user = await this.userService.findOneByUpbCode(upbCode);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      const isPasswordValid = await this.bcryptUtils.comparePassword(password, user.hashed_password);
+      if (!isPasswordValid) {
+        throw new Error('Incorrect password');
+      }
+
+      const token = this.jwtUtils.generateToken({
+        department_id: user.department_id,
+        role_id: user.role_id,
+        upbCode: user.upbCode,
+      });
+
+      return token;
+    } catch (error) {
+      throw new BadRequestException('Invalid credentials');
+    }
   }
 
   findAll() {

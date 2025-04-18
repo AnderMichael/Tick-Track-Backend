@@ -1,16 +1,22 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { LoginDto } from './dto/login.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @Post('login')
+  async login(@Body() loginDto: LoginDto) {
+    const token = await this.authService.obtainToken(loginDto);
+    return {token: token};
   }
+
+  // @Post('logout')
+  // logout(@Body() loginDto: LoginDto) {
+  //   return this.authService.create(loginDto);
+  // }
 
   @Get()
   findAll() {
