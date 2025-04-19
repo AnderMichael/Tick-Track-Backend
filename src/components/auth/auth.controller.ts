@@ -18,11 +18,6 @@ export class AuthController {
   //   return this.authService.create(loginDto);
   // }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.authService.findOne(+id);

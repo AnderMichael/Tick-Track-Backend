@@ -1,48 +1,51 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Permissions } from '../auth/guards/decorators/permissions.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentsService } from './students.service';
 
+@ApiTags('Students')
 @Controller('students')
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class StudentsController {
-  constructor(private readonly service: StudentsService) { }
+  constructor(private readonly studentsService: StudentsService) { }
 
   @Post()
-  create(@Body() dto: CreateStudentDto) {
-    return this.service.create(dto);
+  @Permissions('create:students')
+  @ApiOperation({ summary: 'Create new student' })
+  create(@Body() createDto: CreateStudentDto) {
+    return this.studentsService.create(createDto);
   }
 
   @Get()
+  @Permissions('view:students')
+  @ApiOperation({ summary: 'List students with pagination' })
   findAll(@Query() pagination: StudentPaginationDto) {
-    return this.service.findAll(pagination);
+    return this.studentsService.findAll(pagination);
   }
 
   @Get(':upbCode')
-  findOne(@Param('upbCode', ParseIntPipe) upbCode: number) {
-    return this.service.findOne(upbCode);
+  @Permissions('view:students')
+  @ApiOperation({ summary: 'Get one student by upbCode' })
+  findOne(@Param('upbCode') upbCode: string) {
+    return this.studentsService.findOne(+upbCode);
   }
 
   @Patch(':upbCode')
-  update(
-    @Param('upbCode', ParseIntPipe) upbCode: number,
-    @Body() dto: UpdateStudentDto,
-  ) {
-    return this.service.update(upbCode, dto);
+  @Permissions('update:students')
+  @ApiOperation({ summary: 'Update a student by upbCode' })
+  update(@Param('upbCode') upbCode: string, @Body() updateDto: UpdateStudentDto) {
+    return this.studentsService.update(+upbCode, updateDto);
   }
 
   @Delete(':upbCode')
-  remove(@Param('upbCode', ParseIntPipe) upbCode: number) {
-    return this.service.remove(upbCode);
+  @Permissions('delete:students')
+  @ApiOperation({ summary: 'Soft delete a student by upbCode' })
+  remove(@Param('upbCode') upbCode: string) {
+    return this.studentsService.remove(+upbCode);
   }
 }

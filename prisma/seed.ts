@@ -1,5 +1,26 @@
 // prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+class BcryptUtils {
+
+  async getDefaultPassword(): Promise<string | undefined> {
+    const defaultHashedPassword = await this.hashPassword(process.env.USER_DEFAULT_PASSWORD || 'defaultPassword');
+    console.log(process.env.USER_DEFAULT_PASSWORD);
+    return defaultHashedPassword;
+
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(parseInt(process.env.HASH_SALT_ROUNDS || '10'));
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
+  }
+
+  async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
+    const isMatch = await bcrypt.compare(password, hashedPassword);
+    return isMatch;
+  }
+}
 
 const prisma = new PrismaClient();
 
@@ -18,7 +39,7 @@ async function main() {
   const adminRole = await prisma.role.create({ data: { name: 'ADMIN' } });
 
   // 3. Definir permisos
-  const elements = ['transactions', 'works', 'students', 'supervisors', 'scholarship_officers'];
+  const elements = ['transactions', 'works', 'students', 'supervisors', 'scholarship_officers', 'scholarships', 'semesters'];
   const actions = ['view', 'create', 'update', 'delete'];
   const permissionsToCreate = elements.flatMap((element) =>
     actions.map((action) => ({
@@ -96,6 +117,8 @@ async function main() {
 
   // 6. Crear usuarios con diferentes roles y departamentos
 
+  const bcryptUtils = new BcryptUtils();
+  const def_password = await bcryptUtils.getDefaultPassword();
   // Estudiante 1
   const userStudent1 = await prisma.user.create({
     data: {
@@ -109,6 +132,7 @@ async function main() {
       upbCode: 63428,
       role_id: studentRole.id,
       department_id: depLaPaz.id,
+      hashed_password: def_password,
     },
   });
   // Relación 1:1 con students
@@ -131,6 +155,7 @@ async function main() {
       upbCode: 63003,
       role_id: studentRole.id,
       department_id: depCochabamba.id,
+      hashed_password: def_password,
     },
   });
   await prisma.students.create({
@@ -152,6 +177,7 @@ async function main() {
       upbCode: 43267,
       role_id: supervisorRole.id,
       department_id: depSantaCruz.id,
+      hashed_password: def_password,
     },
   });
   // Relación 1:1 con administratives
@@ -174,6 +200,7 @@ async function main() {
       upbCode: 43247,
       role_id: scholarshipOfficerRole.id,
       department_id: depLaPaz.id,
+      hashed_password: def_password,
     },
   });
   await prisma.administratives.create({
@@ -195,6 +222,7 @@ async function main() {
       email: "silviacarla1@upb.edu",
       role_id: adminRole.id,
       department_id: depCochabamba.id,
+      hashed_password: def_password,
     },
   });
   await prisma.administratives.create({

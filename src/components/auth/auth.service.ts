@@ -4,6 +4,7 @@ import { BcryptUtils } from '../users/utils/bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { JWTUtils } from './utils/JWTUtils';
+import { UserInfo } from './models/UserInfo';
 
 @Injectable()
 export class AuthService {
@@ -40,8 +41,13 @@ export class AuthService {
     }
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async verifyToken(token: string) {
+    try {
+      const payload = await this.jwtUtils.verifyToken(token);
+      return payload as UserInfo;
+    } catch (error) {
+      throw new BadRequestException('Invalid token');
+    }
   }
 
   findOne(id: number) {
