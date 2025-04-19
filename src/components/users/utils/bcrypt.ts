@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { configVariables } from "src/config/environment.config";
+import { configVariables } from "../../../config/environment.config";
 
 const { user } = configVariables;
 

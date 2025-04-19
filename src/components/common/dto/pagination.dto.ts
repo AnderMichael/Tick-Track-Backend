@@ -17,4 +17,14 @@ export class PaginationDto {
     @IsOptional()
     @IsString()
     search?: string;
+
+    buildBaseWhere() {
+        const where: any = {};
+
+        if (this.search) {
+            where.upbCode = { equals: parseInt(this.search) };
+        }
+
+        return where;
+    }
 }

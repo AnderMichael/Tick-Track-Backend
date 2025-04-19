@@ -1,0 +1,6 @@
+export enum RoleEnum {
+    STUDENT = 'STUDENT',
+    SUPERVISOR = 'SUPERVISOR',
+    SCHOLARSHIP_OFFICER = 'SCHOLARSHIP_OFFICER',
+    ADMIN = 'ADMIN'
+}

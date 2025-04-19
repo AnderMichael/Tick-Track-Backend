@@ -1,4 +1,4 @@
-import { UserModel } from 'src/components/users/models/user.model';
+import { UserModel } from '../../users/models/user.model';
 
 export class StudentModel extends UserModel {
     semester: number | null;

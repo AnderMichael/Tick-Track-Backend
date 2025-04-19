@@ -1,0 +1,30 @@
+import { Injectable } from "@nestjs/common";
+import { CustomPrismaClientType, prisma } from "../../config/prisma.client";
+
+@Injectable()
+export class UserRepository {
+    private prisma: CustomPrismaClientType;
+
+    constructor() {
+        this.prisma = prisma
+    }
+
+    async findOneByUpbCode(upbCode: number) {
+        return await this.prisma.user.findFirst({
+            where: {
+                upbCode: upbCode,
+            },
+            include: {
+                role: {
+                    include: {
+                        role_permission: {
+                            include: {
+                                permission: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+    }
+}
