@@ -10,12 +10,13 @@ import { UserModule } from './components/users/user.module';
 import { LoggingInterceptor } from './loging/loging.interceptor';
 import { SemestersModule } from './components/semesters/semesters.module';
 import { ScholarshipsModule } from './components/scholarships/scholarships.module';
+import { WorksModule } from './components/works/works.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '.env',
-  }), StudentsModule, AdministrativesModule, AuthModule, UserModule, SemestersModule, ScholarshipsModule],
+  }), StudentsModule, AdministrativesModule, AuthModule, UserModule, SemestersModule, ScholarshipsModule, WorksModule],
   controllers: [AppController],
   providers: [AppService, {
     provide: APP_INTERCEPTOR,
