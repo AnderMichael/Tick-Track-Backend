@@ -4,7 +4,6 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import * as path from 'path';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import * as winston from 'winston';
@@ -14,18 +13,31 @@ export class LoggingInterceptor implements NestInterceptor {
   private readonly logger: winston.Logger;
 
   constructor() {
-    const logFilePath = path.join('logs', 'requests.log');
+    const transports: winston.transport[] = [];
+
+    if (process.env.NODE_ENV === 'production') {
+      transports.push(new winston.transports.Console());
+    } else {
+      transports.push(
+        new winston.transports.File({
+          filename: 'logs/requests.log',
+          level: 'info',
+        })
+      );
+    }
+
     this.logger = winston.createLogger({
       level: 'info',
       format: winston.format.json(),
-      transports: [new winston.transports.File({ filename: logFilePath })],
+      transports,
     });
   }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const beforeReqTime = Date.now();
-    const method = context.switchToHttp().getRequest().method;
-    const url = context.switchToHttp().getRequest().url;
+    const request = context.switchToHttp().getRequest();
+    const method = request.method;
+    const url = request.url;
 
     return next.handle().pipe(
       tap(() => {
@@ -38,7 +50,7 @@ export class LoggingInterceptor implements NestInterceptor {
         };
 
         this.logger.info(logMessage);
-      }),
+      })
     );
   }
 }
