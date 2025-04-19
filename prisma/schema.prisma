@@ -106,19 +106,19 @@ model administratives {
 }
 
 model commitment {
-  id         Int       @id @default(autoincrement())
-  student_id Int
-  student    students  @relation(fields: [student_id], references: [id])
+  service_details_id Int
+  student_id         Int
+  is_current         Boolean
+  is_deleted         Boolean @default(false)
 
-  is_current Boolean
-  is_deleted Boolean  @default(false)
+  service_details service_details @relation(fields: [service_details_id], references: [id])
+  student         students        @relation(fields: [student_id], references: [id])
 
-  // Relación 1:1 con service_details (opcional)
-  service_details service_details?
+  @@id([service_details_id, student_id]) // clave primaria compuesta
 }
 
 model service_details {
-  id               Int          @id
+  id               Int          @id @default(autoincrement())
   scholarship_id   Int
   scholarship      scholarship  @relation(fields: [scholarship_id], references: [id])
   percentage       Float
@@ -126,8 +126,7 @@ model service_details {
   totalHours       Int
   is_deleted       Boolean      @default(false)
 
-  // Relación 1:1 con commitment (id -> commitment.id)
-  commitment commitment @relation(fields: [id], references: [id])
+  commitment commitment[] // relación 1:N hacia commitment
 }
 
 model scholarship {

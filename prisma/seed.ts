@@ -202,6 +202,72 @@ async function main() {
     },
   });
 
+  const scholarships = [
+    { name: 'Beca de Excelencia Académica', description: 'Otorgada a estudiantes con los mejores promedios de su facultad, cubre el 100% de la colegiatura por semestre.' },
+    { name: 'Beca 100 Mejores', description: 'Beca concursable para los mejores bachilleres de Bolivia. Cubre entre 20% y 100% de la colegiatura según el rendimiento.' },
+    { name: 'Beca Colegio', description: 'Otorgada mediante convenio con colegios destacados. Cubre hasta el 50% de la colegiatura.' },
+    { name: 'Beca de Equidad', description: 'Otorgada a estudiantes con alto rendimiento y limitaciones económicas. Cubre entre 10% y 60% según perfil.' },
+    { name: 'Beca Deportiva - Cultura', description: 'Beneficia a estudiantes con talento en disciplinas deportivas o artísticas. Cubre del 15% al 50% según nivel.' },
+    { name: 'Beca Empresa', description: 'Convenio con empresas para nuevos estudiantes de carreras específicas. Cubre del 20% al 40% de la colegiatura.' },
+    { name: 'Beca por Traspaso', description: 'Para estudiantes que vienen de otras universidades con alto rendimiento. Cubre hasta 40% según asignaturas convalidadas.' },
+    { name: 'Beca Convenio', description: 'Beca solidaria o por necesidad especial. Cubre hasta el 100% de la colegiatura para poblaciones vulnerables.' },
+    { name: 'Beca Comunidad UPB', description: 'Dirigida a bachilleres destacados del municipio del campus. Cubre el 100% de la colegiatura.' },
+    { name: 'Beca Interior y Familiar', description: 'Beca por residencia en otro departamento o por hermanos estudiando en la UPB. Cubre entre 10% y 35%.' }
+  ];
+
+  await prisma.scholarship.createMany({
+    data: scholarships,
+    skipDuplicates: true,
+  });
+
+  const scholarshipMap = {
+    'Beca Colegio': [
+      { percentage: 0.1, hours: 10 },
+      { percentage: 0.2, hours: 20 },
+      { percentage: 0.3, hours: 30 },
+      { percentage: 0.4, hours: 40 },
+      { percentage: 0.5, hours: 50 },
+      { percentage: 0.6, hours: 60 },
+    ],
+    'Beca de Equidad': [
+      { percentage: 0.1, hours: 40 },
+      { percentage: 0.2, hours: 80 },
+      { percentage: 0.3, hours: 120 },
+      { percentage: 0.4, hours: 160 },
+      { percentage: 0.5, hours: 200 },
+    ],
+    'Beca General': [
+      { percentage: 0.2, hours: 20 },
+      { percentage: 0.3, hours: 30 },
+      { percentage: 0.4, hours: 40 },
+      { percentage: 0.5, hours: 50 },
+    ],
+    'Beca Comunidad UPB': [
+      { percentage: 1.0, hours: 60 },
+    ],
+    'Beca Cultural/Deportiva': [
+      { percentage: 1.0, hours: 50 },
+    ],
+  };
+
+  for (const [name, details] of Object.entries(scholarshipMap)) {
+    const scholarship = await prisma.scholarship.findFirst({ where: { name } });
+    if (!scholarship) {
+      console.warn(`⚠️  Becas no encontrada: ${name}`);
+      continue;
+    }
+
+    for (const detail of details) {
+      await prisma.service_details.create({
+        data: {
+          scholarship_id: scholarship.id,
+          percentage: detail.percentage,
+          hoursPerSemester: detail.hours,
+          totalHours: detail.hours * 8,
+        },
+      });
+    }
+  }
   console.log('Seeding completed successfully!');
 }
 

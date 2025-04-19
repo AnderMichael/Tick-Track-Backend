@@ -74,17 +74,17 @@ CREATE TABLE "administratives" (
 
 -- CreateTable
 CREATE TABLE "commitment" (
-    "id" SERIAL NOT NULL,
+    "service_details_id" INTEGER NOT NULL,
     "student_id" INTEGER NOT NULL,
     "is_current" BOOLEAN NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "commitment_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "commitment_pkey" PRIMARY KEY ("service_details_id","student_id")
 );
 
 -- CreateTable
 CREATE TABLE "service_details" (
-    "id" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "scholarship_id" INTEGER NOT NULL,
     "percentage" DOUBLE PRECISION NOT NULL,
     "hoursPerSemester" INTEGER NOT NULL,
@@ -194,13 +194,13 @@ ALTER TABLE "students" ADD CONSTRAINT "students_id_fkey" FOREIGN KEY ("id") REFE
 ALTER TABLE "administratives" ADD CONSTRAINT "administratives_id_fkey" FOREIGN KEY ("id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "commitment" ADD CONSTRAINT "commitment_service_details_id_fkey" FOREIGN KEY ("service_details_id") REFERENCES "service_details"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "commitment" ADD CONSTRAINT "commitment_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "service_details" ADD CONSTRAINT "service_details_scholarship_id_fkey" FOREIGN KEY ("scholarship_id") REFERENCES "scholarship"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "service_details" ADD CONSTRAINT "service_details_id_fkey" FOREIGN KEY ("id") REFERENCES "commitment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "inscriptions" ADD CONSTRAINT "inscriptions_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
