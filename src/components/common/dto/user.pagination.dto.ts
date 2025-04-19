@@ -52,7 +52,7 @@ export class AdministrativePaginationDto extends UserPaginationDto {
     @Type(() => Number)
     @IsInt()
     @IsPositive()
-    role_id?: string;
+    role_id?: number;
 
     buildWhere() {
         const where = {
