@@ -83,7 +83,9 @@ async function main() {
     'update:students',
     'delete:students',
     'view:supervisors',
-    'view:scholarship_officers',
+    'create:supervisors',
+    'update:supervisors',
+    'delete:supervisors',
   ]);
 
   // Admin: todos los permisos
@@ -268,6 +270,48 @@ async function main() {
       });
     }
   }
+
+  const students = await prisma.user.findMany({
+    where: {
+      students: { isNot: null },
+      is_deleted: false,
+    },
+    include: { students: true },
+  });
+
+  const scholarship = await prisma.scholarship.findFirst({ where: { name: 'Beca Colegio' } });
+  if (!scholarship) {
+    throw new Error('Beca de Equidad - Avina no encontrada');
+  }
+
+  const details = [
+    { percentage: 0.1, hours: 40 },
+    { percentage: 0.2, hours: 80 },
+    { percentage: 0.3, hours: 120 },
+  ];
+
+  for (let i = 0; i < Math.min(students.length, details.length); i++) {
+    const student = students[i];
+    const { percentage, hours } = details[i];
+
+    const serviceDetail = await prisma.service_details.create({
+      data: {
+        scholarship_id: scholarship.id,
+        percentage,
+        hoursPerSemester: hours,
+        totalHours: hours * 8,
+      },
+    });
+
+    await prisma.commitment.create({
+      data: {
+        service_details_id: serviceDetail.id,
+        student_id: student.id,
+        is_current: true,
+      },
+    });
+  }
+
   console.log('Seeding completed successfully!');
 }
 
