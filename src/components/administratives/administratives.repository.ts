@@ -114,4 +114,10 @@ export class AdministrativeRepository {
 
         return { message: 'Administrative marked as deleted' };
     }
+
+    async findRole(role: string) {
+        return this.prisma.role.findFirst({
+            where: { name: role },
+        });
+    }
 }

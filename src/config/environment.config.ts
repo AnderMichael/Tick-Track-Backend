@@ -1,4 +1,4 @@
-import { configDotenv } from "dotenv"
+import { configDotenv } from "dotenv";
 
 configDotenv();
 
@@ -8,5 +8,9 @@ export const configVariables = {
     user: {
         defaultPassword: process.env.USER_DEFAULT_PASSWORD || 'DefaultPassword123',
         hashSaltRounds: Number(process.env.HASH_SALT_ROUNDS) || 10,
-    }
+    },
+    jwt: {
+        secret: process.env.JWT_SECRET || 'default_secret',
+        expiresIn: process.env.JWT_EXPIRES_IN || '3600',
+    },
 }

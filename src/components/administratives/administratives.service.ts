@@ -60,4 +60,17 @@ export class AdministrativesService {
     const removed = await this.administrativeRepository.softDelete(upbCode);
     return removed;
   }
+
+  async findByRole(roleName: string, pagination: AdministrativePaginationDto) {
+    const role = await this.administrativeRepository.findRole(roleName);
+    if (!role) throw new NotFoundException('Role not Found');
+
+    pagination.role_id = role.id;
+
+    const result = await this.administrativeRepository.findAll(pagination);
+    return {
+      ...result,
+      data: AdministrativeModel.fromMany(result.data),
+    };
+  }
 }
