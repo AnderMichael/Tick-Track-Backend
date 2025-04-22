@@ -7,10 +7,11 @@ import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateSemesterDto } from './dto/create-semester.dto';
 import { UpdateSemesterDto } from './dto/update-semester.dto';
 import { SemestersService } from './semesters.service';
+import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 
 @ApiTags('Semesters')
 @Controller('semesters')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class SemestersController {
     constructor(private readonly semestersService: SemestersService) { }
 

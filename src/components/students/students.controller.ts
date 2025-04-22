@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -10,7 +11,7 @@ import { StudentsService } from './students.service';
 
 @ApiTags('Students')
 @Controller('students')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) { }
 

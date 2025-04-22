@@ -1,35 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { ConfirmDto } from './dto/confirm.dto';
 import { LoginDto } from './dto/login.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { AuthenticatedRequest, JwtAuthGuard } from './guards/jwt-auth.guard';
+import { UserAvailableGuard } from './guards/user-availability.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const token = await this.authService.obtainToken(loginDto);
-    return {token: token};
+    return { token: token };
   }
 
-  // @Post('logout')
-  // logout(@Body() loginDto: LoginDto) {
-  //   return this.authService.create(loginDto);
-  // }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+  @UseGuards(JwtAuthGuard, UserAvailableGuard)
+  @Get('me')
+  @ApiOperation({ summary: 'Get current user info with extended details' })
+  async getCurrentUser(@Req() req: AuthenticatedRequest) {
+    return this.authService.getUserDetails(req.user);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @UseGuards(JwtAuthGuard, UserAvailableGuard)
+  @Patch('confirm')
+  async confirmUser(@Req() req: AuthenticatedRequest, @Body() body: ConfirmDto) {
+    return this.authService.confirmCredentials(req.user.upbCode, body);
   }
 }

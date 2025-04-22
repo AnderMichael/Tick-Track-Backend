@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { AdministrativePaginationDto } from '../common/dto/user.pagination.dto';
 import { AdministrativesService } from './administratives.service';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
@@ -10,7 +11,7 @@ import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
 
 @ApiTags('Administratives')
 @Controller('administratives')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class AdministrativesController {
   constructor(private readonly administrativesService: AdministrativesService) { }
 

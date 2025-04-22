@@ -2,9 +2,9 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from '../users/user.service';
 import { BcryptUtils } from '../users/utils/bcrypt';
 import { LoginDto } from './dto/login.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import { JWTUtils } from './utils/JWTUtils';
 import { UserInfo } from './models/UserInfo';
+import { JWTUtils } from './utils/JWTUtils';
+import { ConfirmDto } from './dto/confirm.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,15 +17,21 @@ export class AuthService {
   }
 
   async obtainToken(loginDto: LoginDto) {
+    const availability = await this.userService.checkAvailability(loginDto.upbCode);
+    if (!availability) {
+      throw new BadRequestException('User with UPB is not available, please contact to your local scholarship officer.');
+    }
+
     try {
       const { upbCode, password } = loginDto;
-      const user = await this.userService.findOneByUpbCode(upbCode);
+      const user = await this.userService.findAuthorizationByUpbCode(upbCode);
       if (!user) {
-        throw new Error('User not found');
+        throw new Error('User Not Found');
       }
+
       const isPasswordValid = await this.bcryptUtils.comparePassword(password, user.hashed_password);
       if (!isPasswordValid) {
-        throw new Error('Incorrect password');
+        throw new Error('Incorrect Password');
       }
 
       const token = this.jwtUtils.generateToken({
@@ -37,28 +43,32 @@ export class AuthService {
 
       return token;
     } catch (error) {
-      throw new BadRequestException('Invalid credentials');
+      throw new BadRequestException('Invalid credentials, check them again');
     }
   }
 
   async verifyToken(token: string) {
     try {
-      const payload = await this.jwtUtils.verifyToken(token);
+      const payload = this.jwtUtils.verifyToken(token);
       return payload as UserInfo;
     } catch (error) {
-      throw new BadRequestException('Invalid token');
+      throw new BadRequestException('Invalid session, please refresh it.');
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  async getUserDetails(payload: UserInfo) {
+    const user = await this.userService.getBasicUserInfo(payload);
+    return user;
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+  async checkAvaliability(upbCode: number) {
+    const availabiity = await this.userService.checkAvailability(upbCode);
+    return availabiity;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async confirmCredentials(upbCode: number, confirmDto: ConfirmDto){
+    const {confirmPassword} = confirmDto;
+    await this.userService.updatePassword(upbCode, confirmPassword);
+    return {message: "Password updated successfully"};
   }
 }

@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateScholarshipDto } from './dto/create-scholarship.dto';
 import { UpdateScholarshipDto } from './dto/update-scholarship.dto';
@@ -10,7 +11,7 @@ import { ScholarshipsService } from './scholarships.service';
 
 @ApiTags('Scholarships')
 @Controller('scholarships')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class ScholarshipsController {
   constructor(private readonly scholarshipsService: ScholarshipsService) { }
 

@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateWorkDto } from './dto/create-work.dto';
 import { UpdateWorkDto } from './dto/update-work.dto';
@@ -10,7 +11,7 @@ import { WorksService } from './works.service';
 
 @ApiTags('Works')
 @Controller('works')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class WorksController {
   constructor(private readonly worksService: WorksService) { }
 
