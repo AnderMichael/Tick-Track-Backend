@@ -1,5 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { prisma } from 'src/config/prisma.client';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { SemestersService } from '../semesters/semesters.service';
 import { CreateWorkDto } from './dto/create-work.dto';
 import { UpdateWorkDto } from './dto/update-work.dto';
 import { WorkModel } from './model/work.model';
@@ -7,9 +9,18 @@ import { WorksRepository } from './works.repository';
 
 @Injectable()
 export class WorksService {
-  constructor(private readonly worksRepository: WorksRepository) { }
+  constructor(private readonly worksRepository: WorksRepository, private readonly semestersService: SemestersService) { }
 
   async create(dto: CreateWorkDto) {
+    const semester = await this.semestersService.findOne(dto.semester_id);
+
+    const startsWithinSemester = dto.date_begin >= semester.start_date && dto.date_begin <= semester.end_date;
+    const endsWithinSemester = dto.date_end >= semester.start_date && dto.date_end <= semester.end_date;
+
+    if (!startsWithinSemester || !endsWithinSemester) {
+      throw new BadRequestException('Work dates must fall within the semester period');
+    }
+
     const created = await this.worksRepository.create(dto);
     return new WorkModel(created);
   }

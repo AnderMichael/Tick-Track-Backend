@@ -30,7 +30,7 @@ export class UserModel {
     if (!!user.students) {
       this.student = {
         semester: user.students.semester,
-        commitment: user.students.commitment?.service_details,
+        commitment: user.students.commitment.map(comm => ({ id: comm.service_details_id, is_current: comm.is_current })),
         inscriptions: user.students.inscriptions,
         accountKey: JWTAccountKeyUtils.generateAccountKeyToken({
           accountKey: `${user.id}-${user.upbCode}`,

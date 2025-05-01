@@ -39,7 +39,7 @@ export class SemestersService {
     async update(id: number, dto: UpdateSemesterDto) {
         const semester = await this.findOne(id);
 
-        const overlap = await this.semestersRepository.findOverlapping(dto.start_date ?? semester.start_date, dto.end_date ?? semester.end_date);
+        const overlap = await this.semestersRepository.findOverlapping(dto.start_date ?? semester.start_date, dto.end_date ?? semester.end_date, semester.id);
         if (overlap.length > 0) {
             throw new BadRequestException('Semester dates overlap with an existing semester');
         }
