@@ -23,9 +23,13 @@ export class UserService {
         return isAvailable;
     }
 
-    async updatePassword(upbCode: number, password: string) {
+    async confirmPassword(upbCode: number, password: string) {
         const user = await this.userRepository.findByUpbCode(upbCode);
         if (user?.is_confirmed) throw new NotAcceptableException("User already confirmed, please contact your local scholarship officer to reset your password.");
         await this.userRepository.updatePassword(upbCode, password);
+    }
+
+    async resetPassword(upbCode: number) {
+        await this.userRepository.resetPassword(upbCode);
     }
 }

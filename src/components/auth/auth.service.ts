@@ -1,10 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../users/user.service';
 import { BcryptUtils } from '../users/utils/bcrypt';
+import { ConfirmDto } from './dto/confirm.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserInfo } from './models/UserInfo';
 import { JWTUtils } from './utils/JWTUtils';
-import { ConfirmDto } from './dto/confirm.dto';
 
 @Injectable()
 export class AuthService {
@@ -52,7 +52,7 @@ export class AuthService {
       const payload = this.jwtUtils.verifyToken(token);
       return payload as UserInfo;
     } catch (error) {
-      throw new BadRequestException('Invalid session, please refresh it.');
+      throw new UnauthorizedException('Invalid session, please refresh it.');
     }
   }
 
@@ -66,9 +66,18 @@ export class AuthService {
     return availabiity;
   }
 
-  async confirmCredentials(upbCode: number, confirmDto: ConfirmDto){
-    const {confirmPassword} = confirmDto;
-    await this.userService.updatePassword(upbCode, confirmPassword);
-    return {message: "Password updated successfully"};
+  async confirmCredentials(upbCode: number, confirmDto: ConfirmDto) {
+    const { confirmPassword } = confirmDto;
+    await this.userService.confirmPassword(upbCode, confirmPassword);
+    return { message: "Password updated successfully" };
+  }
+
+  async resetCredentials(administrative: UserInfo, upbCode: number) {
+    const user = await this.userService.findAuthorizationByUpbCode(upbCode);
+    if (!administrative.permissions.includes(`update:${user?.role.name.toLocaleLowerCase()}s`)) {
+      throw new UnauthorizedException("You don't have permission to reset this user password");
+    }
+    await this.userService.resetPassword(upbCode);
+    return { message: "Password reset successfully" };
   }
 }

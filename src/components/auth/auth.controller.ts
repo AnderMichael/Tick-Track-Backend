@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { ConfirmDto } from './dto/confirm.dto';
@@ -27,5 +27,11 @@ export class AuthController {
   @Patch('confirm')
   async confirmUser(@Req() req: AuthenticatedRequest, @Body() body: ConfirmDto) {
     return this.authService.confirmCredentials(req.user.upbCode, body);
+  }
+
+  @UseGuards(JwtAuthGuard, UserAvailableGuard)
+  @Patch('reset-password/:upbCode')
+  async resetPassword(@Req() req: AuthenticatedRequest, @Param('upbCode') upbCode: number) {
+    return this.authService.resetCredentials(req.user, upbCode);
   }
 }

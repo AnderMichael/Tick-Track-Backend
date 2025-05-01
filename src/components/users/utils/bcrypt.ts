@@ -5,7 +5,7 @@ const { user } = configVariables;
 
 export class BcryptUtils {
 
-    async getDefaultPassword(): Promise<string | undefined> {
+    async getDefaultPassword(): Promise<string> {
         const defaultHashedPassword = await this.hashPassword(user.defaultPassword);
         return defaultHashedPassword;
 

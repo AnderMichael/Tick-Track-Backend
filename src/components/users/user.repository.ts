@@ -82,4 +82,16 @@ export class UserRepository {
             data: { hashed_password: hashedPassword, is_confirmed: true },
         });
     }
+
+    async resetPassword(upbCode: number) {
+        const user = await this.prisma.user.findFirst({
+            where: { upbCode: upbCode },
+        });
+
+        const hashedPassword = await this.bcryptUtils.getDefaultPassword();
+        await this.prisma.user.update({
+            where: { id: user?.id },
+            data: { hashed_password: hashedPassword, is_confirmed: false },
+        });
+    }
 }

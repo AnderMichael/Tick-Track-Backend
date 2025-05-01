@@ -19,17 +19,14 @@ export class JwtAuthGuard implements CanActivate {
 
         const token = authHeader.split(' ')[1];
 
-        try {
-            const payload = await this.authService.verifyToken(token);
-            request.user = {
-                upbCode: payload.upbCode,
-                department_id: payload.department_id,
-                role_id: payload.role_id,
-                permissions: payload.permissions || [],
-            };
-            return true;
-        } catch (error) {
-            return false;
-        }
+        const payload = await this.authService.verifyToken(token);
+        request.user = {
+            upbCode: payload.upbCode,
+            department_id: payload.department_id,
+            role_id: payload.role_id,
+            permissions: payload.permissions || [],
+        };
+        
+        return true;
     }
 }
