@@ -1,3 +1,6 @@
+import { JWTUtils } from "../utils/JWTUtils";
+
+const JWTAccountKeyUtils = new JWTUtils();
 export class UserModel {
   upbCode: number;
   email: string;
@@ -5,10 +8,12 @@ export class UserModel {
   role: string;
   department: string;
   isConfirmed: boolean;
+  phone: string;
   student?: {
     semester: number;
     commitment?: any;
     inscriptions: any[];
+    accountKey: string;
   };
   administrative?: {
     upbRole: string;
@@ -21,12 +26,15 @@ export class UserModel {
     this.role = user.role?.name;
     this.department = user.department?.name;
     this.isConfirmed = user.is_confirmed;
-
+    this.phone = user.phone;
     if (!!user.students) {
       this.student = {
         semester: user.students.semester,
         commitment: user.students.commitment?.service_details,
         inscriptions: user.students.inscriptions,
+        accountKey: JWTAccountKeyUtils.generateAccountKeyToken({
+          accountKey: `${user.id}-${user.upbCode}`,
+        }),
       };
     }
 
