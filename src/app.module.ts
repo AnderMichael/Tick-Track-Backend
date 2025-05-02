@@ -11,12 +11,13 @@ import { LoggingInterceptor } from './loging/loging.interceptor';
 import { SemestersModule } from './components/semesters/semesters.module';
 import { ScholarshipsModule } from './components/scholarships/scholarships.module';
 import { WorksModule } from './components/works/works.module';
+import { TransactionsModule } from './components/transactions/transactions.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '.env',
-  }), StudentsModule, AdministrativesModule, AuthModule, UserModule, SemestersModule, ScholarshipsModule, WorksModule],
+  }), StudentsModule, AdministrativesModule, AuthModule, UserModule, SemestersModule, ScholarshipsModule, WorksModule, TransactionsModule],
   controllers: [AppController],
   providers: [AppService, {
     provide: APP_INTERCEPTOR,
