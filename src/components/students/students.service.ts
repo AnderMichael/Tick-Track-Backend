@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -7,7 +11,7 @@ import { StudentsRepository } from './students.repository';
 
 @Injectable()
 export class StudentsService {
-  constructor(private readonly studentsRepository: StudentsRepository) { }
+  constructor(private readonly studentsRepository: StudentsRepository) {}
 
   async create(dto: CreateStudentDto) {
     const { upbCode } = dto;

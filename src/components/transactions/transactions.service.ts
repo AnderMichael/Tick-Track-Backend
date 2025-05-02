@@ -4,10 +4,14 @@ import { WorksService } from '../works/works.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { TransactionModel } from './models/transaction.model';
 import { TransactionsRepository } from './transactions.repository';
+import { TransactionPaginationDto } from './dto/transaction.pagination.dto';
 
 @Injectable()
 export class TransactionsService {
-  constructor(private readonly transactionsRepository: TransactionsRepository, private readonly worksService: WorksService) { }
+  constructor(
+    private readonly transactionsRepository: TransactionsRepository,
+    private readonly worksService: WorksService,
+  ) {}
 
   async create(dto: CreateTransactionDto) {
     const work = await this.worksService.findOne(dto.work_id);
@@ -15,7 +19,7 @@ export class TransactionsService {
     return new TransactionModel(created);
   }
 
-  async findAll(pagination: PaginationDto) {
+  async findAll(pagination: TransactionPaginationDto) {
     const result = await this.transactionsRepository.findAll(pagination);
     return {
       ...result,

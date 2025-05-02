@@ -1,12 +1,20 @@
-// src/components/transactions/transactions.controller.ts
-import { Controller, Get, Param, Delete, UseGuards, Query, Post, Body } from '@nestjs/common';
-import { TransactionsService } from './transactions.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth//guards/jwt-auth.guard';
-import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
-import { PaginationDto } from '../common/dto/pagination.dto';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { TransactionPaginationDto } from './dto/transaction.pagination.dto';
+import { TransactionsService } from './transactions.service';
 
 @ApiTags('Transactions')
 @Controller('transactions')
@@ -24,7 +32,7 @@ export class TransactionsController {
   @Get()
   @Permissions('view:transactions')
   @ApiOperation({ summary: 'List all transactions with pagination' })
-  findAll(@Query() pagination: PaginationDto) {
+  findAll(@Query() pagination: TransactionPaginationDto) {
     return this.transactionsService.findAll(pagination);
   }
 

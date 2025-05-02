@@ -66,12 +66,8 @@ export class SemestersRepository {
       where: {
         is_deleted: false,
         ...(excludeId ? { NOT: { id: excludeId } } : {}),
-        AND: [
-          { start_date: { lte: end } },
-          { end_date: { gte: start } },
-        ],
+        AND: [{ start_date: { lte: end } }, { end_date: { gte: start } }],
       },
     });
   }
-  
 }

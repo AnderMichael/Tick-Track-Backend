@@ -1,4 +1,4 @@
-import { work } from "@prisma/client";
+import { work } from '@prisma/client';
 
 export class WorkModel {
   id: number;
@@ -20,6 +20,6 @@ export class WorkModel {
   }
 
   static fromMany(works: work[]): WorkModel[] {
-    return works.map(w => new WorkModel(w));
+    return works.map((w) => new WorkModel(w));
   }
 }

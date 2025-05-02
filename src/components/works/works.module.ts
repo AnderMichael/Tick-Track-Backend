@@ -10,6 +10,11 @@ import { WorksService } from './works.service';
 @Module({
   imports: [AuthModule, SemestersModule],
   controllers: [WorksController],
-  providers: [WorksService, WorksRepository, SemestersService, SemestersRepository],
+  providers: [
+    WorksService,
+    WorksRepository,
+    SemestersService,
+    SemestersRepository,
+  ],
 })
-export class WorksModule { }
+export class WorksModule {}

@@ -5,8 +5,8 @@ import { SemestersService } from './semesters.service';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-    imports: [AuthModule],
-    controllers: [SemestersController],
-    providers: [SemestersService, SemestersRepository],
+  imports: [AuthModule],
+  controllers: [SemestersController],
+  providers: [SemestersService, SemestersRepository],
 })
-export class SemestersModule { }
+export class SemestersModule {}

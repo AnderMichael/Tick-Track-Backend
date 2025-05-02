@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { PrismaClient } from './generated/client';
+import { PrismaClient } from '@prisma/client'; 
 class BcryptUtils {
 
   async getDefaultPassword(): Promise<string | undefined> {

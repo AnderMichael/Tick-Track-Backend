@@ -1,3 +1,3 @@
 export class AccountKeyPayload {
-    accountKey: string;
+  accountKey: string;
 }

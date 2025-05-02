@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -13,7 +23,9 @@ import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
 @Controller('administratives')
 @UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class AdministrativesController {
-  constructor(private readonly administrativesService: AdministrativesService) { }
+  constructor(
+    private readonly administrativesService: AdministrativesService,
+  ) {}
 
   @Post('scholarship-officers')
   @Permissions('create:scholarship_officers')
@@ -26,7 +38,10 @@ export class AdministrativesController {
   @Permissions('view:scholarship_officers')
   @ApiOperation({ summary: 'List Scholarship Officers with pagination' })
   findAllScholarshipOfficers(@Query() pagination: AdministrativePaginationDto) {
-    return this.administrativesService.findByRole('SCHOLARSHIP_OFFICER', pagination);
+    return this.administrativesService.findByRole(
+      'SCHOLARSHIP_OFFICER',
+      pagination,
+    );
   }
 
   @Get('scholarship-officers/:upbCode')
@@ -77,7 +92,10 @@ export class AdministrativesController {
   @Patch('supervisors/:upbCode')
   @Permissions('update:supervisors')
   @ApiOperation({ summary: 'Update a Supervisor by upbCode' })
-  updateSupervisor(@Param('upbCode') upbCode: string, @Body() updateDto: UpdateAdministrativeDto) {
+  updateSupervisor(
+    @Param('upbCode') upbCode: string,
+    @Body() updateDto: UpdateAdministrativeDto,
+  ) {
     return this.administrativesService.update(+upbCode, updateDto);
   }
 

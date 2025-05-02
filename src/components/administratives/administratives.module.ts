@@ -9,4 +9,4 @@ import { AdministrativesService } from './administratives.service';
   controllers: [AdministrativesController],
   providers: [AdministrativesService, AdministrativeRepository],
 })
-export class AdministrativesModule { }
+export class AdministrativesModule {}

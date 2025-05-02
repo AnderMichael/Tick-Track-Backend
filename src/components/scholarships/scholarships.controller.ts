@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -13,7 +23,7 @@ import { ScholarshipsService } from './scholarships.service';
 @Controller('scholarships')
 @UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class ScholarshipsController {
-  constructor(private readonly scholarshipsService: ScholarshipsService) { }
+  constructor(private readonly scholarshipsService: ScholarshipsService) {}
 
   @Post()
   @Permissions('create:scholarships')

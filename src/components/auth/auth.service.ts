@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from '../users/user.service';
 import { BcryptUtils } from '../users/utils/bcrypt';
 import { ConfirmDto } from './dto/confirm.dto';
@@ -17,9 +21,13 @@ export class AuthService {
   }
 
   async obtainToken(loginDto: LoginDto) {
-    const availability = await this.userService.checkAvailability(loginDto.upbCode);
+    const availability = await this.userService.checkAvailability(
+      loginDto.upbCode,
+    );
     if (!availability) {
-      throw new BadRequestException('User with UPB is not available, please contact to your local scholarship officer.');
+      throw new BadRequestException(
+        'User with UPB is not available, please contact to your local scholarship officer.',
+      );
     }
 
     try {
@@ -29,7 +37,10 @@ export class AuthService {
         throw new Error('User Not Found');
       }
 
-      const isPasswordValid = await this.bcryptUtils.comparePassword(password, user.hashed_password);
+      const isPasswordValid = await this.bcryptUtils.comparePassword(
+        password,
+        user.hashed_password,
+      );
       if (!isPasswordValid) {
         throw new Error('Incorrect Password');
       }
@@ -38,7 +49,9 @@ export class AuthService {
         department_id: user.department_id,
         role_id: user.role_id,
         upbCode: user.upbCode,
-        permissions: user.role.role_permission.map((rolePermission) => rolePermission.permission.name),
+        permissions: user.role.role_permission.map(
+          (rolePermission) => rolePermission.permission.name,
+        ),
       });
 
       return token;
@@ -69,15 +82,21 @@ export class AuthService {
   async confirmCredentials(upbCode: number, confirmDto: ConfirmDto) {
     const { confirmPassword } = confirmDto;
     await this.userService.confirmPassword(upbCode, confirmPassword);
-    return { message: "Password updated successfully" };
+    return { message: 'Password updated successfully' };
   }
 
   async resetCredentials(administrative: UserInfo, upbCode: number) {
     const user = await this.userService.findAuthorizationByUpbCode(upbCode);
-    if (!administrative.permissions.includes(`update:${user?.role.name.toLocaleLowerCase()}s`)) {
-      throw new UnauthorizedException("You don't have permission to reset this user password");
+    if (
+      !administrative.permissions.includes(
+        `update:${user?.role.name.toLocaleLowerCase()}s`,
+      )
+    ) {
+      throw new UnauthorizedException(
+        "You don't have permission to reset this user password",
+      );
     }
     await this.userService.resetPassword(upbCode);
-    return { message: "Password reset successfully" };
+    return { message: 'Password reset successfully' };
   }
 }

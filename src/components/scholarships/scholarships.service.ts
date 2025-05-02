@@ -1,14 +1,19 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ScholarshipsRepository } from './scholarships.repository';
 import { CreateScholarshipDto } from './dto/create-scholarship.dto';
 import { UpdateScholarshipDto } from './dto/update-scholarship.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { ScholarshipModel } from './model/scholarship.model';
 
-
 @Injectable()
 export class ScholarshipsService {
-  constructor(private readonly scholarshipsRepository: ScholarshipsRepository) {}
+  constructor(
+    private readonly scholarshipsRepository: ScholarshipsRepository,
+  ) {}
 
   async create(dto: CreateScholarshipDto) {
     // const existing = await this.scholarshipsRepository.findAll({ search: dto.name });

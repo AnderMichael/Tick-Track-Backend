@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CustomPrismaClientType, prisma } from '../../config/prisma.client';
-import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateWorkDto } from './dto/create-work.dto';
 import { UpdateWorkDto } from './dto/update-work.dto';
+import { WorkPaginationDto } from './dto/work.pagination.dto';
 
 @Injectable()
 export class WorksRepository {
@@ -17,13 +17,11 @@ export class WorksRepository {
     });
   }
 
-  async findAll(pagination: PaginationDto) {
+  async findAll(pagination: WorkPaginationDto) {
     const { page = 1, limit = 10, search } = pagination;
     const skip = (page - 1) * limit;
 
-    const where: any = {
-      is_deleted: false,
-    };
+    const where = pagination.buildWorkWhere();
 
     if (search) {
       where.title = { contains: search, mode: 'insensitive' };

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from '@prisma/client';
 
 export const softDeleteExtension = Prisma.defineExtension({
   name: 'softDelete',
@@ -30,7 +30,12 @@ export const softDeleteExtension = Prisma.defineExtension({
   query: {
     $allModels: {
       async $allOperations({ operation, args, query }) {
-        const isReadOp = ['findUnique', 'findFirst', 'findMany', 'count'].includes(operation);
+        const isReadOp = [
+          'findUnique',
+          'findFirst',
+          'findMany',
+          'count',
+        ].includes(operation);
 
         if (isReadOp && 'where' in args) {
           args.where = {

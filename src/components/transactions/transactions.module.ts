@@ -12,6 +12,13 @@ import { TransactionsService } from './transactions.service';
 @Module({
   imports: [AuthModule, WorksModule],
   controllers: [TransactionsController],
-  providers: [TransactionsService, TransactionsRepository, WorksService, WorksRepository, SemestersService, SemestersRepository],
+  providers: [
+    TransactionsService,
+    TransactionsRepository,
+    WorksService,
+    WorksRepository,
+    SemestersService,
+    SemestersRepository,
+  ],
 })
-export class TransactionsModule { }
+export class TransactionsModule {}

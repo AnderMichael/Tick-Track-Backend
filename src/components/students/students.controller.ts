@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -13,7 +23,7 @@ import { StudentsService } from './students.service';
 @Controller('students')
 @UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class StudentsController {
-  constructor(private readonly studentsService: StudentsService) { }
+  constructor(private readonly studentsService: StudentsService) {}
 
   @Post()
   @Permissions('create:students')
@@ -39,7 +49,10 @@ export class StudentsController {
   @Patch(':upbCode')
   @Permissions('update:students')
   @ApiOperation({ summary: 'Update a student by upbCode' })
-  update(@Param('upbCode') upbCode: string, @Body() updateDto: UpdateStudentDto) {
+  update(
+    @Param('upbCode') upbCode: string,
+    @Body() updateDto: UpdateStudentDto,
+  ) {
     return this.studentsService.update(+upbCode, updateDto);
   }
 

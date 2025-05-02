@@ -1,4 +1,4 @@
-import { semester } from "@prisma/client";
+import { semester } from '@prisma/client';
 
 export class SemesterModel {
   id: number;
@@ -14,6 +14,6 @@ export class SemesterModel {
   }
 
   static fromMany(semesters: semester[]): SemesterModel[] {
-    return semesters.map(s => new SemesterModel(s));
+    return semesters.map((s) => new SemesterModel(s));
   }
 }

@@ -1,4 +1,4 @@
-import { scholarship } from "@prisma/client";
+import { scholarship } from '@prisma/client';
 
 export class ScholarshipModel {
   id: number;
@@ -12,6 +12,6 @@ export class ScholarshipModel {
   }
 
   static fromMany(scholarships: scholarship[]): ScholarshipModel[] {
-    return scholarships.map(s => new ScholarshipModel(s));
+    return scholarships.map((s) => new ScholarshipModel(s));
   }
 }

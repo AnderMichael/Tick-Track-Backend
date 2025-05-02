@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { AdministrativePaginationDto } from '../common/dto/user.pagination.dto';
 import { AdministrativeRepository } from './administratives.repository';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
@@ -7,7 +11,9 @@ import { AdministrativeModel } from './models/administratives.model';
 
 @Injectable()
 export class AdministrativesService {
-  constructor(private readonly administrativeRepository: AdministrativeRepository) { }
+  constructor(
+    private readonly administrativeRepository: AdministrativeRepository,
+  ) {}
 
   async create(dto: CreateAdministrativeDto) {
     const { upbCode } = dto;

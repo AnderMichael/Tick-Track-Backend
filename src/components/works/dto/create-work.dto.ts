@@ -1,4 +1,10 @@
-import { IsDateString, IsInt, IsNotEmpty, IsPositive, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsInt,
+  IsNotEmpty,
+  IsPositive,
+  IsString,
+} from 'class-validator';
 
 export class CreateWorkDto {
   @IsNotEmpty()

@@ -22,7 +22,7 @@ export class LoggingInterceptor implements NestInterceptor {
         new winston.transports.File({
           filename: 'logs/requests.log',
           level: 'info',
-        })
+        }),
       );
     }
 
@@ -50,7 +50,7 @@ export class LoggingInterceptor implements NestInterceptor {
         };
 
         this.logger.info(logMessage);
-      })
+      }),
     );
   }
 }

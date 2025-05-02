@@ -20,16 +20,18 @@ async function bootstrap() {
 
   app.setGlobalPrefix(apiRoot);
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-    validationError: {
-      target: false,
-      value: false,
-    },
-  }));
-  
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      validationError: {
+        target: false,
+        value: false,
+      },
+    }),
+  );
+
   app.useGlobalFilters(new HttpExceptionFilter());
   setupSwagger(app);
   await app.listen(port);

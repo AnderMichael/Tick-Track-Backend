@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { ConfirmDto } from './dto/confirm.dto';
@@ -8,7 +17,7 @@ import { UserAvailableGuard } from './guards/user-availability.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
@@ -25,13 +34,19 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard, UserAvailableGuard)
   @Patch('confirm')
-  async confirmUser(@Req() req: AuthenticatedRequest, @Body() body: ConfirmDto) {
+  async confirmUser(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: ConfirmDto,
+  ) {
     return this.authService.confirmCredentials(req.user.upbCode, body);
   }
 
   @UseGuards(JwtAuthGuard, UserAvailableGuard)
   @Patch('reset-password/:upbCode')
-  async resetPassword(@Req() req: AuthenticatedRequest, @Param('upbCode') upbCode: number) {
+  async resetPassword(
+    @Req() req: AuthenticatedRequest,
+    @Param('upbCode') upbCode: number,
+  ) {
     return this.authService.resetCredentials(req.user, upbCode);
   }
 }

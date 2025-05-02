@@ -10,4 +10,4 @@ import { StudentsService } from './students.service';
   providers: [StudentsService, StudentsRepository],
   exports: [StudentsService, StudentsRepository],
 })
-export class StudentsModule { }
+export class StudentsModule {}
