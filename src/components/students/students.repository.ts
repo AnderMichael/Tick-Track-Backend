@@ -23,12 +23,12 @@ export class StudentsRepository {
       data: {
         ...userData,
         hashed_password: defaultHashedPassword,
-        students: {
+        student: {
           create: { semester },
         },
       },
       include: {
-        students: true,
+        student: true,
         role: true,
         department: true,
       },
@@ -45,7 +45,7 @@ export class StudentsRepository {
       this.prisma.user.findMany({
         where,
         include: {
-          students: true,
+          student: true,
           role: true,
           department: true,
         },
@@ -66,13 +66,13 @@ export class StudentsRepository {
   async findOne(upbCode: number) {
     return this.prisma.user.findFirst({
       where: {
-        students: {
+        student: {
           isNot: null,
         },
         upbCode,
       },
       include: {
-        students: true,
+        student: true,
         role: true,
         department: true,
       },
@@ -83,7 +83,7 @@ export class StudentsRepository {
     const { semester, ...userData } = dto;
     const student = await this.findOne(upbCode);
 
-    await this.prisma.students.update({
+    await this.prisma.student.update({
       where: { id: student?.id },
       data: { semester },
     });
@@ -92,7 +92,7 @@ export class StudentsRepository {
       where: { id: student?.id },
       data: { ...userData },
       include: {
-        students: true,
+        student: true,
         role: true,
         department: true,
       },
@@ -102,7 +102,7 @@ export class StudentsRepository {
   async softDelete(upbCode: number) {
     const student = await this.findOne(upbCode);
 
-    await this.prisma.students.update({
+    await this.prisma.student.update({
       where: { id: student?.id },
       data: { is_deleted: true },
     });

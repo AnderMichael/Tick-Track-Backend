@@ -1,4 +1,4 @@
-import { semester } from '@prisma/client';
+import { semester } from "@prisma/client";
 
 export class SemesterModel {
   id: number;

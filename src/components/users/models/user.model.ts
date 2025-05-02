@@ -27,20 +27,20 @@ export class UserModel {
     this.department = user.department?.name;
     this.isConfirmed = user.is_confirmed;
     this.phone = user.phone;
-    if (!!user.students) {
+    if (!!user.student) {
       this.student = {
-        semester: user.students.semester,
-        commitment: user.students.commitment.map(comm => ({ id: comm.service_details_id, is_current: comm.is_current })),
-        inscriptions: user.students.inscriptions,
+        semester: user.student.semester,
+        commitment: user.student.commitment.map(comm => ({ id: comm.service_details_id, is_current: comm.is_current })),
+        inscriptions: user.student.inscription,
         accountKey: JWTAccountKeyUtils.generateAccountKeyToken({
           accountKey: `${user.id}-${user.upbCode}`,
         }),
       };
     }
 
-    if (!!user.administratives) {
+    if (!!user.administrative) {
       this.administrative = {
-        upbRole: user.administratives.upbRole,
+        upbRole: user.administrative.upb_role,
       };
     }
   }

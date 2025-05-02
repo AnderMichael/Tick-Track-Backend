@@ -16,19 +16,21 @@ export class AdministrativeRepository {
     }
 
     async create(dto: CreateAdministrativeDto) {
-        const { upbRole, ...userData } = dto;
+        const { upbRole: upb_role, ...userData } = dto;
         const defaultHashedPassword = await this.bcryptUtils.getDefaultPassword();
 
         return this.prisma.user.create({
             data: {
                 ...userData,
                 hashed_password: defaultHashedPassword,
-                administratives: {
-                    create: { upbRole },
+                administrative: {
+                    create: {
+                        upb_role,
+                    },
                 },
             },
             include: {
-                administratives: true,
+                administrative: true,
                 role: true,
                 department: true,
             },
@@ -45,7 +47,7 @@ export class AdministrativeRepository {
             this.prisma.user.findMany({
                 where,
                 include: {
-                    administratives: true,
+                    administrative: true,
                     role: true,
                     department: true,
                 },
@@ -66,13 +68,13 @@ export class AdministrativeRepository {
     async findOne(upbCode: number) {
         return this.prisma.user.findFirst({
             where: {
-                administratives: {
+                administrative: {
                     isNot: null,
                 },
                 upbCode,
             },
             include: {
-                administratives: true,
+                administrative: true,
                 role: true,
                 department: true,
             },
@@ -80,19 +82,19 @@ export class AdministrativeRepository {
     }
 
     async update(upbCode: number, dto: UpdateAdministrativeDto) {
-        const { upbRole, ...userData } = dto;
+        const { upbRole: upb_role, ...userData } = dto;
         const admin = await this.findOne(upbCode);
 
-        await this.prisma.administratives.update({
+        await this.prisma.administrative.update({
             where: { id: admin?.id },
-            data: { upbRole },
+            data: { upb_role },
         });
 
         return this.prisma.user.update({
             where: { id: admin?.id },
             data: { ...userData },
             include: {
-                administratives: true,
+                administrative: true,
                 role: true,
                 department: true,
             },
@@ -102,7 +104,7 @@ export class AdministrativeRepository {
     async softDelete(upbCode: number) {
         const admin = await this.findOne(upbCode);
 
-        await this.prisma.administratives.update({
+        await this.prisma.administrative.update({
             where: { id: admin?.id },
             data: { is_deleted: true },
         });

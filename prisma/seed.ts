@@ -1,6 +1,5 @@
-// prisma/seed.ts
-import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { PrismaClient } from './generated/client';
 class BcryptUtils {
 
   async getDefaultPassword(): Promise<string | undefined> {
@@ -70,167 +69,67 @@ async function main() {
   }
 
   // 5. Asignar permisos
-  // Estudiante: ver works, ver transactions
-  await linkPermissionsToRole(studentRole.id, [
-    'view:works',
-    'view:transactions',
-  ]);
-
-  // Supervisor
+  await linkPermissionsToRole(studentRole.id, ['view:works', 'view:transactions']);
   await linkPermissionsToRole(supervisorRole.id, [
-    'view:works',
-    'create:works',
-    'update:works',
-    'delete:works',
-    'view:transactions',
-    'create:transactions',
-    'update:transactions',
-    'delete:transactions',
+    'view:works', 'create:works', 'update:works', 'delete:works',
+    'view:transactions', 'create:transactions', 'update:transactions', 'delete:transactions',
     'view:students',
   ]);
-
-  // Scholarship Officer
   await linkPermissionsToRole(scholarshipOfficerRole.id, [
-    'view:works',
-    'create:works',
-    'update:works',
-    'delete:works',
-    'view:transactions',
-    'create:transactions',
-    'update:transactions',
-    'delete:transactions',
-    'view:students',
-    'create:students',
-    'update:students',
-    'delete:students',
-    'view:supervisors',
-    'create:supervisors',
-    'update:supervisors',
-    'delete:supervisors',
+    'view:works', 'create:works', 'update:works', 'delete:works',
+    'view:transactions', 'create:transactions', 'update:transactions', 'delete:transactions',
+    'view:students', 'create:students', 'update:students', 'delete:students',
+    'view:supervisors', 'create:supervisors', 'update:supervisors', 'delete:supervisors',
   ]);
-
-  // Admin: todos los permisos
-  await linkPermissionsToRole(
-    adminRole.id,
-    allPermissions.map((p) => p.name),
-  );
-
-  // 6. Crear usuarios con diferentes roles y departamentos
+  await linkPermissionsToRole(adminRole.id, allPermissions.map((p) => p.name));
 
   const bcryptUtils = new BcryptUtils();
   const def_password = await bcryptUtils.getDefaultPassword();
-  // Estudiante 1
+
   const userStudent1 = await prisma.user.create({
     data: {
-      firstName: 'Carlos',
-      secondName: "Marin",
-      phone: "548393900",
-      email: "carlosmarin1@upb.edu",
-      fatherLastName: 'Pérez',
-      motherLastName: 'Gómez',
-      isAvailable: true,
-      upbCode: 63428,
-      role_id: studentRole.id,
-      department_id: depLaPaz.id,
-      hashed_password: def_password,
+      firstName: 'Carlos', secondName: "Marin", phone: "548393900", email: "carlosmarin1@upb.edu",
+      fatherLastName: 'Pérez', motherLastName: 'Gómez', isAvailable: true, upbCode: 63428,
+      role_id: studentRole.id, department_id: depLaPaz.id, hashed_password: def_password,
     },
   });
-  // Relación 1:1 con students
-  await prisma.students.create({
-    data: {
-      id: userStudent1.id,
-      semester: 1,
-    },
-  });
+  await prisma.student.create({ data: { id: userStudent1.id, semester: 1 } });
 
-  // Estudiante 2
   const userStudent2 = await prisma.user.create({
     data: {
-      firstName: 'Lucía',
-      secondName: "Carla",
-      phone: "548393900",
-      email: "luciacarla1@upb.edu",
-      fatherLastName: 'Sandoval',
-      motherLastName: 'Rojas',
-      upbCode: 63003,
-      role_id: studentRole.id,
-      department_id: depCochabamba.id,
-      hashed_password: def_password,
+      firstName: 'Lucía', secondName: "Carla", phone: "548393900", email: "luciacarla1@upb.edu",
+      fatherLastName: 'Sandoval', motherLastName: 'Rojas', upbCode: 63003,
+      role_id: studentRole.id, department_id: depCochabamba.id, hashed_password: def_password,
     },
   });
-  await prisma.students.create({
-    data: {
-      id: userStudent2.id,
-      semester: 2,
-    },
-  });
+  await prisma.student.create({ data: { id: userStudent2.id, semester: 2 } });
 
-  // Supervisor
   const userSup = await prisma.user.create({
     data: {
-      firstName: 'Juan',
-      secondName: "Carlos",
-      phone: "548393900",
-      email: "juancarlos1@upb.edu",
-      fatherLastName: 'Supervisor',
-      motherLastName: '',
-      upbCode: 43267,
-      role_id: supervisorRole.id,
-      department_id: depSantaCruz.id,
-      hashed_password: def_password,
+      firstName: 'Juan', secondName: "Carlos", phone: "548393900", email: "juancarlos1@upb.edu",
+      fatherLastName: 'Supervisor', motherLastName: '', upbCode: 43267,
+      role_id: supervisorRole.id, department_id: depSantaCruz.id, hashed_password: def_password,
     },
   });
-  // Relación 1:1 con administratives
-  await prisma.administratives.create({
-    data: {
-      id: userSup.id,
-      upbRole: 'SUPERVISOR',
-    },
-  });
+  await prisma.administrative.create({ data: { id: userSup.id, upb_role: 'SUPERVISOR' } });
 
-  // Scholarship Officer
   const userOfficer = await prisma.user.create({
     data: {
-      firstName: 'Ana',
-      secondName: "Carla",
-      phone: "123456789",
-      email: "anacarla1@upb.edu",
-      fatherLastName: 'Scholar',
-      motherLastName: 'Ofc',
-      upbCode: 43247,
-      role_id: scholarshipOfficerRole.id,
-      department_id: depLaPaz.id,
-      hashed_password: def_password,
+      firstName: 'Ana', secondName: "Carla", phone: "123456789", email: "anacarla1@upb.edu",
+      fatherLastName: 'Scholar', motherLastName: 'Ofc', upbCode: 43247,
+      role_id: scholarshipOfficerRole.id, department_id: depLaPaz.id, hashed_password: def_password,
     },
   });
-  await prisma.administratives.create({
-    data: {
-      id: userOfficer.id,
-      upbRole: 'SCHOLARSHIP_OFFICER',
-    },
-  });
+  await prisma.administrative.create({ data: { id: userOfficer.id, upb_role: 'SCHOLARSHIP_OFFICER' } });
 
-  // Admin
   const userAdmin = await prisma.user.create({
     data: {
-      firstName: 'Silvia',
-      fatherLastName: 'Admin',
-      motherLastName: 'Master',
-      upbCode: 32147,
-      secondName: "Carla",
-      phone: "123456789",
-      email: "silviacarla1@upb.edu",
-      role_id: adminRole.id,
-      department_id: depCochabamba.id,
-      hashed_password: def_password,
+      firstName: 'Silvia', fatherLastName: 'Admin', motherLastName: 'Master', upbCode: 32147,
+      secondName: "Carla", phone: "123456789", email: "silviacarla1@upb.edu",
+      role_id: adminRole.id, department_id: depCochabamba.id, hashed_password: def_password,
     },
   });
-  await prisma.administratives.create({
-    data: {
-      id: userAdmin.id,
-      upbRole: 'ADMIN',
-    },
-  });
+  await prisma.administrative.create({ data: { id: userAdmin.id, upb_role: 'ADMIN' } });
 
   const scholarships = [
     { name: 'Beca de Excelencia Académica', description: 'Otorgada a estudiantes con los mejores promedios de su facultad, cubre el 100% de la colegiatura por semestre.' },
@@ -244,11 +143,7 @@ async function main() {
     { name: 'Beca Comunidad UPB', description: 'Dirigida a bachilleres destacados del municipio del campus. Cubre el 100% de la colegiatura.' },
     { name: 'Beca Interior y Familiar', description: 'Beca por residencia en otro departamento o por hermanos estudiando en la UPB. Cubre entre 10% y 35%.' }
   ];
-
-  await prisma.scholarship.createMany({
-    data: scholarships,
-    skipDuplicates: true,
-  });
+  await prisma.scholarship.createMany({ data: scholarships, skipDuplicates: true });
 
   const scholarshipMap = {
     'Beca Colegio': [
@@ -282,41 +177,24 @@ async function main() {
 
   for (const [name, details] of Object.entries(scholarshipMap)) {
     const scholarship = await prisma.scholarship.findFirst({ where: { name } });
-    if (!scholarship) {
-      console.warn(`⚠️  Becas no encontrada: ${name}`);
-      continue;
-    }
+    if (!scholarship) continue;
 
     for (const detail of details) {
       await prisma.service_details.create({
         data: {
           scholarship_id: scholarship.id,
           percentage: detail.percentage,
-          hoursPerSemester: detail.hours,
-          totalHours: detail.hours * 8,
+          hours_per_semester: detail.hours,
+          total_hours: detail.hours * 8,
         },
       });
     }
   }
 
-  const students = await prisma.user.findMany({
-    where: {
-      students: { isNot: null },
-      is_deleted: false,
-    },
-    include: { students: true },
-  });
+  const students = await prisma.user.findMany({ where: { student: { isNot: null }, is_deleted: false }, include: { student: true } });
 
   const scholarship = await prisma.scholarship.findFirst({ where: { name: 'Beca Colegio' } });
-  if (!scholarship) {
-    throw new Error('Beca de Equidad - Avina no encontrada');
-  }
-
-  const details = [
-    { percentage: 0.1, hours: 40 },
-    { percentage: 0.2, hours: 80 },
-    { percentage: 0.3, hours: 120 },
-  ];
+  const details = [{ percentage: 0.1, hours: 40 }, { percentage: 0.2, hours: 80 }, { percentage: 0.3, hours: 120 }];
 
   for (let i = 0; i < Math.min(students.length, details.length); i++) {
     const student = students[i];
@@ -324,10 +202,10 @@ async function main() {
 
     const serviceDetail = await prisma.service_details.create({
       data: {
-        scholarship_id: scholarship.id,
+        scholarship_id: scholarship!.id,
         percentage,
-        hoursPerSemester: hours,
-        totalHours: hours * 8,
+        hours_per_semester: hours,
+        total_hours: hours * 8,
       },
     });
 
@@ -340,13 +218,45 @@ async function main() {
     });
   }
 
+  await prisma.semester.createMany({
+    data: [
+      { name: 'Semestre II-2024', start_date: '2024-08-01', end_date: '2024-12-20' },
+      { name: 'Semestre I-2025', start_date: '2025-02-01', end_date: '2025-06-30' },
+      { name: 'Semestre II-2025', start_date: '2025-08-01', end_date: '2025-12-20' }
+    ],
+    skipDuplicates: true
+  });
+
+  const semester = await prisma.semester.findFirst({ where: { name: '2025-1' } });
+  const admin = await prisma.administrative.findFirst();
+
+  if (semester && admin) {
+    await prisma.work.createMany({
+      data: [
+        {
+          title: 'Supervisión de biblioteca',
+          description: 'Supervisar el uso del área de estudio en la biblioteca central.',
+          date_begin: '2025-02-10',
+          date_end: '2025-06-15',
+          administrative_id: admin.id,
+          semester_id: semester.id
+        },
+        {
+          title: 'Apoyo laboratorio de redes',
+          description: 'Asistir en las prácticas de redes de computadores.',
+          date_begin: '2025-02-15',
+          date_end: '2025-06-10',
+          administrative_id: admin.id,
+          semester_id: semester.id
+        }
+      ]
+    });
+  }
   console.log('Seeding completed successfully!');
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
+  .then(() => prisma.$disconnect())
   .catch(async (e) => {
     console.error(e);
     await prisma.$disconnect();

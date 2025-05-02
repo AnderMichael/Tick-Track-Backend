@@ -1,4 +1,4 @@
-import { scholarship } from '@prisma/client';
+import { scholarship } from "@prisma/client";
 
 export class ScholarshipModel {
   id: number;

@@ -5,7 +5,7 @@ export class StudentModel extends UserModel {
 
     constructor(user: any) {
         super(user);
-        this.semester = user.students?.semester || null;
+        this.semester = user.student?.semester || null;
     }
 
     static fromMany(users: any[]): StudentModel[] {

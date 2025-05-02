@@ -19,4 +19,8 @@ export class CreateTransactionDto {
     @IsInt()
     @IsPositive()
     work_id: number;
+
+    @IsInt()
+    @IsPositive()
+    student_id: number;
 }

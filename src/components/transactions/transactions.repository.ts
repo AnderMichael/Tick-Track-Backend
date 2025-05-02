@@ -11,7 +11,7 @@ export class TransactionsRepository {
     }
 
     async create(dto: CreateTransactionDto) {
-        return this.prisma.transactions.create({
+        return this.prisma.transaction.create({
             data: dto,
         });
     }
@@ -23,13 +23,13 @@ export class TransactionsRepository {
         const where = { is_deleted: false };
 
         const [data, total] = await Promise.all([
-            this.prisma.transactions.findMany({
+            this.prisma.transaction.findMany({
                 where,
                 skip,
                 take: limit,
                 orderBy: { date: 'desc' },
             }),
-            this.prisma.transactions.count({ where }),
+            this.prisma.transaction.count({ where }),
         ]);
 
         return {
@@ -41,13 +41,13 @@ export class TransactionsRepository {
     }
 
     async findOne(id: number) {
-        return this.prisma.transactions.findUnique({
+        return this.prisma.transaction.findUnique({
             where: { id },
         });
     }
 
     async softDelete(id: number) {
-        return this.prisma.transactions.update({
+        return this.prisma.transaction.update({
             where: { id },
             data: { is_deleted: true },
         });

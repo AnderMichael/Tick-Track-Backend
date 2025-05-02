@@ -55,21 +55,21 @@ CREATE TABLE "role_permission" (
 );
 
 -- CreateTable
-CREATE TABLE "students" (
+CREATE TABLE "student" (
     "id" INTEGER NOT NULL,
     "semester" INTEGER NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "students_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "student_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "administratives" (
+CREATE TABLE "administrative" (
     "id" INTEGER NOT NULL,
-    "upbRole" TEXT NOT NULL,
+    "upb_role" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "administratives_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "administrative_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -87,8 +87,8 @@ CREATE TABLE "service_details" (
     "id" SERIAL NOT NULL,
     "scholarship_id" INTEGER NOT NULL,
     "percentage" DOUBLE PRECISION NOT NULL,
-    "hoursPerSemester" INTEGER NOT NULL,
-    "totalHours" INTEGER NOT NULL,
+    "hours_per_semester" INTEGER NOT NULL,
+    "total_hours" INTEGER NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "service_details_pkey" PRIMARY KEY ("id")
@@ -116,18 +116,18 @@ CREATE TABLE "semester" (
 );
 
 -- CreateTable
-CREATE TABLE "inscriptions" (
+CREATE TABLE "inscription" (
     "id" SERIAL NOT NULL,
     "student_id" INTEGER NOT NULL,
     "semester_id" INTEGER NOT NULL,
     "created_at" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "inscriptions_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "inscription_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "works" (
+CREATE TABLE "work" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -137,31 +137,32 @@ CREATE TABLE "works" (
     "semester_id" INTEGER NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "works_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "work_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "works_history" (
+CREATE TABLE "work_history" (
     "id" SERIAL NOT NULL,
     "work_id" INTEGER NOT NULL,
     "status" TEXT NOT NULL,
     "date" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "works_history_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "work_history_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "transactions" (
+CREATE TABLE "transaction" (
     "id" SERIAL NOT NULL,
     "work_id" INTEGER NOT NULL,
+    "student_id" INTEGER NOT NULL,
     "date" TEXT NOT NULL,
     "hours" INTEGER NOT NULL,
     "comment_student" TEXT NOT NULL,
     "comment_administrative" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "transactions_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "transaction_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -188,37 +189,40 @@ ALTER TABLE "role_permission" ADD CONSTRAINT "role_permission_role_id_fkey" FORE
 ALTER TABLE "role_permission" ADD CONSTRAINT "role_permission_permission_id_fkey" FOREIGN KEY ("permission_id") REFERENCES "permission"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "students" ADD CONSTRAINT "students_id_fkey" FOREIGN KEY ("id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "student" ADD CONSTRAINT "student_id_fkey" FOREIGN KEY ("id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "administratives" ADD CONSTRAINT "administratives_id_fkey" FOREIGN KEY ("id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "administrative" ADD CONSTRAINT "administrative_id_fkey" FOREIGN KEY ("id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "commitment" ADD CONSTRAINT "commitment_service_details_id_fkey" FOREIGN KEY ("service_details_id") REFERENCES "service_details"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "commitment" ADD CONSTRAINT "commitment_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "commitment" ADD CONSTRAINT "commitment_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "service_details" ADD CONSTRAINT "service_details_scholarship_id_fkey" FOREIGN KEY ("scholarship_id") REFERENCES "scholarship"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "inscriptions" ADD CONSTRAINT "inscriptions_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "inscription" ADD CONSTRAINT "inscription_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "inscriptions" ADD CONSTRAINT "inscriptions_semester_id_fkey" FOREIGN KEY ("semester_id") REFERENCES "semester"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "inscription" ADD CONSTRAINT "inscription_semester_id_fkey" FOREIGN KEY ("semester_id") REFERENCES "semester"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "works" ADD CONSTRAINT "works_administrative_id_fkey" FOREIGN KEY ("administrative_id") REFERENCES "administratives"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "work" ADD CONSTRAINT "work_administrative_id_fkey" FOREIGN KEY ("administrative_id") REFERENCES "administrative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "works" ADD CONSTRAINT "works_semester_id_fkey" FOREIGN KEY ("semester_id") REFERENCES "semester"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "work" ADD CONSTRAINT "work_semester_id_fkey" FOREIGN KEY ("semester_id") REFERENCES "semester"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "works_history" ADD CONSTRAINT "works_history_work_id_fkey" FOREIGN KEY ("work_id") REFERENCES "works"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "work_history" ADD CONSTRAINT "work_history_work_id_fkey" FOREIGN KEY ("work_id") REFERENCES "work"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "transactions" ADD CONSTRAINT "transactions_work_id_fkey" FOREIGN KEY ("work_id") REFERENCES "works"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "transaction" ADD CONSTRAINT "transaction_work_id_fkey" FOREIGN KEY ("work_id") REFERENCES "work"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transaction" ADD CONSTRAINT "transaction_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "user_state_history" ADD CONSTRAINT "user_state_history_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,4 +1,4 @@
-import { works } from '@prisma/client';
+import { work } from "@prisma/client";
 
 export class WorkModel {
   id: number;
@@ -9,7 +9,7 @@ export class WorkModel {
   administrative_id: number;
   semester_id: number;
 
-  constructor(work: works) {
+  constructor(work: work) {
     this.id = work.id;
     this.title = work.title;
     this.description = work.description;
@@ -19,7 +19,7 @@ export class WorkModel {
     this.semester_id = work.semester_id;
   }
 
-  static fromMany(works: works[]): WorkModel[] {
+  static fromMany(works: work[]): WorkModel[] {
     return works.map(w => new WorkModel(w));
   }
 }

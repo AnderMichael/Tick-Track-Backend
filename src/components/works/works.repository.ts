@@ -12,7 +12,7 @@ export class WorksRepository {
   }
 
   async create(dto: CreateWorkDto) {
-    return this.prisma.works.create({
+    return this.prisma.work.create({
       data: dto,
     });
   }
@@ -30,7 +30,7 @@ export class WorksRepository {
     }
 
     const [data, total] = await Promise.all([
-      this.prisma.works.findMany({
+      this.prisma.work.findMany({
         where,
         skip,
         take: limit,
@@ -40,7 +40,7 @@ export class WorksRepository {
           administrative: true,
         },
       }),
-      this.prisma.works.count({ where }),
+      this.prisma.work.count({ where }),
     ]);
 
     return {
@@ -52,7 +52,7 @@ export class WorksRepository {
   }
 
   async findOne(id: number) {
-    return this.prisma.works.findUnique({
+    return this.prisma.work.findUnique({
       where: { id },
       include: {
         semester: true,
@@ -62,14 +62,14 @@ export class WorksRepository {
   }
 
   async update(id: number, dto: UpdateWorkDto) {
-    return this.prisma.works.update({
+    return this.prisma.work.update({
       where: { id },
       data: dto,
     });
   }
 
   async softDelete(id: number) {
-    return this.prisma.works.update({
+    return this.prisma.work.update({
       where: { id },
       data: { is_deleted: true },
     });

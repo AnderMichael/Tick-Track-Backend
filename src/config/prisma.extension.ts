@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@prisma/client";
 
 export const softDeleteExtension = Prisma.defineExtension({
   name: 'softDelete',

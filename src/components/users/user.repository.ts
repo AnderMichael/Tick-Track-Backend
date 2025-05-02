@@ -48,7 +48,7 @@ export class UserRepository {
             include: {
                 role: true,
                 department: true,
-                students: {
+                student: {
                     include: {
                         commitment: {
                             include: {
@@ -59,12 +59,12 @@ export class UserRepository {
                                 },
                             },
                         },
-                        inscriptions: {
+                        inscription: {
                             include: { semester: true },
                         },
                     },
                 },
-                administratives: true,
+                administrative: true,
             },
         });
         return user;
