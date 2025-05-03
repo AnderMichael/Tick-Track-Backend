@@ -152,6 +152,35 @@ export class StudentsRepository {
     });
   }
 
+  async findCommitmentBySemesterId(upbCode: number, semester_id: number) {
+    return this.prisma.inscription.findFirst({
+      where: {
+        is_deleted: false,
+        semester_id,
+        commitment: {
+          is_deleted: false,
+          student: {
+            user: {
+              upbCode,
+              is_deleted: false,
+            },
+          },
+        },
+      },
+      include: {
+        commitment: {
+          include: {
+            service_details: {
+              include: {
+                scholarship: true,
+              },
+            },
+          },
+        },
+        semester: true,
+      }
+    });
+  }
 
   async inscribeStudent(commitment_id: number, semester_id: number) {
     return this.prisma.inscription.create({
@@ -192,5 +221,25 @@ export class StudentsRepository {
         is_deleted: true
       }
     });
+  }
+
+  async getTrackedHours(commitment_id: number, semester_id: number): Promise<number> {
+    const result = await this.prisma.transaction.aggregate({
+      _sum: {
+        hours: true,
+      },
+      where: {
+        is_deleted: false,
+        work: {
+          semester_id,
+        },
+        commitment: {
+          id: commitment_id,
+          is_deleted: false,
+        },
+      },
+    });
+
+    return result._sum.hours || 0;
   }
 }

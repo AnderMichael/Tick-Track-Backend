@@ -23,7 +23,7 @@ import { StudentsService } from './students.service';
 @Controller('students')
 @UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class StudentsController {
-  constructor(private readonly studentsService: StudentsService) {}
+  constructor(private readonly studentsService: StudentsService) { }
 
   @Post()
   @Permissions('create:students')
@@ -75,5 +75,13 @@ export class StudentsController {
   @ApiOperation({ summary: 'Remove a student inscription from a semester' })
   uninscribe(@Param('upbCode') upbCode: string, @Param('semesterId') semesterId: string) {
     return this.studentsService.removeInscription(+upbCode, +semesterId);
+  }
+
+  @Get(':upbCode/tracks/:semesterId')
+  @ApiOperation({ summary: 'Obtain Tracking Info Hours' })
+  async getTrackingInfo(
+    @Param('upbCode') upbCode: string, @Param('semesterId') semesterId: string
+  ) {
+    return this.studentsService.getTrackingBySemester(+upbCode, +semesterId);
   }
 }

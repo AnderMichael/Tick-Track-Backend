@@ -92,12 +92,28 @@ export class StudentsService {
   }
 
   async removeInscription(upbCode: number, semester_id: number) {
-    const user = await this.findOne(upbCode);
+    const commitment = await this.findCurrentCommitmentByUpbCode(upbCode);
     const semester = await this.semestersService.findOne(semester_id);
-    const inscription = await this.findInscription(user.student?.commitment.id, semester.id);
+    const inscription = await this.findInscription(commitment.id, semester.id);
     if (!inscription) {
       throw new NotFoundException('Inscription not exists');
     }
     return this.studentsRepository.uninscribeStudent(inscription.id);
+  }
+
+  async getTrackingBySemester(upbCode: number, semesterId: number) {
+    const inscription = await this.studentsRepository.findCommitmentBySemesterId(upbCode, semesterId);
+
+    if (!inscription) {
+      throw new NotFoundException('Student is not enrolled in this semester');
+    }
+
+    const tracked = await this.studentsRepository.getTrackedHours(inscription.commitment.id, semesterId);
+
+    return {
+      total: inscription.commitment.service_details.hours_per_semester,
+      completed: tracked,
+      remaining: Math.max(inscription.commitment.service_details.hours_per_semester - tracked, 0),
+    };
   }
 }

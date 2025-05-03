@@ -11,8 +11,19 @@ export class UserModel {
   phone: string;
   student?: {
     semester: number;
-    commitment?: any;
-    inscriptions: any[];
+    inscriptions: { id: number; name: string }[];
+    commitments: {
+      id: number;
+      is_current: boolean;
+      service_details: {
+        percentage: number;
+        hours_per_semester: number;
+        scholarship: {
+          name: string;
+          description: string;
+        };
+      };
+    }[];
     accountKey: string;
   };
   administrative?: {
@@ -28,13 +39,26 @@ export class UserModel {
     this.isConfirmed = user.is_confirmed;
     this.phone = user.phone;
     if (!!user.student) {
+      const commitments = user.student?.commitment || [];
+
+      const semesterMap = new Map<number, { id: number; name: string }>();
+      commitments.forEach((commit) => {
+        commit.inscriptions?.forEach((i) => {
+          const sem = i.semester;
+          if (sem && !semesterMap.has(sem.id)) {
+            semesterMap.set(sem.id, sem);
+          }
+        });
+      });
       this.student = {
         semester: user.student.semester,
-        commitment: user.student.commitment,
-        inscriptions: user.student.inscription,
-        accountKey: JWTAccountKeyUtils.generateAccountKeyToken({
-          accountKey: `${user.id}-${user.upbCode}`,
-        }),
+        inscriptions: Array.from(semesterMap.values()),
+        commitments: commitments.map((c) => ({
+          id: c.id,
+          is_current: c.is_current,
+          service_details: c.service_details,
+        })),
+        accountKey: JWTAccountKeyUtils.generateAccountKeyToken({ accountKey: `${user.id}-${user.upbCode}` }),
       };
     }
 
