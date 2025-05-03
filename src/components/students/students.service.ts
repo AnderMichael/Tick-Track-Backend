@@ -66,30 +66,38 @@ export class StudentsService {
     return new StudentModel(deletedStudent);
   }
 
-  async inscribeStudent(upbCode: number, semesterId: number) {
-    const student = await this.findOne(upbCode);
-    const semester = await this.semestersService.findOne(semesterId);
+  async inscribeStudent(upbCode: number, semester_id: number) {
+    const commitment = await this.findCurrentCommitmentByUpbCode(upbCode);
+    const semester = await this.semestersService.findOne(semester_id);
 
-    const inscription = await this.studentsRepository.findInscription(student.id, semester.id);
+    const inscription = await this.studentsRepository.findInscription(commitment.id, semester.id);
     if (inscription) {
       throw new BadRequestException('Student already inscribed');
     }
-    
-    return this.studentsRepository.inscribeStudent(student.id, semester.id);
+
+    return this.studentsRepository.inscribeStudent(commitment.id, semester.id);
   }
 
-  async findInscription(upbCode: number, semesterId: number) {
-    const student = await this.findOne(upbCode);
-    const semester = await this.semestersService.findOne(semesterId);
-    const inscription = await this.studentsRepository.findInscription(student.id, semester.id);
-    if (!inscription) {
-      throw new NotFoundException('Inscription not exists');
+  async findCurrentCommitmentByUpbCode(upbCode: number) {
+    const commitment = await this.studentsRepository.findCurrentCommitmentByUpbCode(upbCode);
+    if (!commitment) {
+      throw new NotFoundException('Commitment not exists');
     }
+    return commitment;
+  }
+
+  async findInscription(commitment_id: number, semester_id: number) {
+    const inscription = await this.studentsRepository.findInscription(commitment_id, semester_id);
     return inscription;
   }
 
-  async removeInscription(upbCode: number, semesterId: number) {
-    const inscription = await this.findInscription(upbCode, semesterId);
+  async removeInscription(upbCode: number, semester_id: number) {
+    const user = await this.findOne(upbCode);
+    const semester = await this.semestersService.findOne(semester_id);
+    const inscription = await this.findInscription(user.student?.commitment.id, semester.id);
+    if (!inscription) {
+      throw new NotFoundException('Inscription not exists');
+    }
     return this.studentsRepository.uninscribeStudent(inscription.id);
   }
 }

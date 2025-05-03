@@ -38,43 +38,36 @@ export class TransactionPaginationDto extends PaginationDto {
       is_deleted: false,
     };
 
-    if (this.student_upb_code) {
-      where.student = {
-        user: {
-          upbCode: this.student_upb_code,
+    if (this.student_upb_code || this.department_id) {
+      where.commitment = {
+        ...(where.commitment || {}),
+        student: {
+          ...(this.student_upb_code && {
+            user: {
+              upbCode: this.student_upb_code,
+            },
+          }),
+          ...(this.department_id && {
+            user: {
+              ...(this.student_upb_code ? { upbCode: this.student_upb_code } : {}),
+              department_id: this.department_id,
+            },
+          }),
         },
       };
     }
 
-    if (this.work_id) {
-      where.work_id = this.work_id;
-    }
-
-    if (this.semester_id) {
+    if (this.work_id || this.semester_id || this.administrative_upb_code) {
       where.work = {
-        ...(where.work || {}),
-        semester_id: this.semester_id,
-      };
-    }
-
-    if (this.department_id) {
-      where.student = {
-        ...(where.student || {}),
-        user: {
-          ...(where.student?.user || {}),
-          department_id: this.department_id,
-        },
-      };
-    }
-
-    if (this.administrative_upb_code) {
-      where.work = {
-        ...(where.work || {}),
-        administrative: {
-          user: {
-            upbCode: this.administrative_upb_code,
+        ...(this.work_id && { id: this.work_id }),
+        ...(this.semester_id && { semester_id: this.semester_id }),
+        ...(this.administrative_upb_code && {
+          administrative: {
+            user: {
+              upbCode: this.administrative_upb_code,
+            },
           },
-        },
+        }),
       };
     }
 

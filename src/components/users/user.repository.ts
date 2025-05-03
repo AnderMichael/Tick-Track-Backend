@@ -55,6 +55,28 @@ export class UserRepository {
                 is_deleted: false,
               },
               select: {
+                inscriptions: {
+                  select: {
+                    id: true,
+                    semester: {
+                      select: {
+                        id: true,
+                        name: true,
+                        start_date: true,
+                        end_date: true,
+                      },
+                    },
+                  },
+                  where: {
+                    is_deleted: false,
+                  },
+                  orderBy: {
+                    semester: {
+                      start_date: 'desc',
+                    },
+                  }
+                },
+                id: true,
                 is_current: true,
                 service_details: {
                   select: {
@@ -69,22 +91,6 @@ export class UserRepository {
                   }
                 }
               }
-            },
-            inscription: {
-              select: {
-                id: true,
-                semester: {
-                  select: {
-                    id: true,
-                    name: true,
-                    start_date: true,
-                    end_date: true,
-                  },
-                },
-              },
-              where: {
-                is_deleted: false,
-              },
             },
           },
         },

@@ -74,8 +74,11 @@ export class StudentsRepository {
       include: {
         student: {
           include: {
-            inscription: true,
-            commitment: true,
+            commitment: {
+              include: {
+                inscriptions: true
+              }
+            },
           }
         },
         role: true,
@@ -120,10 +123,40 @@ export class StudentsRepository {
     return { message: 'Student marked as deleted' };
   }
 
-  async inscribeStudent(student_id: number, semester_id: number) {
+  async findCurrentCommitmentByUpbCode(upbCode: number) {
+    return prisma.commitment.findFirst({
+      where: {
+        is_current: true,
+        is_deleted: false,
+        student: {
+          user: {
+            upbCode,
+            is_deleted: false,
+          },
+        },
+      },
+      include: {
+        student: {
+          include: {
+            user: true,
+          },
+        },
+        service_details: {
+          include: {
+            scholarship: true,
+          },
+        },
+        inscriptions: true,
+        transaction: true,
+      },
+    });
+  }
+
+
+  async inscribeStudent(commitment_id: number, semester_id: number) {
     return this.prisma.inscription.create({
       data: {
-        student_id,
+        commitment_id,
         semester_id,
         created_at: new Date().toISOString(),
       },
@@ -141,10 +174,10 @@ export class StudentsRepository {
     });
   }
 
-  async findInscription(student_id: number, semester_id: number) {
+  async findInscription(commitment_id: number, semester_id: number) {
     return this.prisma.inscription.findFirst({
       where: {
-        student_id,
+        commitment_id,
         semester_id,
       },
     });

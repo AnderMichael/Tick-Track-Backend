@@ -76,8 +76,6 @@ model student {
   is_deleted Boolean @default(false)
 
   commitment   commitment[]
-  inscription  inscription[]
-  transaction  transaction[]
 }
 
 model administrative {
@@ -90,6 +88,7 @@ model administrative {
 }
 
 model commitment {
+  id                 Int               @id @default(autoincrement())
   service_details_id Int
   student_id         Int
   is_current         Boolean
@@ -97,9 +96,10 @@ model commitment {
 
   service_details service_details @relation(fields: [service_details_id], references: [id])
   student         student         @relation(fields: [student_id], references: [id])
-
-  @@id([service_details_id, student_id])
+  inscriptions    inscription[]
+  transaction  transaction[]
 }
+
 
 model service_details {
   id                 Int             @id @default(autoincrement())
@@ -134,13 +134,15 @@ model semester {
 }
 
 model inscription {
-  id           Int      @id @default(autoincrement())
-  student_id   Int
-  student      student  @relation(fields: [student_id], references: [id])
-  semester_id  Int
-  semester     semester @relation(fields: [semester_id], references: [id])
-  created_at   String
-  is_deleted   Boolean @default(false)
+  id             Int         @id @default(autoincrement())
+  commitment_id  Int
+  commitment     commitment  @relation(fields: [commitment_id], references: [id])
+
+  semester_id    Int
+  semester       semester    @relation(fields: [semester_id], references: [id])
+
+  created_at     String
+  is_deleted     Boolean     @default(false)
 }
 
 model work {
@@ -153,6 +155,7 @@ model work {
   administrative      administrative   @relation(fields: [administrative_id], references: [id])
   semester_id         Int
   semester            semester         @relation(fields: [semester_id], references: [id])
+  is_open             Boolean          @default(true)
   is_deleted          Boolean          @default(false)
 
   work_history  work_history[]
@@ -172,8 +175,8 @@ model transaction {
   id                     Int      @id @default(autoincrement())
   work_id                Int
   work                   work     @relation(fields: [work_id], references: [id])
-  student_id             Int
-  student                student  @relation(fields: [student_id], references: [id])
+  commitment_id          Int
+  commitment             commitment  @relation(fields: [commitment_id], references: [id])
   date                   String
   hours                  Int
   comment_student        String
