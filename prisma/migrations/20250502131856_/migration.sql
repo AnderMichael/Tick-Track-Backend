@@ -230,3 +230,7 @@ ALTER TABLE "user_state_history" ADD CONSTRAINT "user_state_history_user_id_fkey
 CREATE UNIQUE INDEX user_upbcode_unique_not_deleted
 ON "user" ("upbCode")
 WHERE is_deleted = false;
+
+CREATE UNIQUE INDEX inscription_unique_not_deleted
+ON "inscription" ("semester_id", "student_id")
+WHERE is_deleted = false;

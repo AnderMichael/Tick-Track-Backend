@@ -13,7 +13,7 @@ export class WorkPaginationDto extends PaginationDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  administrative_id?: number;
+  administrative_upb_code?: number;
 
   @IsOptional()
   @Type(() => Number)
@@ -30,13 +30,19 @@ export class WorkPaginationDto extends PaginationDto {
       where.semester_id = this.semester_id;
     }
 
-    if (this.administrative_id) {
-      where.administrative_id = this.administrative_id;
+    if (this.administrative_upb_code) {
+      where.administrative = {
+        user: {
+          upbCode: this.administrative_upb_code,
+        },
+      };
     }
 
     if (this.department_id) {
       where.administrative = {
+        ...where.administrative,
         user: {
+          ...(where.administrative?.user || {}),
           department_id: this.department_id,
         },
       };

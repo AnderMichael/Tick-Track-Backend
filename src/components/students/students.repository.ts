@@ -114,4 +114,34 @@ export class StudentsRepository {
 
     return { message: 'Student marked as deleted' };
   }
+
+  async inscribeStudent(student_id: number, semester_id: number) {
+    return this.prisma.inscription.create({
+      data: {
+        student_id,
+        semester_id,
+        created_at: new Date().toISOString(),
+      },
+    });
+  }
+
+  async findInscription(student_id: number, semester_id: number) {
+    return this.prisma.inscription.findFirst({
+      where: {
+        student_id,
+        semester_id,
+      },
+    });
+  }
+
+  async uninscribeStudent(inscription_id: number) {
+    return this.prisma.inscription.update({
+      where: {
+        id: inscription_id,
+      },
+      data: {
+        is_deleted: true
+      }
+    });
+  }
 }

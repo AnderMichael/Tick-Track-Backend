@@ -13,7 +13,7 @@ export class TransactionPaginationDto extends PaginationDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  upbCode?: number;
+  student_upb_code?: number;
 
   @IsOptional()
   @Type(() => Number)
@@ -27,15 +27,21 @@ export class TransactionPaginationDto extends PaginationDto {
   @Min(1)
   department_id?: number;
 
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  administrative_upb_code?: number;
+
   buildTransactionWhere() {
     const where: any = {
       is_deleted: false,
     };
 
-    if (this.upbCode) {
+    if (this.student_upb_code) {
       where.student = {
         user: {
-          upbCode: this.upbCode,
+          upbCode: this.student_upb_code,
         },
       };
     }
@@ -46,6 +52,7 @@ export class TransactionPaginationDto extends PaginationDto {
 
     if (this.semester_id) {
       where.work = {
+        ...(where.work || {}),
         semester_id: this.semester_id,
       };
     }
@@ -56,6 +63,17 @@ export class TransactionPaginationDto extends PaginationDto {
         user: {
           ...(where.student?.user || {}),
           department_id: this.department_id,
+        },
+      };
+    }
+
+    if (this.administrative_upb_code) {
+      where.work = {
+        ...(where.work || {}),
+        administrative: {
+          user: {
+            upbCode: this.administrative_upb_code,
+          },
         },
       };
     }

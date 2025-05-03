@@ -5,7 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AdministrativesModule } from './components/administratives/administratives.module';
 import { AuthModule } from './components/auth/auth.module';
-import { InscriptionsModule } from './components/inscriptions/inscriptions.module';
 import { ScholarshipsModule } from './components/scholarships/scholarships.module';
 import { SemestersModule } from './components/semesters/semesters.module';
 import { StudentsModule } from './components/students/students.module';
@@ -28,7 +27,6 @@ import { LoggingInterceptor } from './loging/loging.interceptor';
     ScholarshipsModule,
     WorksModule,
     TransactionsModule,
-    InscriptionsModule,
   ],
   controllers: [AppController],
   providers: [
@@ -39,4 +37,4 @@ import { LoggingInterceptor } from './loging/loging.interceptor';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

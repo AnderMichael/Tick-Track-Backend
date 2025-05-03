@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
+import { SemestersService } from '../semesters/semesters.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentModel } from './models/student.model';
@@ -11,7 +12,7 @@ import { StudentsRepository } from './students.repository';
 
 @Injectable()
 export class StudentsService {
-  constructor(private readonly studentsRepository: StudentsRepository) {}
+  constructor(private readonly studentsRepository: StudentsRepository, private readonly semestersService: SemestersService) { }
 
   async create(dto: CreateStudentDto) {
     const { upbCode } = dto;
@@ -63,5 +64,32 @@ export class StudentsService {
 
     const deletedStudent = await this.studentsRepository.softDelete(upbCode);
     return new StudentModel(deletedStudent);
+  }
+
+  async inscribeStudent(upbCode: number, semesterId: number) {
+    const student = await this.findOne(upbCode);
+    const semester = await this.semestersService.findOne(semesterId);
+
+    const inscription = await this.studentsRepository.findInscription(student.id, semester.id);
+    if (inscription) {
+      throw new BadRequestException('Student already inscribed');
+    }
+    
+    return this.studentsRepository.inscribeStudent(student.id, semester.id);
+  }
+
+  async findInscription(upbCode: number, semesterId: number) {
+    const student = await this.findOne(upbCode);
+    const semester = await this.semestersService.findOne(semesterId);
+    const inscription = await this.studentsRepository.findInscription(student.id, semester.id);
+    if (!inscription) {
+      throw new NotFoundException('Inscription not exists');
+    }
+    return inscription;
+  }
+
+  async removeInscription(upbCode: number, semesterId: number) {
+    const inscription = await this.findInscription(upbCode, semesterId);
+    return this.studentsRepository.uninscribeStudent(inscription.id);
   }
 }

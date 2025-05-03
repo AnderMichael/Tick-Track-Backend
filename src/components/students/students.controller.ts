@@ -62,4 +62,18 @@ export class StudentsController {
   remove(@Param('upbCode') upbCode: string) {
     return this.studentsService.remove(+upbCode);
   }
+
+  @Post(':upbCode/inscribe/:semesterId')
+  @Permissions('update:students')
+  @ApiOperation({ summary: 'Inscribe a student to a semester' })
+  inscribe(@Param('upbCode') upbCode: string, @Param('semesterId') semesterId: string) {
+    return this.studentsService.inscribeStudent(+upbCode, +semesterId);
+  }
+
+  @Patch(':upbCode/uninscribe/:semesterId')
+  @Permissions('update:students')
+  @ApiOperation({ summary: 'Remove a student inscription from a semester' })
+  uninscribe(@Param('upbCode') upbCode: string, @Param('semesterId') semesterId: string) {
+    return this.studentsService.removeInscription(+upbCode, +semesterId);
+  }
 }
