@@ -51,16 +51,40 @@ export class UserRepository {
         student: {
           include: {
             commitment: {
-              include: {
+              where: {
+                is_deleted: false,
+              },
+              select: {
+                is_current: true,
                 service_details: {
-                  include: {
-                    scholarship: true,
+                  select: {
+                    percentage: true,
+                    hours_per_semester: true,
+                    scholarship: {
+                      select: {
+                        name: true,
+                        description: true,
+                      },
+                    }
+                  }
+                }
+              }
+            },
+            inscription: {
+              select: {
+                id: true,
+                semester: {
+                  select: {
+                    id: true,
+                    name: true,
+                    start_date: true,
+                    end_date: true,
                   },
                 },
               },
-            },
-            inscription: {
-              include: { semester: true },
+              where: {
+                is_deleted: false,
+              },
             },
           },
         },

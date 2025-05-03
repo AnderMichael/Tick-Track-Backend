@@ -72,7 +72,12 @@ export class StudentsRepository {
         upbCode,
       },
       include: {
-        student: true,
+        student: {
+          include: {
+            inscription: true,
+            commitment: true,
+          }
+        },
         role: true,
         department: true,
       },
@@ -121,6 +126,17 @@ export class StudentsRepository {
         student_id,
         semester_id,
         created_at: new Date().toISOString(),
+      },
+      omit: {
+        is_deleted: true,
+        semester_id: true,
+      },
+      include: {
+        semester: {
+          omit: {
+            is_deleted: true,
+          }
+        },
       },
     });
   }

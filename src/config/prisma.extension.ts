@@ -1,5 +1,26 @@
 import { Prisma } from '@prisma/client';
 
+function recursivelyAddIsDeletedFalse(obj: any): any {
+  if (!obj || typeof obj !== 'object') return obj;
+
+  const newObj = { ...obj };
+
+  if ('where' in newObj) {
+    newObj.where = {
+      ...newObj.where,
+      is_deleted: false,
+    };
+  }
+
+  for (const key in newObj) {
+    if (typeof newObj[key] === 'object') {
+      newObj[key] = recursivelyAddIsDeletedFalse(newObj[key]);
+    }
+  }
+
+  return newObj;
+}
+
 export const softDeleteExtension = Prisma.defineExtension({
   name: 'softDelete',
   model: {
@@ -30,18 +51,10 @@ export const softDeleteExtension = Prisma.defineExtension({
   query: {
     $allModels: {
       async $allOperations({ operation, args, query }) {
-        const isReadOp = [
-          'findUnique',
-          'findFirst',
-          'findMany',
-          'count',
-        ].includes(operation);
+        const readOps = ['findUnique', 'findFirst', 'findMany', 'count', 'aggregate', 'groupBy'];
 
-        if (isReadOp && 'where' in args) {
-          args.where = {
-            ...args.where,
-            is_deleted: false,
-          };
+        if (readOps.includes(operation)) {
+          args = recursivelyAddIsDeletedFalse(args);
         }
 
         return query(args);
