@@ -38,7 +38,7 @@ async function main() {
   const adminRole = await prisma.role.create({ data: { name: 'ADMIN' } });
 
   // 3. Definir permisos
-  const elements = ['transactions', 'works', 'students', 'supervisors', 'scholarship_officers', 'scholarships', 'semesters'];
+  const elements = ['transactions', 'works', 'students', 'supervisors', 'scholarship_officers', 'scholarships', 'semesters', 'tracks', 'commitments'];
   const actions = ['view', 'create', 'update', 'delete'];
   const permissionsToCreate = elements.flatMap((element) =>
     actions.map((action) => ({
@@ -69,7 +69,7 @@ async function main() {
   }
 
   // 5. Asignar permisos
-  await linkPermissionsToRole(studentRole.id, ['view:works', 'view:transactions']);
+  await linkPermissionsToRole(studentRole.id, ['view:works', 'view:transactions', 'view:commitments', 'view:tracks']);
   await linkPermissionsToRole(supervisorRole.id, [
     'view:works', 'create:works', 'update:works', 'delete:works',
     'view:transactions', 'create:transactions', 'update:transactions', 'delete:transactions',
@@ -93,7 +93,7 @@ async function main() {
       role_id: studentRole.id, department_id: depLaPaz.id, hashed_password: def_password,
     },
   });
-  await prisma.student.create({ data: { id: userStudent1.id, semester: 1 } });
+  await prisma.student.create({ data: { id: userStudent1.id } });
 
   const userStudent2 = await prisma.user.create({
     data: {
@@ -102,7 +102,7 @@ async function main() {
       role_id: studentRole.id, department_id: depCochabamba.id, hashed_password: def_password,
     },
   });
-  await prisma.student.create({ data: { id: userStudent2.id, semester: 2 } });
+  await prisma.student.create({ data: { id: userStudent2.id } });
 
   const userSup = await prisma.user.create({
     data: {

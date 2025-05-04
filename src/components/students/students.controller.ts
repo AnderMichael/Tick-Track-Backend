@@ -84,4 +84,12 @@ export class StudentsController {
   ) {
     return this.studentsService.getTrackingBySemester(+upbCode, +semesterId);
   }
+
+  @Get('commitments/:commitmentId')
+  @Permissions('view:commitments')
+  async getCommitmentById(
+    @Param('commitmentId') commitmentId: string
+  ) {
+    return this.studentsService.findCommitmentById(+commitmentId);
+  }
 }

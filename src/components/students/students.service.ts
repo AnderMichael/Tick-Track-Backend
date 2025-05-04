@@ -116,4 +116,12 @@ export class StudentsService {
       remaining: Math.max(inscription.commitment.service_details.hours_per_semester - tracked, 0),
     };
   }
+
+  async findCommitmentById(commitmentId: number) {
+    const commitment = await this.studentsRepository.findCommitmentById(commitmentId);
+    if (!commitment) {
+      throw new NotFoundException('Commitment not found');
+    }
+    return commitment;
+  }
 }

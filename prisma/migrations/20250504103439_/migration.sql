@@ -57,7 +57,7 @@ CREATE TABLE "role_permission" (
 -- CreateTable
 CREATE TABLE "student" (
     "id" INTEGER NOT NULL,
-    "semester" INTEGER NOT NULL,
+    "semester" INTEGER NOT NULL DEFAULT 0,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "student_pkey" PRIMARY KEY ("id")
@@ -234,5 +234,5 @@ ON "user" ("upbCode")
 WHERE is_deleted = false;
 
 CREATE UNIQUE INDEX inscription_unique_not_deleted
-ON "inscription" ("semester_id", "student_id")
+ON "inscription" ("semester_id", "commitment_id")
 WHERE is_deleted = false;

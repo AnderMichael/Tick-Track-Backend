@@ -72,7 +72,7 @@ model role_permission {
 model student {
   id         Int    @id
   user       user   @relation(fields: [id], references: [id])
-  semester   Int
+  semester   Int    @default(0)
   is_deleted Boolean @default(false)
 
   commitment   commitment[]

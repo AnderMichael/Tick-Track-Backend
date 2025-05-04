@@ -242,4 +242,25 @@ export class StudentsRepository {
 
     return result._sum.hours || 0;
   }
+
+  async findCommitmentById(commitmentId: number) {
+    return this.prisma.commitment.findFirst({
+      where: { id: commitmentId, is_deleted: false },
+      select: {
+        is_current: true,
+        service_details: {
+          select: {
+            percentage: true,
+            hours_per_semester: true,
+            scholarship: {
+              select: {
+                name: true,
+                description: true,
+              }
+            }
+          }
+        }
+      },
+    });
+  }
 }

@@ -12,18 +12,6 @@ export class UserModel {
   student?: {
     semester: number;
     inscriptions: { id: number; name: string }[];
-    commitments: {
-      id: number;
-      is_current: boolean;
-      service_details: {
-        percentage: number;
-        hours_per_semester: number;
-        scholarship: {
-          name: string;
-          description: string;
-        };
-      };
-    }[];
     accountKey: string;
   };
   administrative?: {
@@ -45,6 +33,9 @@ export class UserModel {
       commitments.forEach((commit) => {
         commit.inscriptions?.forEach((i) => {
           const sem = i.semester;
+          sem.commitment_id = commit.id;
+          sem.semester_id = sem.id;
+          sem.id = i.id;
           if (sem && !semesterMap.has(sem.id)) {
             semesterMap.set(sem.id, sem);
           }
@@ -53,11 +44,6 @@ export class UserModel {
       this.student = {
         semester: user.student.semester,
         inscriptions: Array.from(semesterMap.values()),
-        commitments: commitments.map((c) => ({
-          id: c.id,
-          is_current: c.is_current,
-          service_details: c.service_details,
-        })),
         accountKey: JWTAccountKeyUtils.generateAccountKeyToken({ accountKey: `${user.id}-${user.upbCode}` }),
       };
     }
