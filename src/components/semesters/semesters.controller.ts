@@ -18,6 +18,7 @@ import { CreateSemesterDto } from './dto/create-semester.dto';
 import { UpdateSemesterDto } from './dto/update-semester.dto';
 import { SemestersService } from './semesters.service';
 import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
+import { SemesterPaginationDto } from './dto/pagination.dto';
 
 @ApiTags('Semesters')
 @Controller('semesters')
@@ -35,7 +36,7 @@ export class SemestersController {
   @Get()
   @Permissions('view:semesters')
   @ApiOperation({ summary: 'List semesters with pagination' })
-  findAll(@Query() pagination: PaginationDto) {
+  findAll(@Query() pagination: SemesterPaginationDto) {
     return this.semestersService.findAll(pagination);
   }
 

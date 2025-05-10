@@ -5,14 +5,14 @@ import {
 } from '@nestjs/common';
 import { SemestersRepository } from './semesters.repository';
 
-import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateSemesterDto } from './dto/create-semester.dto';
+import { SemesterPaginationDto } from './dto/pagination.dto';
 import { UpdateSemesterDto } from './dto/update-semester.dto';
 import { SemesterModel } from './models/semester.model';
 
 @Injectable()
 export class SemestersService {
-  constructor(private readonly semestersRepository: SemestersRepository) {}
+  constructor(private readonly semestersRepository: SemestersRepository) { }
 
   async create(dto: CreateSemesterDto) {
     const overlap = await this.semestersRepository.findOverlapping(
@@ -29,7 +29,7 @@ export class SemestersService {
     return new SemesterModel(newSemester);
   }
 
-  async findAll(pagination: PaginationDto) {
+  async findAll(pagination: SemesterPaginationDto) {
     const result = await this.semestersRepository.findAll(pagination);
     return {
       ...result,

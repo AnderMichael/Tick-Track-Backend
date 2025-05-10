@@ -63,6 +63,15 @@ export class TransactionsRepository {
               }
             }
           }
+        },
+        commitment: {
+          include: {
+            student: {
+              include: {
+                user: true
+              }
+            }
+          }
         }
       }
     });

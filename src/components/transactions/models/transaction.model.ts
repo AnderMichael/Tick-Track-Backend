@@ -6,6 +6,7 @@ export class TransactionModel {
   comment_administrative: string;
   administrative_name: string;
   work_name: string;
+  student_name: string;
 
   constructor(transaction: any) {
     this.id = transaction.id;
@@ -15,6 +16,7 @@ export class TransactionModel {
     this.comment_administrative = transaction.comment_administrative;
     this.administrative_name = `${transaction.work.administrative.user.firstName} ${transaction.work.administrative.user.fatherLastName}`;
     this.work_name = transaction.work.title;
+    this.student_name = `${transaction.commitment.student.user.firstName} ${transaction.commitment.student.user.fatherLastName}`;
   }
 
   static fromMany(data: any[]): TransactionModel[] {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CustomPrismaClientType, prisma } from '../../config/prisma.client';
 import { CreateSemesterDto } from './dto/create-semester.dto';
+import { SemesterPaginationDto } from './dto/pagination.dto';
 import { UpdateSemesterDto } from './dto/update-semester.dto';
-import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class SemestersRepository {
@@ -17,11 +17,11 @@ export class SemestersRepository {
     });
   }
 
-  async findAll(pagination: PaginationDto) {
+  async findAll(pagination: SemesterPaginationDto) {
     const { page = 1, limit = 10, search } = pagination;
     const skip = (page - 1) * limit;
 
-    const where = pagination.buildBaseWhere();
+    const where = pagination.buildSemesterWhere();
 
     const [data, total] = await Promise.all([
       this.prisma.semester.findMany({
