@@ -25,6 +25,17 @@ export class TransactionsRepository {
     const [data, total] = await Promise.all([
       this.prisma.transaction.findMany({
         where,
+        include: {
+          work: {
+            include: {
+              administrative: {
+                include: {
+                  user: true
+                }
+              }
+            }
+          }
+        },
         skip,
         take: limit,
         orderBy: { date: 'desc' },
@@ -43,6 +54,17 @@ export class TransactionsRepository {
   async findOne(id: number) {
     return this.prisma.transaction.findUnique({
       where: { id },
+      include: {
+        work: {
+          include: {
+            administrative: {
+              include: {
+                user: true
+              }
+            }
+          }
+        }
+      }
     });
   }
 

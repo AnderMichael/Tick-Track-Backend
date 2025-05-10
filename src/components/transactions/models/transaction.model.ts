@@ -1,21 +1,23 @@
 export class TransactionModel {
   id: number;
-  date: string;
   hours: number;
+  date: string;
   comment_student: string;
   comment_administrative: string;
-  student_id: number;
+  administrative_name: string;
+  work_name: string;
 
-  constructor(t: any) {
-    this.id = t.id;
-    this.date = t.date;
-    this.hours = t.hours;
-    this.comment_student = t.comment_student;
-    this.comment_administrative = t.comment_administrative;
-    this.student_id = t.student_id;
+  constructor(transaction: any) {
+    this.id = transaction.id;
+    this.hours = transaction.hours;
+    this.date = transaction.date;
+    this.comment_student = transaction.comment_student;
+    this.comment_administrative = transaction.comment_administrative;
+    this.administrative_name = `${transaction.work.administrative.user.firstName} ${transaction.work.administrative.user.fatherLastName}`;
+    this.work_name = transaction.work.title;
   }
 
-  static fromMany(txns: any[]): TransactionModel[] {
-    return txns.map((t) => new TransactionModel(t));
+  static fromMany(data: any[]): TransactionModel[] {
+    return data.map((t) => new TransactionModel(t));
   }
 }
