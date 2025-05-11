@@ -105,4 +105,13 @@ export class AdministrativesController {
   removeSupervisor(@Param('upbCode') upbCode: string) {
     return this.administrativesService.remove(+upbCode);
   }
+
+  @Get(':upbCode/tracks/:semesterId')
+  @Permissions('view:works')
+  @ApiOperation({ summary: 'Obtain Tracking Info Works' })
+  getTrackingInfo(
+    @Param('upbCode') upbCode: string, @Param('semesterId') semesterId: string
+  ) {
+    return this.administrativesService.getWorkSummary(+upbCode, +semesterId);
+  }
 }

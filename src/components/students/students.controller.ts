@@ -78,6 +78,7 @@ export class StudentsController {
   }
 
   @Get(':upbCode/tracks/:semesterId')
+  @Permissions('view:tracks')
   @ApiOperation({ summary: 'Obtain Tracking Info Hours' })
   async getTrackingInfo(
     @Param('upbCode') upbCode: string, @Param('semesterId') semesterId: string

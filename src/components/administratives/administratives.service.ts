@@ -13,7 +13,7 @@ import { AdministrativeModel } from './models/administratives.model';
 export class AdministrativesService {
   constructor(
     private readonly administrativeRepository: AdministrativeRepository,
-  ) {}
+  ) { }
 
   async create(dto: CreateAdministrativeDto) {
     const { upbCode } = dto;
@@ -77,6 +77,15 @@ export class AdministrativesService {
     return {
       ...result,
       data: AdministrativeModel.fromMany(result.data),
+    };
+  }
+
+  async getWorkSummary(upbCode: number, semesterId: number) {
+    const summary = await this.administrativeRepository.getWorkSummary(upbCode, semesterId);
+    return {
+      open: summary.open,
+      closed: summary.closed,
+      total: summary.total,
     };
   }
 }

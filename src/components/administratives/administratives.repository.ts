@@ -122,4 +122,44 @@ export class AdministrativeRepository {
       where: { name: role },
     });
   }
+
+  async getWorkSummary(upbCode: number, semesterId: number) {
+    const user = await this.prisma.user.findFirst({
+      where: { upbCode, is_deleted: false },
+      select: { id: true },
+    });
+
+    if (!user) {
+      throw new Error('Administrative not found');
+    }
+
+    const [open, closed, total] = await Promise.all([
+      this.prisma.work.count({
+        where: {
+          administrative_id: user.id,
+          semester_id: semesterId,
+          is_deleted: false,
+          is_open: true,
+        },
+      }),
+      this.prisma.work.count({
+        where: {
+          administrative_id: user.id,
+          semester_id: semesterId,
+          is_deleted: false,
+          is_open: false,
+        },
+      }),
+      this.prisma.work.count({
+        where: {
+          administrative_id: user.id,
+          semester_id: semesterId,
+          is_deleted: false,
+        },
+      }),
+    ]);
+
+    return { open, closed, total };
+  }
+
 }
