@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { StudentsService } from '../students/students.service';
 import { WorksService } from '../works/works.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { TransactionPaginationDto } from './dto/transaction.pagination.dto';
 import { TransactionModel } from './models/transaction.model';
 import { TransactionsRepository } from './transactions.repository';
-import { TransactionPaginationDto } from './dto/transaction.pagination.dto';
-import { StudentsService } from '../students/students.service';
 
 @Injectable()
 export class TransactionsService {
@@ -13,12 +12,12 @@ export class TransactionsService {
     private readonly transactionsRepository: TransactionsRepository,
     private readonly worksService: WorksService,
     private readonly studentsService: StudentsService,
-  ) {}
+  ) { }
 
   async create(dto: CreateTransactionDto) {
     const work = await this.worksService.findOne(dto.work_id);
     const created = await this.transactionsRepository.create(dto);
-    return new TransactionModel(created);
+    return { message: 'Succesful Payment!' };
   }
 
   async findAll(pagination: TransactionPaginationDto) {
