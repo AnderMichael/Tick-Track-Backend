@@ -93,4 +93,18 @@ export class TransactionsRepository {
       data: { is_deleted: true },
     });
   }
+
+  async findStudentHeader(upbCode: number) {
+    return this.prisma.user.findFirst({
+      where: {
+        upbCode,
+        student: { isNot: null },
+      },
+      select: {
+        upbCode: true,
+        firstName: true,
+        fatherLastName: true,
+      },
+    });
+  }
 }

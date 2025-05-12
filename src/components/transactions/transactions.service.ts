@@ -5,12 +5,14 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { TransactionModel } from './models/transaction.model';
 import { TransactionsRepository } from './transactions.repository';
 import { TransactionPaginationDto } from './dto/transaction.pagination.dto';
+import { StudentsService } from '../students/students.service';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     private readonly transactionsRepository: TransactionsRepository,
     private readonly worksService: WorksService,
+    private readonly studentsService: StudentsService,
   ) {}
 
   async create(dto: CreateTransactionDto) {
@@ -39,5 +41,17 @@ export class TransactionsService {
     const transaction = await this.findOne(id);
     await this.transactionsRepository.softDelete(transaction.id);
     return { message: 'Transaction marked as deleted' };
+  }
+
+  async getStudentHeaderInfo(upbCode: number) {
+    const commitment = await this.studentsService.findCurrentCommitmentByUpbCode(upbCode);
+    if (!commitment) {
+      throw new NotFoundException('Student not found');
+    }
+    const student = await this.transactionsRepository.findStudentHeader(upbCode);
+    return {
+      ...student,
+      commitment_id: commitment.id,
+    }
   }
 }

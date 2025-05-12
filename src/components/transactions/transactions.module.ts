@@ -8,9 +8,13 @@ import { WorksService } from '../works/works.service';
 import { TransactionsController } from './transactions.controller';
 import { TransactionsRepository } from './transactions.repository';
 import { TransactionsService } from './transactions.service';
+import { SemestersModule } from '../semesters/semesters.module';
+import { StudentsModule } from '../students/students.module';
+import { StudentsService } from '../students/students.service';
+import { StudentsRepository } from '../students/students.repository';
 
 @Module({
-  imports: [AuthModule, WorksModule],
+  imports: [AuthModule, WorksModule, SemestersModule, StudentsModule],
   controllers: [TransactionsController],
   providers: [
     TransactionsService,
@@ -19,6 +23,8 @@ import { TransactionsService } from './transactions.service';
     WorksRepository,
     SemestersService,
     SemestersRepository,
+    StudentsService,
+    StudentsRepository
   ],
 })
 export class TransactionsModule {}

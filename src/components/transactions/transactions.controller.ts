@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -15,12 +16,21 @@ import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { TransactionPaginationDto } from './dto/transaction.pagination.dto';
 import { TransactionsService } from './transactions.service';
+import { AccountKeyGuard, AccountStudentRequest } from '../auth/guards/account-key.guard';
 
 @ApiTags('Transactions')
 @Controller('transactions')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class TransactionsController {
-  constructor(private readonly transactionsService: TransactionsService) {}
+  constructor(private readonly transactionsService: TransactionsService) { }
+
+  @Post('process-account')
+  @Permissions('create:transactions')
+  @UseGuards(AccountKeyGuard)
+  async getStudentFromToken(@Req() req: AccountStudentRequest) {
+    const { upbCode } = req.student;
+    return this.transactionsService.getStudentHeaderInfo(upbCode);
+  }
 
   @Post()
   @Permissions('create:transactions')
