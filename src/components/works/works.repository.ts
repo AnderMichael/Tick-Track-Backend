@@ -35,7 +35,11 @@ export class WorksRepository {
         orderBy: { date_begin: 'desc' },
         include: {
           semester: true,
-          administrative: true,
+          administrative: {
+            include: {
+              user: true,
+            },
+          },
         },
       }),
       this.prisma.work.count({ where }),
@@ -54,7 +58,11 @@ export class WorksRepository {
       where: { id },
       include: {
         semester: true,
-        administrative: true,
+        administrative: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
   }

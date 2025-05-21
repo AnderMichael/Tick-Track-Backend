@@ -15,7 +15,7 @@ export class WorksService {
   constructor(
     private readonly worksRepository: WorksRepository,
     private readonly semestersService: SemestersService,
-  ) {}
+  ) { }
 
   async create(dto: CreateWorkDto) {
     const semester = await this.semestersService.findOne(dto.semester_id);
@@ -33,7 +33,7 @@ export class WorksService {
     }
 
     const created = await this.worksRepository.create(dto);
-    return new WorkModel(created);
+    return { message: `Work \"${created.title}\" created successfully` };
   }
 
   async findAll(pagination: WorkPaginationDto) {
@@ -55,7 +55,7 @@ export class WorksService {
   async update(id: number, dto: UpdateWorkDto) {
     const work = await this.findOne(id);
     const updated = await this.worksRepository.update(work.id, dto);
-    return new WorkModel(updated);
+    return { message: `Work \"${updated.title}\" created successfully` };
   }
 
   async remove(id: number) {

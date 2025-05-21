@@ -17,7 +17,7 @@ export class TransactionsService {
   async create(dto: CreateTransactionDto) {
     const work = await this.worksService.findOne(dto.work_id);
     const created = await this.transactionsRepository.create(dto);
-    return { message: 'Succesful Payment!' };
+    return { message: `Succesful Payment! Transaction N° ${created.id} to work \"${work.title}\"` };
   }
 
   async findAll(pagination: TransactionPaginationDto) {
