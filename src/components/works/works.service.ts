@@ -17,7 +17,7 @@ export class WorksService {
     private readonly semestersService: SemestersService,
   ) { }
 
-  async create(dto: CreateWorkDto) {
+  async create(dto: CreateWorkDto, upbCode: number) {
     const semester = await this.semestersService.findOne(dto.semester_id);
 
     const startsWithinSemester =
@@ -32,7 +32,7 @@ export class WorksService {
       );
     }
 
-    const created = await this.worksRepository.create(dto);
+    const created = await this.worksRepository.create(dto, upbCode);
     return { message: `Work \"${created.title}\" created successfully` };
   }
 

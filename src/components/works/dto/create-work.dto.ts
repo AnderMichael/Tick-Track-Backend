@@ -25,9 +25,5 @@ export class CreateWorkDto {
 
   @IsInt()
   @IsPositive()
-  administrative_id: number;
-
-  @IsInt()
-  @IsPositive()
   semester_id: number;
 }

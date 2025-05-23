@@ -11,9 +11,17 @@ export class WorksRepository {
     this.prisma = prisma;
   }
 
-  async create(dto: CreateWorkDto) {
+  async create(dto: CreateWorkDto, upbCode: number) {
+    const administrative = await this.prisma.administrative.findFirst({
+      where: {
+        user: {
+          upbCode,
+        },
+      },
+    });
+
     return this.prisma.work.create({
-      data: dto,
+      data: { ...dto, administrative_id: administrative!.id },
     });
   }
 

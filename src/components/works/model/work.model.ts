@@ -1,4 +1,4 @@
-import { Prisma, work } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 const workWithRelations = Prisma.validator<Prisma.workDefaultArgs>()({
   include: {
