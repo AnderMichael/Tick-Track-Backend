@@ -3,6 +3,8 @@ CREATE TABLE "department" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "department_pkey" PRIMARY KEY ("id")
 );
@@ -21,6 +23,8 @@ CREATE TABLE "user" (
     "is_confirmed" BOOLEAN NOT NULL DEFAULT false,
     "phone" TEXT NOT NULL,
     "hashed_password" TEXT NOT NULL DEFAULT 'TickTrackNewUser',
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "role_id" INTEGER NOT NULL,
     "department_id" INTEGER NOT NULL,
 
@@ -32,6 +36,8 @@ CREATE TABLE "role" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "role_pkey" PRIMARY KEY ("id")
 );
@@ -41,6 +47,8 @@ CREATE TABLE "permission" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "permission_pkey" PRIMARY KEY ("id")
 );
@@ -50,6 +58,8 @@ CREATE TABLE "role_permission" (
     "role_id" INTEGER NOT NULL,
     "permission_id" INTEGER NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "role_permission_pkey" PRIMARY KEY ("role_id","permission_id")
 );
@@ -59,6 +69,8 @@ CREATE TABLE "student" (
     "id" INTEGER NOT NULL,
     "semester" INTEGER NOT NULL DEFAULT 0,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "student_pkey" PRIMARY KEY ("id")
 );
@@ -68,6 +80,8 @@ CREATE TABLE "administrative" (
     "id" INTEGER NOT NULL,
     "upb_role" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "administrative_pkey" PRIMARY KEY ("id")
 );
@@ -79,6 +93,8 @@ CREATE TABLE "commitment" (
     "student_id" INTEGER NOT NULL,
     "is_current" BOOLEAN NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "commitment_pkey" PRIMARY KEY ("id")
 );
@@ -91,6 +107,8 @@ CREATE TABLE "service_details" (
     "hours_per_semester" INTEGER NOT NULL,
     "total_hours" INTEGER NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "service_details_pkey" PRIMARY KEY ("id")
 );
@@ -101,6 +119,8 @@ CREATE TABLE "scholarship" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "scholarship_pkey" PRIMARY KEY ("id")
 );
@@ -112,6 +132,8 @@ CREATE TABLE "semester" (
     "start_date" TEXT NOT NULL,
     "end_date" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "semester_pkey" PRIMARY KEY ("id")
 );
@@ -121,7 +143,8 @@ CREATE TABLE "inscription" (
     "id" SERIAL NOT NULL,
     "commitment_id" INTEGER NOT NULL,
     "semester_id" INTEGER NOT NULL,
-    "created_at" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "inscription_pkey" PRIMARY KEY ("id")
@@ -138,6 +161,8 @@ CREATE TABLE "work" (
     "semester_id" INTEGER NOT NULL,
     "is_open" BOOLEAN NOT NULL DEFAULT true,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "work_pkey" PRIMARY KEY ("id")
 );
@@ -149,6 +174,8 @@ CREATE TABLE "work_history" (
     "status" TEXT NOT NULL,
     "date" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "work_history_pkey" PRIMARY KEY ("id")
 );
@@ -160,9 +187,11 @@ CREATE TABLE "transaction" (
     "commitment_id" INTEGER NOT NULL,
     "date" TEXT NOT NULL,
     "hours" INTEGER NOT NULL,
-    "comment_student" TEXT NOT NULL,
-    "comment_administrative" TEXT NOT NULL,
+    "comment_student" TEXT,
+    "comment_administrative" TEXT,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "transaction_pkey" PRIMARY KEY ("id")
 );
@@ -174,6 +203,8 @@ CREATE TABLE "user_state_history" (
     "status" TEXT NOT NULL,
     "date" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "user_state_history_pkey" PRIMARY KEY ("id")
 );

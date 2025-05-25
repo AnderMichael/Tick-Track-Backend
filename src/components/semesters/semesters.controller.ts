@@ -13,18 +13,17 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { CreateSemesterDto } from './dto/create-semester.dto';
+import { SemesterPaginationDto } from './dto/pagination.dto';
 import { UpdateSemesterDto } from './dto/update-semester.dto';
 import { SemestersService } from './semesters.service';
-import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
-import { SemesterPaginationDto } from './dto/pagination.dto';
 
 @ApiTags('Semesters')
 @Controller('semesters')
 @UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class SemestersController {
-  constructor(private readonly semestersService: SemestersService) {}
+  constructor(private readonly semestersService: SemestersService) { }
 
   @Post()
   @Permissions('create:semesters')

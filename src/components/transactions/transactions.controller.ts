@@ -17,10 +17,11 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { TransactionPaginationDto } from './dto/transaction.pagination.dto';
 import { TransactionsService } from './transactions.service';
 import { AccountKeyGuard, AccountStudentRequest } from '../auth/guards/account-key.guard';
+import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 
 @ApiTags('Transactions')
 @Controller('transactions')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) { }
 
@@ -29,7 +30,8 @@ export class TransactionsController {
   @UseGuards(AccountKeyGuard)
   async getStudentFromToken(@Req() req: AccountStudentRequest) {
     const { upbCode } = req.student;
-    return this.transactionsService.getStudentHeaderInfo(upbCode);
+    const { department_id } = req.user;
+    return this.transactionsService.getStudentHeaderInfo(upbCode, department_id);
   }
 
   @Post()

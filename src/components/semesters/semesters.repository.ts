@@ -65,8 +65,9 @@ export class SemestersRepository {
     return this.prisma.semester.findMany({
       where: {
         is_deleted: false,
-        ...(excludeId ? { NOT: { id: excludeId } } : {}),
-        AND: [{ start_date: { lte: end } }, { end_date: { gte: start } }],
+        start_date: { lte: end },
+        end_date: { gte: start },
+        ...(excludeId ? { NOT: { id: excludeId } } : []),
       },
     });
   }

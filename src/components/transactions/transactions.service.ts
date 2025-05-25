@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { StudentsService } from '../students/students.service';
 import { WorksService } from '../works/works.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -16,6 +16,17 @@ export class TransactionsService {
 
   async create(dto: CreateTransactionDto) {
     const work = await this.worksService.findOne(dto.work_id);
+    
+    if (!work) {
+      throw new NotFoundException('Work not found');
+    }
+
+    const inscription = await this.studentsService.findInscription(dto.commitment_id, work.semester_id);
+
+    if(!inscription) {
+      throw new NotFoundException('Student is not inscribed in this semester');
+    }
+
     const created = await this.transactionsRepository.create(dto);
     return { message: `Succesful Payment! Transaction N° ${created.id} to work \"${work.title}\"` };
   }
@@ -42,12 +53,20 @@ export class TransactionsService {
     return { message: 'Transaction marked as deleted' };
   }
 
-  async getStudentHeaderInfo(upbCode: number) {
+  async getStudentHeaderInfo(upbCode: number, department_id: number) {
     const commitment = await this.studentsService.findCurrentCommitmentByUpbCode(upbCode);
     if (!commitment) {
-      throw new NotFoundException('Student not found');
+      throw new NotFoundException('Commitment not found');
     }
     const student = await this.transactionsRepository.findStudentHeader(upbCode);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    if (student.department_id !== department_id) {
+      throw new BadRequestException('Interdepartment transaction is not allowed');
+    }
+
     return {
       ...student,
       commitment_id: commitment.id,

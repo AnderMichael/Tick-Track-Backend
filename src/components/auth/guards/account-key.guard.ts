@@ -1,8 +1,9 @@
 import { BadRequestException, CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { JWTUtils } from '../../users/utils/JWTUtils';
+import { AuthenticatedRequest } from './jwt-auth.guard';
 
-export interface AccountStudentRequest extends Request {
+export interface AccountStudentRequest extends AuthenticatedRequest {
     student: {
         upbCode: number;
     };

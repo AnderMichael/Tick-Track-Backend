@@ -40,7 +40,7 @@ export class WorksRepository {
         where,
         skip,
         take: limit,
-        orderBy: { date_begin: 'desc' },
+        orderBy: { created_at: 'desc' },
         include: {
           semester: true,
           administrative: {

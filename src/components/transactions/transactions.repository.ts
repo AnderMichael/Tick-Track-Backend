@@ -48,7 +48,7 @@ export class TransactionsRepository {
         },
         skip,
         take: limit,
-        orderBy: { date: 'desc' },
+        orderBy: { created_at: 'desc' },
       }),
       this.prisma.transaction.count({ where }),
     ]);
@@ -104,6 +104,7 @@ export class TransactionsRepository {
         upbCode: true,
         firstName: true,
         fatherLastName: true,
+        department_id: true,
       },
     });
   }

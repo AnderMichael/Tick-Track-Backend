@@ -9,15 +9,17 @@ generator client {
 }
 
 model department {
-  id         Int    @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   name       String
   is_deleted Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   users user[]
 }
 
 model user {
-  id               Int    @id @default(autoincrement())
+  id               Int     @id @default(autoincrement())
   firstName        String
   secondName       String
   fatherLastName   String
@@ -29,6 +31,8 @@ model user {
   is_confirmed     Boolean @default(false)
   phone            String
   hashed_password  String  @default("TickTrackNewUser")
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 
   role_id      Int
   role         role        @relation(fields: [role_id], references: [id])
@@ -42,18 +46,22 @@ model user {
 }
 
 model role {
-  id         Int    @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   name       String
   is_deleted Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   users             user[]
   role_permission   role_permission[]
 }
 
 model permission {
-  id         Int    @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   name       String
   is_deleted Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   role_permission role_permission[]
 }
@@ -62,6 +70,8 @@ model role_permission {
   role_id       Int
   permission_id Int
   is_deleted    Boolean @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   role       role       @relation(fields: [role_id], references: [id])
   permission permission @relation(fields: [permission_id], references: [id])
@@ -70,125 +80,147 @@ model role_permission {
 }
 
 model student {
-  id         Int    @id
-  user       user   @relation(fields: [id], references: [id])
-  semester   Int    @default(0)
+  id         Int     @id
+  user       user    @relation(fields: [id], references: [id])
+  semester   Int     @default(0)
   is_deleted Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   commitment   commitment[]
 }
 
 model administrative {
-  id         Int    @id
-  user       user   @relation(fields: [id], references: [id])
+  id         Int     @id
+  user       user    @relation(fields: [id], references: [id])
   upb_role   String
   is_deleted Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   work work[]
 }
 
 model commitment {
-  id                 Int               @id @default(autoincrement())
+  id                 Int     @id @default(autoincrement())
   service_details_id Int
   student_id         Int
   is_current         Boolean
   is_deleted         Boolean @default(false)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 
   service_details service_details @relation(fields: [service_details_id], references: [id])
   student         student         @relation(fields: [student_id], references: [id])
   inscriptions    inscription[]
-  transaction  transaction[]
+  transaction     transaction[]
 }
 
-
 model service_details {
-  id                 Int             @id @default(autoincrement())
+  id                 Int     @id @default(autoincrement())
   scholarship_id     Int
-  scholarship        scholarship     @relation(fields: [scholarship_id], references: [id])
+  scholarship        scholarship @relation(fields: [scholarship_id], references: [id])
   percentage         Float
   hours_per_semester Int
   total_hours        Int
-  is_deleted         Boolean         @default(false)
+  is_deleted         Boolean @default(false)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 
   commitment commitment[]
 }
 
 model scholarship {
-  id              Int               @id @default(autoincrement())
+  id              Int     @id @default(autoincrement())
   name            String
   description     String
   is_deleted      Boolean @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
   service_details service_details[]
 }
 
 model semester {
-  id           Int          @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   name         String
   start_date   String
   end_date     String
   is_deleted   Boolean @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
   inscription  inscription[]
   work         work[]
 }
 
 model inscription {
-  id             Int         @id @default(autoincrement())
+  id             Int     @id @default(autoincrement())
   commitment_id  Int
-  commitment     commitment  @relation(fields: [commitment_id], references: [id])
-
   semester_id    Int
-  semester       semester    @relation(fields: [semester_id], references: [id])
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  is_deleted     Boolean @default(false)
 
-  created_at     String
-  is_deleted     Boolean     @default(false)
+  commitment     commitment @relation(fields: [commitment_id], references: [id])
+  semester       semester   @relation(fields: [semester_id], references: [id])
 }
 
 model work {
-  id                  Int              @id @default(autoincrement())
+  id                  Int     @id @default(autoincrement())
   title               String
   description         String
   date_begin          String
   date_end            String
   administrative_id   Int
-  administrative      administrative   @relation(fields: [administrative_id], references: [id])
   semester_id         Int
-  semester            semester         @relation(fields: [semester_id], references: [id])
-  is_open             Boolean          @default(true)
-  is_deleted          Boolean          @default(false)
+  is_open             Boolean @default(true)
+  is_deleted          Boolean @default(false)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
 
-  work_history  work_history[]
-  transaction   transaction[]
+  administrative      administrative @relation(fields: [administrative_id], references: [id])
+  semester            semester       @relation(fields: [semester_id], references: [id])
+  work_history        work_history[]
+  transaction         transaction[]
 }
 
 model work_history {
-  id         Int   @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   work_id    Int
-  work       work  @relation(fields: [work_id], references: [id])
   status     String
   date       String
   is_deleted Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  work       work     @relation(fields: [work_id], references: [id])
 }
 
 model transaction {
-  id                     Int      @id @default(autoincrement())
+  id                     Int     @id @default(autoincrement())
   work_id                Int
-  work                   work     @relation(fields: [work_id], references: [id])
   commitment_id          Int
-  commitment             commitment  @relation(fields: [commitment_id], references: [id])
   date                   String
   hours                  Int
-  comment_student        String
-  comment_administrative String
-  is_deleted             Boolean  @default(false)
+  comment_student        String?
+  comment_administrative String?
+  is_deleted             Boolean @default(false)
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+
+  work       work       @relation(fields: [work_id], references: [id])
+  commitment commitment @relation(fields: [commitment_id], references: [id])
 }
 
 model user_state_history {
-  id         Int   @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   user_id    Int
-  user       user  @relation(fields: [user_id], references: [id])
   status     String
   date       String
   is_deleted Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user       user     @relation(fields: [user_id], references: [id])
 }

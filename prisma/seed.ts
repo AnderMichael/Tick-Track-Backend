@@ -73,13 +73,14 @@ async function main() {
   await linkPermissionsToRole(supervisorRole.id, [
     'view:works', 'create:works', 'update:works', 'delete:works',
     'view:transactions', 'create:transactions', 'update:transactions', 'delete:transactions',
-    'view:students',
+    'view:students', 'view:semesters'
   ]);
   await linkPermissionsToRole(scholarshipOfficerRole.id, [
     'view:works', 'create:works', 'update:works', 'delete:works',
     'view:transactions', 'create:transactions', 'update:transactions', 'delete:transactions',
     'view:students', 'create:students', 'update:students', 'delete:students',
     'view:supervisors', 'create:supervisors', 'update:supervisors', 'delete:supervisors',
+    'view:semesters'
   ]);
   await linkPermissionsToRole(adminRole.id, allPermissions.map((p) => p.name));
 
@@ -99,7 +100,7 @@ async function main() {
     data: {
       firstName: 'Lucía', secondName: "Carla", phone: "548393900", email: "luciacarla1@upb.edu",
       fatherLastName: 'Sandoval', motherLastName: 'Rojas', upbCode: 63003,
-      role_id: studentRole.id, department_id: depCochabamba.id, hashed_password: def_password,
+      role_id: studentRole.id, department_id: depLaPaz.id, hashed_password: def_password,
     },
   });
   await prisma.student.create({ data: { id: userStudent2.id } });
@@ -108,7 +109,7 @@ async function main() {
     data: {
       firstName: 'Juan', secondName: "Carlos", phone: "548393900", email: "juancarlos1@upb.edu",
       fatherLastName: 'Supervisor', motherLastName: '', upbCode: 43267,
-      role_id: supervisorRole.id, department_id: depSantaCruz.id, hashed_password: def_password,
+      role_id: supervisorRole.id, department_id: depLaPaz.id, hashed_password: def_password,
     },
   });
   await prisma.administrative.create({ data: { id: userSup.id, upb_role: 'SUPERVISOR' } });
