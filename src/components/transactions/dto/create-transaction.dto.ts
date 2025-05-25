@@ -2,6 +2,7 @@ import {
   IsDateString,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   IsPositive,
   IsString,
 } from 'class-validator';
@@ -15,8 +16,8 @@ export class CreateTransactionDto {
   hours: number;
 
   @IsString()
-  @IsNotEmpty()
-  comment_student: string;
+  @IsOptional()
+  comment_student?: string;
 
   @IsString()
   @IsNotEmpty()

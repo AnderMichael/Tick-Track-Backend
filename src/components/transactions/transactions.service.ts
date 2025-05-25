@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { StudentsService } from '../students/students.service';
 import { WorksService } from '../works/works.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -16,14 +16,14 @@ export class TransactionsService {
 
   async create(dto: CreateTransactionDto) {
     const work = await this.worksService.findOne(dto.work_id);
-    
+
     if (!work) {
       throw new NotFoundException('Work not found');
     }
 
     const inscription = await this.studentsService.findInscription(dto.commitment_id, work.semester_id);
 
-    if(!inscription) {
+    if (!inscription) {
       throw new NotFoundException('Student is not inscribed in this semester');
     }
 
@@ -70,6 +70,23 @@ export class TransactionsService {
     return {
       ...student,
       commitment_id: commitment.id,
+    }
+  }
+
+  async addStudentComment(id: number, student_comment: string, studentUpbCode: number) {
+    const transaction = await this.findOne(id);
+    if (transaction.student_upbCode !== studentUpbCode) {
+      throw new UnauthorizedException('You are not authorized to comment on this transaction');
+    }
+    if (!student_comment || student_comment.trim() === '') {
+      throw new BadRequestException('Comment cannot be empty');
+    }
+    if (transaction.comment_student) {
+      throw new BadRequestException('Comment already exists for this transaction');
+    }
+    await this.transactionsRepository.addStudentComment(transaction.id, student_comment);
+    return {
+      message: 'Comment added successfully',
     }
   }
 }

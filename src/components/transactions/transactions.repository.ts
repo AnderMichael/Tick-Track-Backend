@@ -108,4 +108,15 @@ export class TransactionsRepository {
       },
     });
   }
+
+  async addStudentComment(id: number, comment: string) {
+    return this.prisma.transaction.update({
+      where: { id },
+      data: {
+        comment_student: {
+          set: comment,
+        },
+      },
+    });
+  }
 }

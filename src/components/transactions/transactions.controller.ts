@@ -4,20 +4,21 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth//guards/jwt-auth.guard';
+import { AuthenticatedRequest, JwtAuthGuard } from '../auth//guards/jwt-auth.guard';
+import { AccountKeyGuard, AccountStudentRequest } from '../auth/guards/account-key.guard';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { TransactionPaginationDto } from './dto/transaction.pagination.dto';
 import { TransactionsService } from './transactions.service';
-import { AccountKeyGuard, AccountStudentRequest } from '../auth/guards/account-key.guard';
-import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 
 @ApiTags('Transactions')
 @Controller('transactions')
@@ -28,7 +29,7 @@ export class TransactionsController {
   @Post('process-account')
   @Permissions('create:transactions')
   @UseGuards(AccountKeyGuard)
-  async getStudentFromToken(@Req() req: AccountStudentRequest) {
+  getStudentFromToken(@Req() req: AccountStudentRequest) {
     const { upbCode } = req.student;
     const { department_id } = req.user;
     return this.transactionsService.getStudentHeaderInfo(upbCode, department_id);
@@ -60,5 +61,12 @@ export class TransactionsController {
   @ApiOperation({ summary: 'Soft delete a transaction by ID' })
   remove(@Param('id') id: string) {
     return this.transactionsService.remove(+id);
+  }
+
+  @Patch(':id/comment')
+  @Permissions('create:comments')
+  @ApiOperation({ summary: 'Add a comment to a transaction' })
+  addStudentComment(@Param('id') id: string, @Body('comment') comment: string, @Req() req: AuthenticatedRequest) {
+    return this.transactionsService.addStudentComment(+id, comment, req.user.upbCode);
   }
 }
