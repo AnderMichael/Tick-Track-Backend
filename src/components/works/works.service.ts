@@ -54,6 +54,28 @@ export class WorksService {
 
   async update(id: number, dto: UpdateWorkDto) {
     const work = await this.findOne(id);
+    const semester = await this.semestersService.findOne(work.semester_id);
+
+    let startsWithinSemester = true;
+    let endsWithinSemester = true;
+
+    if(dto.date_begin) {
+      startsWithinSemester =
+        dto.date_begin >= semester.start_date &&
+        dto.date_begin <= semester.end_date;
+    }
+
+    if (dto.date_end) {
+      endsWithinSemester =
+        dto.date_end >= semester.start_date && 
+        dto.date_end <= semester.end_date;
+    }
+
+    if (!startsWithinSemester || !endsWithinSemester) {
+      throw new BadRequestException(
+        'Work dates must fall within the semester period',
+      );
+    }
     const updated = await this.worksRepository.update(work.id, dto);
     return { message: `Work \"${updated.title}\" created successfully` };
   }
