@@ -13,9 +13,8 @@ export class SemesterPaginationDto extends PaginationDto {
     const where: any = { is_deleted: false };
 
     if (this.year) {
-      where.start_date = {
-        gte: `${this.year}-01-01`,
-        lte: `${this.year}-12-31`,
+      where.name = {
+        endsWith: this.year.toString(),
       };
     }
 

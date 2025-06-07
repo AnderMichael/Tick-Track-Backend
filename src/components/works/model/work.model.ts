@@ -24,6 +24,7 @@ export class WorkModel {
     name: string;
   }
   semester_id: number;
+  created_at: Date;
 
   constructor(work: Work) {
     this.id = work.id;
@@ -37,6 +38,7 @@ export class WorkModel {
       name: `${work.administrative.user.firstName} ${work.administrative.user.fatherLastName}`,
     };
     this.semester_id = work.semester_id;
+    this.created_at = work.created_at;
   }
 
   static fromMany(works: Work[]): WorkModel[] {
