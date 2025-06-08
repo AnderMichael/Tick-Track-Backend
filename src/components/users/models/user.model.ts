@@ -1,4 +1,63 @@
+import { Prisma } from '@prisma/client';
 import { JWTUtils } from '../utils/JWTUtils';
+
+const userWithRelations = Prisma.validator<Prisma.userDefaultArgs>()({
+  include: {
+    role: true,
+    department: true,
+    student: {
+      include: {
+        commitment: {
+          where: {
+            is_deleted: false,
+          },
+          select: {
+            inscriptions: {
+              select: {
+                id: true,
+                semester: {
+                  select: {
+                    id: true,
+                    number: true,
+                    year: true,
+                    start_date: true,
+                    end_date: true,
+                  },
+                },
+              },
+              where: {
+                is_deleted: false,
+              },
+              orderBy: {
+                semester: {
+                  start_date: 'desc',
+                },
+              },
+            },
+            id: true,
+            is_current: true,
+            service_details: {
+              select: {
+                percentage: true,
+                hours_per_semester: true,
+                scholarship: {
+                  select: {
+                    name: true,
+                    description: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    administrative: true,
+  },
+});
+
+
+type User = Prisma.userGetPayload<typeof userWithRelations>;
 
 const JWTAccountKeyUtils = new JWTUtils();
 export class UserModel {
@@ -18,7 +77,7 @@ export class UserModel {
     upbRole: string;
   };
 
-  constructor(user: any) {
+  constructor(user: User | any) {
     this.upbCode = user.upbCode;
     this.email = user.email;
     this.fullName = `${user.firstName} ${user.fatherLastName}`;
@@ -31,20 +90,23 @@ export class UserModel {
 
       const semesterMap = new Map<number, { id: number; name: string }>();
       commitments.forEach((commit) => {
-        commit.inscriptions?.forEach((i) => {
-          const sem = i.semester;
-          sem.commitment_id = commit.id;
-          sem.semester_id = sem.id;
-          sem.id = i.id;
-          if (sem && !semesterMap.has(sem.id)) {
-            semesterMap.set(sem.id, sem);
+        commit.inscriptions.forEach((inscription) => {
+          const semesterExtended : any = inscription.semester;
+          semesterExtended.commitment_id = commit.id;
+          semesterExtended.semester_id = semesterExtended.id;
+          semesterExtended.id = inscription.id;
+          semesterExtended.name = `Semestre ${semesterExtended.number} - ${semesterExtended.year}`;
+          if (semesterExtended && !semesterMap.has(semesterExtended.id)) {
+            semesterMap.set(semesterExtended.id, semesterExtended);
           }
         });
       });
       this.student = {
         semester: user.student.semester,
         inscriptions: Array.from(semesterMap.values()),
-        accountKey: JWTAccountKeyUtils.generateAccountKeyToken({ accountKey: `${user.id}-${user.upbCode}` }),
+        accountKey: JWTAccountKeyUtils.generateAccountKeyToken({
+          accountKey: `${user.id}-${user.upbCode}`,
+        }),
       };
     }
 

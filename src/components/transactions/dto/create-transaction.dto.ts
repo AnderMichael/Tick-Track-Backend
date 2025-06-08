@@ -30,4 +30,12 @@ export class CreateTransactionDto {
   @IsInt()
   @IsPositive()
   commitment_id: number;
+
+  @IsInt()
+  @IsPositive()
+  qualification_id: number;
+
+  @IsInt()
+  @IsPositive()
+  author_id: number;
 }

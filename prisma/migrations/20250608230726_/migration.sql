@@ -128,12 +128,13 @@ CREATE TABLE "scholarship" (
 -- CreateTable
 CREATE TABLE "semester" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
     "start_date" TEXT NOT NULL,
     "end_date" TEXT NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "number" INTEGER NOT NULL,
+    "year" INTEGER NOT NULL,
 
     CONSTRAINT "semester_pkey" PRIMARY KEY ("id")
 );
@@ -192,8 +193,20 @@ CREATE TABLE "transaction" (
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "qualification_id" INTEGER NOT NULL,
+    "author_id" INTEGER NOT NULL,
 
     CONSTRAINT "transaction_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "qualification" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "value" INTEGER NOT NULL,
+    "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "qualification_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -250,6 +263,12 @@ ALTER TABLE "work" ADD CONSTRAINT "work_semester_id_fkey" FOREIGN KEY ("semester
 
 -- AddForeignKey
 ALTER TABLE "work_history" ADD CONSTRAINT "work_history_work_id_fkey" FOREIGN KEY ("work_id") REFERENCES "work"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transaction" ADD CONSTRAINT "transaction_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "administrative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transaction" ADD CONSTRAINT "transaction_qualification_id_fkey" FOREIGN KEY ("qualification_id") REFERENCES "qualification"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "transaction" ADD CONSTRAINT "transaction_work_id_fkey" FOREIGN KEY ("work_id") REFERENCES "work"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

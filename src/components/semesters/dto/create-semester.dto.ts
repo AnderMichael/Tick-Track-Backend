@@ -1,9 +1,13 @@
-import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateSemesterDto {
   @IsNotEmpty()
-  @IsString()
-  name: string;
+  @IsInt()
+  number: number;
+
+  @IsNotEmpty()
+  @IsInt()
+  year: number;
 
   @IsNotEmpty()
   @IsDateString()
