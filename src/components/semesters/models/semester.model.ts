@@ -1,4 +1,5 @@
 import { semester } from '@prisma/client';
+import defineRomanNumbers from '../../../components/common/helpers/defineRomanNumbers';
 
 export class SemesterModel {
   id: number;
@@ -14,26 +15,10 @@ export class SemesterModel {
     this.end_date = sem.end_date;
     this.number = sem.number;
     this.year = sem.year;
-    this.name = `Semestre ${this.obtainRomanNumber(this.number)} - ${sem.year}`;
+    this.name = `Semestre ${defineRomanNumbers(this.number)} - ${sem.year}`;
   }
 
   static fromMany(semesters: semester[]): SemesterModel[] {
     return semesters.map((s) => new SemesterModel(s));
-  }
-
-  obtainRomanNumber(decimalNumber: number): string {
-    const romanNumerals = [
-      'I',
-      'II',
-      'III',
-      'IV',
-      'V',
-      'VI',
-      'VII',
-      'VIII',
-      'IX',
-      'X',
-    ];
-    return romanNumerals[decimalNumber - 1] || decimalNumber.toString();
   }
 }

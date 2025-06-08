@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import defineRomanNumbers from '../../../components/common/helpers/defineRomanNumbers';
 import { JWTUtils } from '../utils/JWTUtils';
 
 const userWithRelations = Prisma.validator<Prisma.userDefaultArgs>()({
@@ -56,7 +57,6 @@ const userWithRelations = Prisma.validator<Prisma.userDefaultArgs>()({
   },
 });
 
-
 type User = Prisma.userGetPayload<typeof userWithRelations>;
 
 const JWTAccountKeyUtils = new JWTUtils();
@@ -91,11 +91,11 @@ export class UserModel {
       const semesterMap = new Map<number, { id: number; name: string }>();
       commitments.forEach((commit) => {
         commit.inscriptions.forEach((inscription) => {
-          const semesterExtended : any = inscription.semester;
+          const semesterExtended: any = inscription.semester;
           semesterExtended.commitment_id = commit.id;
           semesterExtended.semester_id = semesterExtended.id;
           semesterExtended.id = inscription.id;
-          semesterExtended.name = `Semestre ${semesterExtended.number} - ${semesterExtended.year}`;
+          semesterExtended.name = `Semestre ${defineRomanNumbers(semesterExtended.number)} - ${semesterExtended.year}`;
           if (semesterExtended && !semesterMap.has(semesterExtended.id)) {
             semesterMap.set(semesterExtended.id, semesterExtended);
           }
