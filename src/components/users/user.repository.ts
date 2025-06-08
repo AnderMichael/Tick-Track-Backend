@@ -61,7 +61,8 @@ export class UserRepository {
                     semester: {
                       select: {
                         id: true,
-                        name: true,
+                        number: true,
+                        year: true,
                         start_date: true,
                         end_date: true,
                       },

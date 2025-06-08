@@ -99,6 +99,7 @@ model administrative {
   updated_at DateTime @updatedAt
 
   work work[]
+  transactions_authored   transaction[] @relation("AuthorTransactions")
 }
 
 model commitment {
@@ -143,13 +144,13 @@ model scholarship {
 
 model semester {
   id           Int     @id @default(autoincrement())
-  name         String
   start_date   String
   end_date     String
   is_deleted   Boolean @default(false)
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
-
+  number       Int
+  year         Int
   inscription  inscription[]
   work         work[]
 }
@@ -208,9 +209,21 @@ model transaction {
   is_deleted             Boolean @default(false)
   created_at             DateTime @default(now())
   updated_at             DateTime @updatedAt
+  qualification_id       Int
+  author_id              Int
 
-  work       work       @relation(fields: [work_id], references: [id])
-  commitment commitment @relation(fields: [commitment_id], references: [id])
+  author          administrative     @relation("AuthorTransactions", fields: [author_id], references: [id])
+  qualification   qualification      @relation(fields: [qualification_id], references: [id])
+  work            work               @relation(fields: [work_id], references: [id])
+  commitment      commitment         @relation(fields: [commitment_id], references: [id])
+}
+
+model qualification {
+  id                     Int     @id @default(autoincrement())
+  name                   String
+  value                  Int
+  is_deleted   Boolean @default(false)
+  transactions           transaction[]
 }
 
 model user_state_history {

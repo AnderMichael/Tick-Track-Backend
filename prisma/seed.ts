@@ -221,16 +221,36 @@ async function main() {
 
   await prisma.semester.createMany({
     data: [
-      { name: 'Semestre II-2024', start_date: '2024-08-01', end_date: '2024-12-20' },
-      { name: 'Semestre I-2025', start_date: '2025-02-01', end_date: '2025-06-30' },
-      { name: 'Semestre II-2025', start_date: '2025-08-01', end_date: '2025-12-20' }
+      { number: 2, year: 2024, start_date: '2024-08-01', end_date: '2024-12-20' },
+      { number: 1, year: 2025, start_date: '2025-02-01', end_date: '2025-06-30' },
+      { number: 2, year: 2025, start_date: '2025-08-01', end_date: '2025-12-20' }
     ],
     skipDuplicates: true
   });
 
-  const semester = await prisma.semester.findFirst({ where: { name: '2025-1' } });
+  const semester = await prisma.semester.findFirst({ where: { year: 2025, number: 2 } });
   const admin = await prisma.administrative.findFirst();
 
+  await prisma.inscription.create(
+    {
+      data: {
+        semester_id: semester?.id || 0,
+        commitment_id: 1,
+      },
+    }
+  )
+
+
+  await prisma.qualification.createMany({
+    data: [
+      { value: 1, name: "INSUFICIENTE"},
+      { value: 2, name: "SUFICIENTE" },
+      { value: 3, name: "BUENO" },
+      { value: 4, name: "EXCELENTE" }
+    ],  
+    skipDuplicates: true
+  });
+  
   if (semester && admin) {
     await prisma.work.createMany({
       data: [
