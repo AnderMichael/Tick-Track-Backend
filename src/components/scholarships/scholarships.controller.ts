@@ -98,6 +98,7 @@ export class ScholarshipsController {
     @Body() serviceDetails: UpdateServiceDetailsDto,
   ) {
     return this.scholarshipsService.updateServiceDetails(
+      +id,
       +detailId,
       serviceDetails,
     );

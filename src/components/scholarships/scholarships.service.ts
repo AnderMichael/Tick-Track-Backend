@@ -61,7 +61,7 @@ export class ScholarshipsService {
     availableServiceDetails.forEach((detail) => {
       if (detail.percentage === serviceDetails.percentage) {
         throw new ConflictException(
-          `Service details with percentage ${serviceDetails.percentage} already exists for this scholarship`,
+          `Service details with percentage ${serviceDetails.percentage * 100}% already exists for this scholarship`,
         );
       }
     });
@@ -93,10 +93,23 @@ export class ScholarshipsService {
   }
 
   async updateServiceDetails(
+    scholarshipId: number,
     serviceDetailsId: number,
     serviceDetails: UpdateServiceDetailsDto,
   ) {
     const existing = await this.findServiceDetails(serviceDetailsId);
+
+    const availableServiceDetails =
+      await this.findAllServiceDetails(scholarshipId);
+
+    availableServiceDetails.forEach((detail) => {
+      if (detail.percentage === serviceDetails.percentage) {
+        throw new ConflictException(
+          `Service details with percentage ${serviceDetails.percentage * 100}% already exists for this scholarship`,
+        );
+      }
+    });
+
     await this.scholarshipsRepository.updateServiceDetails(
       existing.id,
       serviceDetails,
