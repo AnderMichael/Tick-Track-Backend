@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CustomPrismaClientType, prisma } from '../../config/prisma.client';
-import { CreateScholarshipDto } from './dto/create-scholarship.dto';
-import { UpdateScholarshipDto } from './dto/update-scholarship.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { CreateScholarshipDto } from './dto/create-scholarship.dto';
+import { CreateServiceDetailsDto } from './dto/create-service-details.dto';
+import { UpdateScholarshipDto } from './dto/update-scholarship.dto';
+import { UpdateServiceDetailsDto } from './dto/update-service-details.dto';
 
 @Injectable()
 export class ScholarshipsRepository {
@@ -58,6 +60,48 @@ export class ScholarshipsRepository {
   async softDelete(id: number) {
     return this.prisma.scholarship.update({
       where: { id },
+      data: { is_deleted: true },
+    });
+  }
+
+  async createServiceDetails(
+    scholarshipId: number,
+    serviceDetails: CreateServiceDetailsDto,
+  ) {
+    return this.prisma.service_details.create({
+      data: {
+        scholarship_id: scholarshipId,
+        ...serviceDetails,
+      },
+    });
+  }
+
+  async findAllServiceDetails(scholarshipId: number) {
+    return this.prisma.service_details.findMany({
+      where: { scholarship_id: scholarshipId, is_deleted: false },
+      orderBy: { percentage: 'asc' },
+    });
+  }
+
+  async findServiceDetails(serviceDetailsId: number) {
+    return this.prisma.service_details.findUnique({
+      where: { id: serviceDetailsId, is_deleted: false },
+    });
+  }
+
+  async updateServiceDetails(
+    serviceDetailsId: number,
+    serviceDetails: UpdateServiceDetailsDto,
+  ) {
+    return this.prisma.service_details.update({
+      where: { id: serviceDetailsId },
+      data: serviceDetails,
+    });
+  }
+
+  async softDeleteServiceDetails(serviceDetailsId: number) {
+    return this.prisma.service_details.update({
+      where: { id: serviceDetailsId },
       data: { is_deleted: true },
     });
   }

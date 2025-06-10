@@ -16,7 +16,9 @@ import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateScholarshipDto } from './dto/create-scholarship.dto';
+import { CreateServiceDetailsDto } from './dto/create-service-details.dto';
 import { UpdateScholarshipDto } from './dto/update-scholarship.dto';
+import { UpdateServiceDetailsDto } from './dto/update-service-details.dto';
 import { ScholarshipsService } from './scholarships.service';
 
 @ApiTags('Scholarships')
@@ -58,5 +60,58 @@ export class ScholarshipsController {
   @ApiOperation({ summary: 'Soft delete a scholarship by ID' })
   remove(@Param('id') id: string) {
     return this.scholarshipsService.remove(+id);
+  }
+
+  @Post(':id/service-details')
+  @Permissions('create:scholarships')
+  @ApiOperation({ summary: 'Create service details for a scholarship' })
+  createServiceDetails(
+    @Param('id') id: string,
+    @Body() serviceDetails: CreateServiceDetailsDto,
+  ) {
+    return this.scholarshipsService.createServiceDetails(+id, serviceDetails);
+  }
+
+  @Get(':id/service-details')
+  @Permissions('view:scholarships')
+  @ApiOperation({ summary: 'List service details for a scholarship' })
+  findAllServiceDetails(@Param('id') id: string) {
+    return this.scholarshipsService.findAllServiceDetails(+id);
+  }
+
+  @Get(':id/service-details/:detailId')
+  @Permissions('view:scholarships')
+  @ApiOperation({ summary: 'Get service details by ID for a scholarship' })
+  findServiceDetailsById(
+    @Param('id') id: string,
+    @Param('detailId') detailId: string,
+  ) {
+    return this.scholarshipsService.findServiceDetails(+detailId);
+  }
+
+  @Patch(':id/service-details/:detailId')
+  @Permissions('update:scholarships')
+  @ApiOperation({ summary: 'Update service details by ID for a scholarship' })
+  updateServiceDetails(
+    @Param('id') id: string,
+    @Param('detailId') detailId: string,
+    @Body() serviceDetails: UpdateServiceDetailsDto,
+  ) {
+    return this.scholarshipsService.updateServiceDetails(
+      +detailId,
+      serviceDetails,
+    );
+  }
+
+  @Delete(':id/service-details/:detailId')
+  @Permissions('delete:scholarships')
+  @ApiOperation({
+    summary: 'Soft delete service details by ID for a scholarship',
+  })
+  removeServiceDetails(
+    @Param('id') id: string,
+    @Param('detailId') detailId: string,
+  ) {
+    return this.scholarshipsService.removeServiceDetails(+detailId);
   }
 }

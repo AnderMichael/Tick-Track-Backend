@@ -1,13 +1,15 @@
 import {
-  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ScholarshipsRepository } from './scholarships.repository';
-import { CreateScholarshipDto } from './dto/create-scholarship.dto';
-import { UpdateScholarshipDto } from './dto/update-scholarship.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { CreateScholarshipDto } from './dto/create-scholarship.dto';
+import { CreateServiceDetailsDto } from './dto/create-service-details.dto';
+import { UpdateScholarshipDto } from './dto/update-scholarship.dto';
+import { UpdateServiceDetailsDto } from './dto/update-service-details.dto';
 import { ScholarshipModel } from './model/scholarship.model';
+import { ScholarshipsRepository } from './scholarships.repository';
 
 @Injectable()
 export class ScholarshipsService {
@@ -16,10 +18,6 @@ export class ScholarshipsService {
   ) {}
 
   async create(dto: CreateScholarshipDto) {
-    // const existing = await this.scholarshipsRepository.findAll({ search: dto.name });
-    // if (existing.total > 0) {
-    //   throw new BadRequestException('Scholarship already exists');
-    // }
     const created = await this.scholarshipsRepository.create(dto);
     return new ScholarshipModel(created);
   }
@@ -50,5 +48,65 @@ export class ScholarshipsService {
     const existing = await this.findOne(id);
     await this.scholarshipsRepository.softDelete(existing.id);
     return { message: 'Scholarship marked as deleted' };
+  }
+
+  async createServiceDetails(
+    scholarshipId: number,
+    serviceDetails: CreateServiceDetailsDto,
+  ) {
+    const scholarship = await this.findOne(scholarshipId);
+    const availableServiceDetails = await this.findAllServiceDetails(
+      scholarship.id,
+    );
+    availableServiceDetails.forEach((detail) => {
+      if (detail.percentage === serviceDetails.percentage) {
+        throw new ConflictException(
+          `Service details with percentage ${serviceDetails.percentage} already exists for this scholarship`,
+        );
+      }
+    });
+
+    await this.scholarshipsRepository.createServiceDetails(
+      scholarshipId,
+      serviceDetails,
+    );
+
+    return {
+      message: 'Service details created, percentage added successfully',
+    };
+  }
+
+  async findAllServiceDetails(scholarshipId: number) {
+    const scholarship = await this.findOne(scholarshipId);
+    const serviceDetails =
+      await this.scholarshipsRepository.findAllServiceDetails(scholarship.id);
+    return serviceDetails;
+  }
+
+  async findServiceDetails(serviceDetailsId: number) {
+    const serviceDetails =
+      await this.scholarshipsRepository.findServiceDetails(serviceDetailsId);
+    if (!serviceDetails) {
+      throw new NotFoundException('Service details not found');
+    }
+    return serviceDetails;
+  }
+
+  async updateServiceDetails(
+    serviceDetailsId: number,
+    serviceDetails: UpdateServiceDetailsDto,
+  ) {
+    const existing = await this.findServiceDetails(serviceDetailsId);
+    await this.scholarshipsRepository.updateServiceDetails(
+      existing.id,
+      serviceDetails,
+    );
+    return { message: 'Service details updated successfully' };
+  }
+
+  async removeServiceDetails(serviceDetailsId: number) {
+    const existing = await this.findServiceDetails(serviceDetailsId);
+    await this.scholarshipsRepository.softDeleteServiceDetails(existing.id);
+    return { message: 'Service details marked as deleted' };
   }
 }
