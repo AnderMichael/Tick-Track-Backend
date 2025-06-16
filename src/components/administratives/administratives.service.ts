@@ -6,6 +6,7 @@ import {
 import { AdministrativePaginationDto } from '../common/dto/user.pagination.dto';
 import { AdministrativeRepository } from './administratives.repository';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
+import { TrackSummaryDto } from './dto/track-summary.dto';
 import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
 import { AdministrativeModel } from './models/administratives.model';
 
@@ -13,7 +14,7 @@ import { AdministrativeModel } from './models/administratives.model';
 export class AdministrativesService {
   constructor(
     private readonly administrativeRepository: AdministrativeRepository,
-  ) { }
+  ) {}
 
   async create(dto: CreateAdministrativeDto) {
     const { upbCode } = dto;
@@ -80,8 +81,11 @@ export class AdministrativesService {
     };
   }
 
-  async getWorkSummary(upbCode: number, semesterId: number) {
-    const summary = await this.administrativeRepository.getWorkSummary(upbCode, semesterId);
+  async getWorkSummary(tracksSummaryDto: TrackSummaryDto, semesterId: number) {
+    const summary = await this.administrativeRepository.getWorkSummary(
+      tracksSummaryDto,
+      semesterId,
+    );
     return {
       open: summary.open,
       closed: summary.closed,
