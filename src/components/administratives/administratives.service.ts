@@ -104,4 +104,24 @@ export class AdministrativesService {
       value: department.name,
     }));
   }
+
+  async lock(upbCode: number) {
+    const admin = await this.administrativeRepository.findOne(upbCode);
+    if (!admin) {
+      throw new NotFoundException('Administrative not exists');
+    }
+
+    const updated = await this.administrativeRepository.lock(upbCode);
+    return new AdministrativeModel(updated);
+  }
+
+  async unlock(upbCode: number) {
+    const admin = await this.administrativeRepository.findOne(upbCode);
+    if (!admin) {
+      throw new NotFoundException('Administrative not exists');
+    }
+
+    const updated = await this.administrativeRepository.unlock(upbCode);
+    return new AdministrativeModel(updated);
+  }
 }

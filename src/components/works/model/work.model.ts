@@ -25,6 +25,7 @@ export class WorkModel {
   }
   semester_id: number;
   created_at: Date;
+  is_open?: boolean;
 
   constructor(work: Work) {
     this.id = work.id;
@@ -39,6 +40,7 @@ export class WorkModel {
     };
     this.semester_id = work.semester_id;
     this.created_at = work.created_at;
+    this.is_open = work.is_open;
   }
 
   static fromMany(works: Work[]): WorkModel[] {

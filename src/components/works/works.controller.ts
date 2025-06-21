@@ -54,6 +54,20 @@ export class WorksController {
     return this.worksService.update(+id, updateDto);
   }
 
+  @Patch(':id/lock')
+  @Permissions('update:works')
+  @ApiOperation({ summary: 'Lock a work by ID' })
+  lock(@Param('id') id: string) {
+    return this.worksService.lock(+id);
+  }
+
+  @Patch(':id/unlock')
+  @Permissions('update:works')
+  @ApiOperation({ summary: 'Lock a work by ID' })
+  unlock(@Param('id') id: string) {
+    return this.worksService.unlock(+id);
+  }
+
   @Delete(':id')
   @Permissions('delete:works')
   @ApiOperation({ summary: 'Soft delete a work by ID' })

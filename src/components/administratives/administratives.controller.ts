@@ -101,11 +101,39 @@ export class AdministrativesController {
     return this.administrativesService.update(+upbCode, updateDto);
   }
 
+  @Patch('supervisors/:upbCode/lock')
+  @Permissions('update:supervisors')
+  @ApiOperation({ summary: 'Lock a Supervisor by upbCode' })
+  lockSupervisor(@Param('upbCode') upbCode: string) {
+    return this.administrativesService.lock(+upbCode);
+  }
+
+  @Patch('supervisors/:upbCode/unlock')
+  @Permissions('update:supervisors')
+  @ApiOperation({ summary: 'Unlock a Supervisor by upbCode' })
+  unlockSupervisor(@Param('upbCode') upbCode: string) {
+    return this.administrativesService.unlock(+upbCode);
+  }
+
   @Delete('supervisors/:upbCode')
   @Permissions('delete:supervisors')
   @ApiOperation({ summary: 'Delete a Supervisor by upbCode' })
   removeSupervisor(@Param('upbCode') upbCode: string) {
     return this.administrativesService.remove(+upbCode);
+  }
+
+  @Patch('scholarship-officers/:upbCode/unlock')
+  @Permissions('update:scholarship_officers')
+  @ApiOperation({ summary: 'Unlock a Scholarship Officer by upbCode' })
+  unlockScholarshipOfficer(@Param('upbCode') upbCode: string) {
+    return this.administrativesService.unlock(+upbCode);
+  }
+
+  @Patch('scholarship-officers/:upbCode/lock')
+  @Permissions('update:scholarship_officers')
+  @ApiOperation({ summary: 'Lock a Scholarship Officer by upbCode' })
+  lockScholarshipOfficer(@Param('upbCode') upbCode: string) {
+    return this.administrativesService.lock(+upbCode);
   }
 
   @Get('tracks/:semesterId')

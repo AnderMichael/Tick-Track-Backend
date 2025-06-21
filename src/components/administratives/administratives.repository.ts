@@ -177,4 +177,32 @@ export class AdministrativeRepository {
       orderBy: { name: 'asc' },
     });
   }
+
+  async lock(upbCode: number) {
+    const admin = await this.findOne(upbCode);
+
+    return this.prisma.user.update({
+      where: { id: admin?.id },
+      data: { isAvailable: false },
+      include: {
+        administrative: true,
+        role: true,
+        department: true,
+      },
+    });
+  }
+
+  async unlock(upbCode: number) {
+    const admin = await this.findOne(upbCode);
+
+    return this.prisma.user.update({
+      where: { id: admin?.id },
+      data: { isAvailable: true },
+      include: {
+        administrative: true,
+        role: true,
+        department: true,
+      },
+    });
+  }
 }

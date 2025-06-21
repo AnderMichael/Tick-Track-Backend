@@ -88,4 +88,18 @@ export class WorksRepository {
       data: { is_deleted: true },
     });
   }
+
+  async lock(id: number) {
+    return this.prisma.work.update({
+      where: { id },
+      data: { is_open: false },
+    });
+  }
+
+  async unlock(id: number) {
+    return this.prisma.work.update({
+      where: { id },
+      data: { is_open: true },
+    });
+  }
 }

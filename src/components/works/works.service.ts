@@ -85,4 +85,22 @@ export class WorksService {
     await this.worksRepository.softDelete(work.id);
     return { message: 'Work marked as deleted' };
   }
+
+  async lock(id: number) {
+    const work = await this.findOne(id);
+    if (!work.is_open) {
+      throw new BadRequestException('Work is already locked');
+    }
+    const updated = await this.worksRepository.lock(work.id);
+    return { message: `Work \"${updated.title}\" locked successfully` };
+  }
+
+  async unlock(id: number) {
+    const work = await this.findOne(id);
+    if (work.is_open) {
+      throw new BadRequestException('Work is already unlocked');
+    }
+    const updated = await this.worksRepository.unlock(work.id);
+    return { message: `Work \"${updated.title}\" unlocked successfully` };
+  }
 }
