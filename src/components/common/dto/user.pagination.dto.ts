@@ -42,7 +42,7 @@ export class StudentPaginationDto extends UserPaginationDto {
   buildWhere() {
     return {
       ...this.buildBaseWhere(),
-      students: { isNot: null },
+      student: { isNot: null },
     };
   }
 }
@@ -57,7 +57,7 @@ export class AdministrativePaginationDto extends UserPaginationDto {
   buildWhere() {
     const where = {
       ...this.buildBaseWhere(),
-      administratives: { isNot: null },
+      administrative: { isNot: null },
     };
 
     if (this.role_id !== undefined) {

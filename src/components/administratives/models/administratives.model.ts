@@ -5,7 +5,7 @@ export class AdministrativeModel extends UserModel {
 
   constructor(user: any) {
     super(user);
-    this.upbRole = user.administratives?.upb_role || null;
+    this.upbRole = user.administrative?.upb_role || null;
   }
 
   static fromMany(users: any[]): AdministrativeModel[] {

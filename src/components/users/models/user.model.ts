@@ -64,10 +64,16 @@ export class UserModel {
   upbCode: number;
   email: string;
   fullName: string;
+  fatherLastName?: string;
+  motherLastName?: string;
+  secondName?: string;
+  firstName?: string;
   role: string;
+  role_id?: number;
   department: string;
-  departmentId: number;
+  department_id: number;
   isConfirmed: boolean;
+  isAvailable?: boolean;
   phone: string;
   student?: {
     semester: number;
@@ -82,12 +88,17 @@ export class UserModel {
     this.upbCode = user.upbCode;
     this.email = user.email;
     this.fullName = `${user.firstName} ${user.fatherLastName}`;
+    this.fatherLastName = user.fatherLastName;
+    this.motherLastName = user.motherLastName;
+    this.secondName = user.secondName;
+    this.firstName = user.firstName;
     this.role = user.role?.name;
+    this.role_id = user.role?.id;
     this.department = user.department?.name;
     this.isConfirmed = user.is_confirmed;
     this.phone = user.phone;
-    this.departmentId = user.department.id;
-    
+    this.department_id = user.department.id;
+    this.isAvailable = user.isAvailable;
     if (!!user.student) {
       const commitments = user.student?.commitment || [];
 
