@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { StudentsService } from '../students/students.service';
 import { WorksService } from '../works/works.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -12,7 +17,7 @@ export class TransactionsService {
     private readonly transactionsRepository: TransactionsRepository,
     private readonly worksService: WorksService,
     private readonly studentsService: StudentsService,
-  ) { }
+  ) {}
 
   async create(dto: CreateTransactionDto) {
     const work = await this.worksService.findOne(dto.work_id);
@@ -21,14 +26,19 @@ export class TransactionsService {
       throw new NotFoundException('Work not found');
     }
 
-    const inscription = await this.studentsService.findInscription(dto.commitment_id, work.semester_id);
+    const inscription = await this.studentsService.findInscription(
+      dto.commitment_id,
+      work.semester_id,
+    );
 
     if (!inscription) {
       throw new NotFoundException('Student is not inscribed in this semester');
     }
 
     const created = await this.transactionsRepository.create(dto);
-    return { message: `Succesful Payment! Transaction N° ${created.id} to work \"${work.title}\"` };
+    return {
+      message: `Succesful Payment! Transaction N° ${created.id} to work \"${work.title}\"`,
+    };
   }
 
   async findAll(pagination: TransactionPaginationDto) {
@@ -53,40 +63,65 @@ export class TransactionsService {
     return { message: 'Transaction marked as deleted' };
   }
 
-  async getStudentHeaderInfo(upbCode: number, department_id: number) {
-    const commitment = await this.studentsService.findCurrentCommitmentByUpbCode(upbCode);
+  async getStudentHeaderInfo(
+    upbCode: number,
+    department_id: number,
+    administrative_role_id: number,
+  ) {
+    const commitment =
+      await this.studentsService.findCurrentCommitmentByUpbCode(upbCode);
     if (!commitment) {
       throw new NotFoundException('Commitment not found');
     }
-    const student = await this.transactionsRepository.findStudentHeader(upbCode);
+    const student =
+      await this.transactionsRepository.findStudentHeader(upbCode);
     if (!student) {
       throw new NotFoundException('Student not found');
     }
 
-    if (student.department_id !== department_id) {
-      throw new BadRequestException('Interdepartment transaction is not allowed');
+    const isAdmin = await this.transactionsRepository.isAdmin(
+      administrative_role_id,
+    );
+    
+    if (!isAdmin) {
+      if (student.department_id !== department_id) {
+        throw new BadRequestException(
+          'Interdepartment transaction is not allowed',
+        );
+      }
     }
 
     return {
       ...student,
       commitment_id: commitment.id,
-    }
+    };
   }
 
-  async addStudentComment(id: number, student_comment: string, studentUpbCode: number) {
+  async addStudentComment(
+    id: number,
+    student_comment: string,
+    studentUpbCode: number,
+  ) {
     const transaction = await this.findOne(id);
     if (transaction.student_upbCode !== studentUpbCode) {
-      throw new UnauthorizedException('You are not authorized to comment on this transaction');
+      throw new UnauthorizedException(
+        'You are not authorized to comment on this transaction',
+      );
     }
     if (!student_comment || student_comment.trim() === '') {
       throw new BadRequestException('Comment cannot be empty');
     }
     if (transaction.comment_student) {
-      throw new BadRequestException('Comment already exists for this transaction');
+      throw new BadRequestException(
+        'Comment already exists for this transaction',
+      );
     }
-    await this.transactionsRepository.addStudentComment(transaction.id, student_comment);
+    await this.transactionsRepository.addStudentComment(
+      transaction.id,
+      student_comment,
+    );
     return {
       message: 'Comment added successfully',
-    }
+    };
   }
 }

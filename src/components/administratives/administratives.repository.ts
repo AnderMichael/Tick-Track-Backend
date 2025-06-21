@@ -170,4 +170,11 @@ export class AdministrativeRepository {
 
     return { open, closed, total };
   }
+
+  async findAllDepartments() {
+    return this.prisma.department.findMany({
+      where: { is_deleted: false },
+      orderBy: { name: 'asc' },
+    });
+  }
 }

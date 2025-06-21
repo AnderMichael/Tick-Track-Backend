@@ -120,4 +120,11 @@ export class AdministrativesController {
       semesterId,
     );
   }
+
+  @Get('departments')
+  @Permissions('view:scholarship_officers')
+  @ApiOperation({ summary: 'List all Departments' })
+  findAllDepartments() {
+    return this.administrativesService.findAllDepartments();
+  }
 }

@@ -92,4 +92,16 @@ export class AdministrativesService {
       total: summary.total,
     };
   }
+
+  async findAllDepartments() {
+    const departments =
+      await this.administrativeRepository.findAllDepartments();
+    if (!departments || departments.length === 0) {
+      throw new NotFoundException('No departments found');
+    }
+    return departments.map((department) => ({
+      id: department.id,
+      value: department.name,
+    }));
+  }
 }
