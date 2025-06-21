@@ -66,6 +66,7 @@ export class UserModel {
   fullName: string;
   role: string;
   department: string;
+  departmentId: number;
   isConfirmed: boolean;
   phone: string;
   student?: {
@@ -85,6 +86,8 @@ export class UserModel {
     this.department = user.department?.name;
     this.isConfirmed = user.is_confirmed;
     this.phone = user.phone;
+    this.departmentId = user.department.id;
+    
     if (!!user.student) {
       const commitments = user.student?.commitment || [];
 

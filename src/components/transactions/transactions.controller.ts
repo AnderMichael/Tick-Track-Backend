@@ -31,8 +31,8 @@ export class TransactionsController {
   @UseGuards(AccountKeyGuard)
   getStudentFromToken(@Req() req: AccountStudentRequest) {
     const { upbCode } = req.student;
-    const { department_id } = req.user;
-    return this.transactionsService.getStudentHeaderInfo(upbCode, department_id);
+    const { department_id, role_id } = req.user;
+    return this.transactionsService.getStudentHeaderInfo(upbCode, department_id, role_id);
   }
 
   @Post()

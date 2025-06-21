@@ -3,6 +3,7 @@ import { CustomPrismaClientType, prisma } from '../../config/prisma.client';
 import { AdministrativePaginationDto } from '../common/dto/user.pagination.dto';
 import { BcryptUtils } from '../users/utils/bcrypt';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
+import { TrackSummaryDto } from './dto/track-summary.dto';
 import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
 
 @Injectable()
@@ -123,43 +124,57 @@ export class AdministrativeRepository {
     });
   }
 
-  async getWorkSummary(upbCode: number, semesterId: number) {
-    const user = await this.prisma.user.findFirst({
-      where: { upbCode, is_deleted: false },
-      select: { id: true },
-    });
+  async getWorkSummary(tracksSummaryDto: TrackSummaryDto, semesterId: number) {
+    const { upbCode, department_id } = tracksSummaryDto;
 
-    if (!user) {
-      throw new Error('Administrative not found');
+    const filters: any = {
+      semester_id: semesterId,
+      is_deleted: false,
+    };
+
+    if (upbCode) {
+      const user = await this.prisma.user.findFirst({
+        where: { upbCode, is_deleted: false },
+        select: { id: true },
+      });
+      if (user) {
+        filters.administrative_id = user.id;
+      }
+    }
+
+    if (department_id) {
+      filters.administrative = {
+        user: {
+          department_id,
+        },
+      };
     }
 
     const [open, closed, total] = await Promise.all([
       this.prisma.work.count({
         where: {
-          administrative_id: user.id,
-          semester_id: semesterId,
-          is_deleted: false,
+          ...filters,
           is_open: true,
         },
       }),
       this.prisma.work.count({
         where: {
-          administrative_id: user.id,
-          semester_id: semesterId,
-          is_deleted: false,
+          ...filters,
           is_open: false,
         },
       }),
       this.prisma.work.count({
-        where: {
-          administrative_id: user.id,
-          semester_id: semesterId,
-          is_deleted: false,
-        },
+        where: filters,
       }),
     ]);
 
     return { open, closed, total };
   }
 
+  async findAllDepartments() {
+    return this.prisma.department.findMany({
+      where: { is_deleted: false },
+      orderBy: { name: 'asc' },
+    });
+  }
 }

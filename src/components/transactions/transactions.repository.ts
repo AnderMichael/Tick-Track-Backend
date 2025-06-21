@@ -119,4 +119,12 @@ export class TransactionsRepository {
       },
     });
   }
+
+  async isAdmin(id: number) {
+    const transaction = await this.prisma.role.findUnique({
+      where: { id },
+    });
+
+    return transaction?.name === 'ADMIN';
+  }
 }

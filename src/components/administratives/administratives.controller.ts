@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -17,6 +18,7 @@ import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { AdministrativePaginationDto } from '../common/dto/user.pagination.dto';
 import { AdministrativesService } from './administratives.service';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
+import { TrackSummaryDto } from './dto/track-summary.dto';
 import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
 
 @ApiTags('Administratives')
@@ -106,12 +108,23 @@ export class AdministrativesController {
     return this.administrativesService.remove(+upbCode);
   }
 
-  @Get(':upbCode/tracks/:semesterId')
+  @Get('tracks/:semesterId')
   @Permissions('view:works')
   @ApiOperation({ summary: 'Obtain Tracking Info Works' })
   getTrackingInfo(
-    @Param('upbCode') upbCode: string, @Param('semesterId') semesterId: string
+    @Param('semesterId', ParseIntPipe) semesterId: number,
+    @Query() tracksSummaryDto: TrackSummaryDto,
   ) {
-    return this.administrativesService.getWorkSummary(+upbCode, +semesterId);
+    return this.administrativesService.getWorkSummary(
+      tracksSummaryDto,
+      semesterId,
+    );
+  }
+
+  @Get('departments')
+  @Permissions('view:scholarship_officers')
+  @ApiOperation({ summary: 'List all Departments' })
+  findAllDepartments() {
+    return this.administrativesService.findAllDepartments();
   }
 }
