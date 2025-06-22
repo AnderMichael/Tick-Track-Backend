@@ -306,4 +306,30 @@ export class StudentsRepository {
       },
     });
   }
+
+  async findCommitmentsByUpbCode(upbCode: number) {
+    return this.prisma.commitment.findMany({
+      where: {
+        is_deleted: false,
+        student: {
+          user: {
+            upbCode,
+            is_deleted: false,
+          },
+        },
+      },
+      include: {
+        service_details: {
+          include: {
+            scholarship: true,
+          },
+        },
+        inscriptions: {
+          include: {
+            semester: true,
+          },
+        },
+      },
+    });
+  }
 }

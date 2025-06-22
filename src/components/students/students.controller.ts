@@ -112,4 +112,11 @@ export class StudentsController {
   unlock(@Param('upbCode') upbCode: string) {
     return this.studentsService.unlock(+upbCode);
   }
+
+  @Get(':upbCode/commitments')
+  @Permissions('update:students')
+  @ApiOperation({ summary: 'Confirm a student by upbCode' })
+  confirm(@Param('upbCode') upbCode: string) {
+    return this.studentsService.findStudentCommitments(+upbCode);
+  }
 }

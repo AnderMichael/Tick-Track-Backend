@@ -168,4 +168,19 @@ export class StudentsService {
     }
     return this.studentsRepository.unlock(upbCode);
   }
+
+  async findStudentCommitments(upbCode: number) {
+    const student = await this.findOne(upbCode);
+
+    const commitments =
+      await this.studentsRepository.findCommitmentsByUpbCode(student.upbCode);
+
+    return commitments.map(commitment => ({
+      id: commitment.id,
+      isCurrent: commitment.is_current,
+      scholarship: commitment.service_details.scholarship.name,
+      percentage: commitment.service_details.percentage,
+      hoursPerSemester: commitment.service_details.hours_per_semester
+    }));
+  }
 }
