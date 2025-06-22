@@ -278,4 +278,32 @@ export class StudentsRepository {
       }
     });
   }
+
+  async lock(upbCode: number) {
+    const student = await this.findOne(upbCode);
+
+    return this.prisma.user.update({
+      where: { id: student?.id },
+      data: { isAvailable: false },
+      include: {
+        student: true,
+        role: true,
+        department: true,
+      },
+    });
+  }
+
+  async unlock(upbCode: number) {
+    const student = await this.findOne(upbCode);
+
+    return this.prisma.user.update({
+      where: { id: student?.id },
+      data: { isAvailable: true },
+      include: {
+        student: true,
+        role: true,
+        department: true,
+      },
+    });
+  }
 }

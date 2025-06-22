@@ -12,12 +12,16 @@ import { StudentsRepository } from './students.repository';
 
 @Injectable()
 export class StudentsService {
-  constructor(private readonly studentsRepository: StudentsRepository, private readonly semestersService: SemestersService) { }
+  constructor(
+    private readonly studentsRepository: StudentsRepository,
+    private readonly semestersService: SemestersService,
+  ) {}
 
   async create(dto: CreateStudentDto) {
     const { upbCode } = dto;
 
-    const existingUser = await this.studentsRepository.findUserByUpbCode(upbCode);
+    const existingUser =
+      await this.studentsRepository.findUserByUpbCode(upbCode);
 
     if (existingUser) {
       throw new BadRequestException('User already exists with this UPB code');
@@ -75,7 +79,10 @@ export class StudentsService {
     const commitment = await this.findCurrentCommitmentByUpbCode(upbCode);
     const semester = await this.semestersService.findOne(semester_id);
 
-    const inscription = await this.studentsRepository.findInscription(commitment.id, semester.id);
+    const inscription = await this.studentsRepository.findInscription(
+      commitment.id,
+      semester.id,
+    );
     if (inscription) {
       throw new BadRequestException('Student already inscribed');
     }
@@ -84,7 +91,8 @@ export class StudentsService {
   }
 
   async findCurrentCommitmentByUpbCode(upbCode: number) {
-    const commitment = await this.studentsRepository.findCurrentCommitmentByUpbCode(upbCode);
+    const commitment =
+      await this.studentsRepository.findCurrentCommitmentByUpbCode(upbCode);
     if (!commitment) {
       throw new NotFoundException('Commitment not exists');
     }
@@ -92,7 +100,10 @@ export class StudentsService {
   }
 
   async findInscription(commitment_id: number, semester_id: number) {
-    const inscription = await this.studentsRepository.findInscription(commitment_id, semester_id);
+    const inscription = await this.studentsRepository.findInscription(
+      commitment_id,
+      semester_id,
+    );
     return inscription;
   }
 
@@ -107,26 +118,54 @@ export class StudentsService {
   }
 
   async getTrackingBySemester(upbCode: number, semesterId: number) {
-    const inscription = await this.studentsRepository.findCommitmentBySemesterId(upbCode, semesterId);
+    const inscription =
+      await this.studentsRepository.findCommitmentBySemesterId(
+        upbCode,
+        semesterId,
+      );
 
     if (!inscription) {
       throw new NotFoundException('Student is not enrolled in this semester');
     }
 
-    const tracked = await this.studentsRepository.getTrackedHours(inscription.commitment.id, semesterId);
+    const tracked = await this.studentsRepository.getTrackedHours(
+      inscription.commitment.id,
+      semesterId,
+    );
 
     return {
       total: inscription.commitment.service_details.hours_per_semester,
       completed: tracked,
-      remaining: Math.max(inscription.commitment.service_details.hours_per_semester - tracked, 0),
+      remaining: Math.max(
+        inscription.commitment.service_details.hours_per_semester - tracked,
+        0,
+      ),
     };
   }
 
   async findCommitmentById(commitmentId: number) {
-    const commitment = await this.studentsRepository.findCommitmentById(commitmentId);
+    const commitment =
+      await this.studentsRepository.findCommitmentById(commitmentId);
     if (!commitment) {
       throw new NotFoundException('Commitment not found');
     }
     return commitment;
+  }
+
+  async lock(upbCode: number) {
+    const student = await this.studentsRepository.findOne(upbCode);
+    if (!student) {
+      throw new NotFoundException('Student not exists');
+    }
+
+    return this.studentsRepository.lock(upbCode);
+  }
+
+  async unlock(upbCode: number) {
+    const student = await this.studentsRepository.findOne(upbCode);
+    if (!student) {
+      throw new NotFoundException('Student not exists');
+    }
+    return this.studentsRepository.unlock(upbCode);
   }
 }

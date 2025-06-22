@@ -23,7 +23,7 @@ import { StudentsService } from './students.service';
 @Controller('students')
 @UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class StudentsController {
-  constructor(private readonly studentsService: StudentsService) { }
+  constructor(private readonly studentsService: StudentsService) {}
 
   @Post()
   @Permissions('create:students')
@@ -66,14 +66,20 @@ export class StudentsController {
   @Post(':upbCode/inscribe/:semesterId')
   @Permissions('update:students')
   @ApiOperation({ summary: 'Inscribe a student to a semester' })
-  inscribe(@Param('upbCode') upbCode: string, @Param('semesterId') semesterId: string) {
+  inscribe(
+    @Param('upbCode') upbCode: string,
+    @Param('semesterId') semesterId: string,
+  ) {
     return this.studentsService.inscribeStudent(+upbCode, +semesterId);
   }
 
   @Patch(':upbCode/uninscribe/:semesterId')
   @Permissions('update:students')
   @ApiOperation({ summary: 'Remove a student inscription from a semester' })
-  uninscribe(@Param('upbCode') upbCode: string, @Param('semesterId') semesterId: string) {
+  uninscribe(
+    @Param('upbCode') upbCode: string,
+    @Param('semesterId') semesterId: string,
+  ) {
     return this.studentsService.removeInscription(+upbCode, +semesterId);
   }
 
@@ -81,16 +87,29 @@ export class StudentsController {
   @Permissions('view:tracks')
   @ApiOperation({ summary: 'Obtain Tracking Info Hours' })
   async getTrackingInfo(
-    @Param('upbCode') upbCode: string, @Param('semesterId') semesterId: string
+    @Param('upbCode') upbCode: string,
+    @Param('semesterId') semesterId: string,
   ) {
     return this.studentsService.getTrackingBySemester(+upbCode, +semesterId);
   }
 
   @Get('commitments/:commitmentId')
   @Permissions('view:commitments')
-  async getCommitmentById(
-    @Param('commitmentId') commitmentId: string
-  ) {
+  async getCommitmentById(@Param('commitmentId') commitmentId: string) {
     return this.studentsService.findCommitmentById(+commitmentId);
+  }
+
+  @Patch(':upbCode/lock')
+  @Permissions('update:students')
+  @ApiOperation({ summary: 'Lock a student by upbCode' })
+  lock(@Param('upbCode') upbCode: string) {
+    return this.studentsService.lock(+upbCode);
+  }
+
+  @Patch(':upbCode/unlock')
+  @Permissions('update:students')
+  @ApiOperation({ summary: 'Unlock a student by upbCode' })
+  unlock(@Param('upbCode') upbCode: string) {
+    return this.studentsService.unlock(+upbCode);
   }
 }
