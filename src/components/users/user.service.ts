@@ -14,7 +14,8 @@ export class UserService {
 
   async getBasicUserInfo(payload: UserInfo) {
     const user = await this.userRepository.findUserDetails(payload);
-    return new UserModel(user);
+    const userUitls = await this.userRepository.getUserUtils();
+    return new UserModel({...user, ...userUitls});
   }
 
   async checkAvailability(upbCode: number) {

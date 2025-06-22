@@ -17,7 +17,7 @@ export class UserPaginationDto extends PaginationDto {
   @Type(() => Number)
   @IsInt()
   @IsPositive()
-  department_id?: string;
+  department_id?: number;
 
   override buildBaseWhere() {
     const where = super.buildBaseWhere();

@@ -16,6 +16,13 @@ export class StudentsService {
 
   async create(dto: CreateStudentDto) {
     const { upbCode } = dto;
+
+    const existingUser = await this.studentsRepository.findUserByUpbCode(upbCode);
+
+    if (existingUser) {
+      throw new BadRequestException('User already exists with this UPB code');
+    }
+
     const student = await this.studentsRepository.findOne(upbCode);
 
     if (student) {

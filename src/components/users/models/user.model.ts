@@ -82,6 +82,12 @@ export class UserModel {
   };
   administrative?: {
     upbRole: string;
+    utils: {
+      studentRoleId: number;
+      supervisorRoleId: number;
+      scholarshipOfficerRoleId: number;
+      departments: { id: number; value: string }[];
+    };
   };
 
   constructor(user: User | any) {
@@ -127,6 +133,12 @@ export class UserModel {
     if (!!user.administrative) {
       this.administrative = {
         upbRole: user.administrative.upb_role,
+        utils: {
+          studentRoleId: user.studentRoleId,
+          supervisorRoleId: user.supervisorRoleId,
+          scholarshipOfficerRoleId: user.scholarshipOfficerRoleId,
+          departments: user.departments,
+        }
       };
     }
   }

@@ -76,10 +76,14 @@ export class StudentsRepository {
           include: {
             commitment: {
               include: {
-                inscriptions: true
-              }
+                inscriptions: {
+                  include: {
+                    semester: true,
+                  },
+                },
+              },
             },
-          }
+          },
         },
         role: true,
         department: true,
@@ -178,7 +182,7 @@ export class StudentsRepository {
           },
         },
         semester: true,
-      }
+      },
     });
   }
 
@@ -197,7 +201,7 @@ export class StudentsRepository {
         semester: {
           omit: {
             is_deleted: true,
-          }
+          },
         },
       },
     });
@@ -218,12 +222,15 @@ export class StudentsRepository {
         id: inscription_id,
       },
       data: {
-        is_deleted: true
-      }
+        is_deleted: true,
+      },
     });
   }
 
-  async getTrackedHours(commitment_id: number, semester_id: number): Promise<number> {
+  async getTrackedHours(
+    commitment_id: number,
+    semester_id: number,
+  ): Promise<number> {
     const result = await this.prisma.transaction.aggregate({
       _sum: {
         hours: true,
@@ -256,11 +263,19 @@ export class StudentsRepository {
               select: {
                 name: true,
                 description: true,
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       },
+    });
+  }
+  async findUserByUpbCode(upbCode: number) {
+    return this.prisma.user.findFirst({
+      where: {
+        upbCode,
+        is_deleted: false,
+      }
     });
   }
 }

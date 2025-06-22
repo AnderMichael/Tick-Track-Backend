@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CustomPrismaClientType, prisma } from '../../config/prisma.client';
 import { UserInfo } from '../auth/models/UserInfo';
 import { BcryptUtils } from './utils/bcrypt';
+import { RoleEnum } from '../../constants/role.enum';
 
 @Injectable()
 export class UserRepository {
@@ -123,5 +124,36 @@ export class UserRepository {
       where: { id: user?.id },
       data: { hashed_password: hashedPassword, is_confirmed: false },
     });
+  }
+
+  async getUserUtils() {
+    const studentRoleId = await this.prisma.role.findFirst({
+      where: { name: RoleEnum.STUDENT },
+      select: { id: true },
+    });
+
+    const supervisorRoleId = await this.prisma.role.findFirst({
+      where: { name: RoleEnum.SUPERVISOR },
+      select: { id: true },
+    });
+
+    const scholarshipOfficerRoleId = await this.prisma.role.findFirst({
+      where: { name: RoleEnum.SCHOLARSHIP_OFFICER },
+      select: { id: true },
+    });
+
+    const departments = await this.prisma.department.findMany({
+      select: { id: true, name: true },
+    });
+
+    return {
+      studentRoleId: studentRoleId?.id,
+      supervisorRoleId: supervisorRoleId?.id,
+      scholarshipOfficerRoleId: scholarshipOfficerRoleId?.id,
+      departments: departments.map((department) => ({
+        id: department.id,
+        value: department.name,
+      })),
+    };
   }
 }
