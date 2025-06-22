@@ -58,8 +58,7 @@ export class StudentsService {
       throw new NotFoundException('Student not exists');
     }
 
-    const updatedStudent = await this.studentsRepository.update(upbCode, dto);
-    return new StudentModel(updatedStudent);
+    await this.studentsRepository.update(upbCode, dto);
   }
 
   async remove(upbCode: number) {
@@ -69,8 +68,7 @@ export class StudentsService {
       throw new NotFoundException('Student not exists');
     }
 
-    const deletedStudent = await this.studentsRepository.softDelete(upbCode);
-    return new StudentModel(deletedStudent);
+    await this.studentsRepository.softDelete(upbCode);
   }
 
   async inscribeStudent(upbCode: number, semester_id: number) {
