@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CustomPrismaClientType, prisma } from '../../config/prisma.client';
 import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
+import { SemesterModel } from '../semesters/models/semester.model';
 import { BcryptUtils } from '../users/utils/bcrypt';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -208,7 +209,7 @@ export class StudentsRepository {
   }
 
   async findInscription(commitment_id: number, semester_id: number) {
-    return this.prisma.inscription.findFirst({
+    return await this.prisma.inscription.findFirst({
       where: {
         commitment_id,
         semester_id,
@@ -255,6 +256,7 @@ export class StudentsRepository {
       where: { id: commitmentId, is_deleted: false },
       select: {
         id: true,
+        student_id: true,
         is_current: true,
         service_details: {
           select: {
@@ -334,22 +336,62 @@ export class StudentsRepository {
     });
   }
 
-  async getInscriptionsByStudentAndYear(
-    studentId: number,
-    year: number,
-  ) {
-    return this.prisma.inscription.findMany({
+  async getInscriptionsByCommitmentAndYear(student_id: number, year: number) {
+    const inscriptions = await this.prisma.inscription.findMany({
       where: {
         is_deleted: false,
         commitment: {
-          student_id: studentId,
+          student_id,
+          is_deleted: false,
         },
-        semester:{
-          year:{
-            equals: year,
-          }
+        semester: {
+          year,
+          is_deleted: false,
         },
       },
+      include: {
+        semester: true,
+        commitment: {
+          include: {         
+            service_details: {
+              include: {
+                scholarship: true,
+              },
+            },
+          },
+        },}
+      });
+    return inscriptions;
+  }
+
+  async findInscriptionById(inscriptionId: number) {
+    return this.prisma.inscription.findFirst({
+      where: {
+        id: inscriptionId,
+        is_deleted: false,
+      },
+      include: {
+        commitment: {
+          include: {
+            service_details: {
+              include: {
+                scholarship: true,
+              },
+            },
+          },
+        },
+        semester: true,
+      },
+    });
+  }
+
+  async updateInscription(
+    inscriptionId: number,
+    commitment_id: number,
+  ) {
+    return this.prisma.inscription.update({
+      where: { id: inscriptionId },
+      data: { commitment_id },
       include: {
         commitment: {
           include: {

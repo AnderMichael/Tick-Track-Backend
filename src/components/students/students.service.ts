@@ -76,7 +76,11 @@ export class StudentsService {
     await this.studentsRepository.softDelete(upbCode);
   }
 
-  async inscribeStudent(upbCode: number, semester_id: number, commitmentId: number) {
+  async inscribeStudent(
+    upbCode: number,
+    semester_id: number,
+    commitmentId: number,
+  ) {
     const commitment = await this.findCommitmentById(commitmentId);
     const semester = await this.semestersService.findOne(semester_id);
 
@@ -188,8 +192,9 @@ export class StudentsService {
 
   async getInscriptions(upbCode: number, year: number) {
     const student = await this.findOne(upbCode);
+
     const inscriptions =
-      await this.studentsRepository.getInscriptionsByStudentAndYear(
+      await this.studentsRepository.getInscriptionsByCommitmentAndYear(
         student.id,
         year,
       );
@@ -202,5 +207,43 @@ export class StudentsService {
       commitmentId: inscription.commitment_id,
       createdAt: inscription.created_at,
     }));
+  }
+
+  async updateInscription(
+    upbCode: number,
+    inscriptionId: number,
+    commitment_id: number,
+  ) {
+    await this.findOne(upbCode);
+    const inscription =
+      await this.studentsRepository.findInscriptionById(inscriptionId);
+
+    if (!inscription) {
+      throw new NotFoundException('Inscription not found');
+    }
+
+    return this.studentsRepository.updateInscription(
+      inscriptionId,
+      commitment_id,
+    );
+  }
+
+  async findInscriptionById(upbCode: number, inscriptionId: number) {
+    await this.findOne(upbCode);
+    const inscription =
+      await this.studentsRepository.findInscriptionById(inscriptionId);
+
+    if (!inscription) {
+      throw new NotFoundException('Inscription not found');
+    }
+
+    return {
+      id: inscription.id,
+      semester: new SemesterModel(inscription.semester),
+      scholarship: inscription.commitment.service_details.scholarship.name,
+      percentage: inscription.commitment.service_details.percentage,
+      commitmentId: inscription.commitment_id,
+      createdAt: inscription.created_at,
+    };
   }
 }

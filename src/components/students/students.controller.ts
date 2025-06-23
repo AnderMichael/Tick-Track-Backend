@@ -69,9 +69,13 @@ export class StudentsController {
   inscribe(
     @Param('upbCode') upbCode: string,
     @Param('semesterId') semesterId: string,
-    @Body('commitmentId') commitmentId: number,        
+    @Body('commitment_id') commitment_id: number,
   ) {
-    return this.studentsService.inscribeStudent(+upbCode, +semesterId, commitmentId);
+    return this.studentsService.inscribeStudent(
+      +upbCode,
+      +semesterId,
+      commitment_id,
+    );
   }
 
   @Patch(':upbCode/uninscribe/:semesterId')
@@ -128,6 +132,35 @@ export class StudentsController {
     @Param('upbCode') upbCode: string,
     @Query('year') year: string,
   ) {
-    return this.studentsService.getInscriptions(+upbCode, +year);
+    return this.studentsService.getInscriptions(+upbCode, Number(year));
+  }
+
+  @Patch(':upbCode/inscriptions/:inscriptionId')
+  @Permissions('update:students')
+  @ApiOperation({
+    summary: 'Update a student inscription by upbCode and inscriptionId',
+  })
+  updateInscription(
+    @Param('upbCode') upbCode: string,
+    @Param('inscriptionId') inscriptionId: string,
+    @Body('commitment_id') commitment_id: number,
+  ) {
+    return this.studentsService.updateInscription(
+      +upbCode,
+      +inscriptionId,
+      commitment_id,
+    );
+  }
+
+  @Get(':upbCode/inscriptions/:inscriptionId')
+  @Permissions('view:students')
+  @ApiOperation({
+    summary: 'Get a student inscription by upbCode and inscriptionId',
+  })
+  findInscriptionById(
+    @Param('upbCode') upbCode: string,
+    @Param('inscriptionId') inscriptionId: string,
+  ) {
+    return this.studentsService.findInscriptionById(+upbCode, +inscriptionId);
   }
 }
