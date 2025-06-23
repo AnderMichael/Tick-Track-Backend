@@ -84,8 +84,9 @@ export class StudentsController {
   uninscribe(
     @Param('upbCode') upbCode: string,
     @Param('semesterId') semesterId: string,
+    @Body('commitment_id') commitment_id: number,
   ) {
-    return this.studentsService.removeInscription(+upbCode, +semesterId);
+    return this.studentsService.removeInscription(+upbCode, +semesterId, commitment_id);
   }
 
   @Get(':upbCode/tracks/:semesterId')

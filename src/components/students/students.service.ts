@@ -112,9 +112,9 @@ export class StudentsService {
     return inscription;
   }
 
-  async removeInscription(upbCode: number, semester_id: number) {
-    const commitment = await this.findCurrentCommitmentByUpbCode(upbCode);
+  async removeInscription(upbCode: number, semester_id: number, commitment_id : number) {
     const semester = await this.semestersService.findOne(semester_id);
+    const commitment = await this.findCommitmentById(commitment_id);
     const inscription = await this.findInscription(commitment.id, semester.id);
     if (!inscription) {
       throw new NotFoundException('Inscription not exists');
