@@ -119,4 +119,14 @@ export class StudentsController {
   confirm(@Param('upbCode') upbCode: string) {
     return this.studentsService.findStudentCommitments(+upbCode);
   }
+
+  @Get(':upbCode/inscriptions')
+  @Permissions('view:students')
+  @ApiOperation({ summary: 'Get all inscriptions of a student by upbCode' })
+  getInscriptions(
+    @Param('upbCode') upbCode: string,
+    @Query('year') year: string,
+  ) {
+    return this.studentsService.getInscriptions(+upbCode, +year);
+  }
 }

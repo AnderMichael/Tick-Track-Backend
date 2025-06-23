@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
+import { SemesterModel } from '../semesters/models/semester.model';
 import { SemestersService } from '../semesters/semesters.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -172,15 +173,38 @@ export class StudentsService {
   async findStudentCommitments(upbCode: number) {
     const student = await this.findOne(upbCode);
 
-    const commitments =
-      await this.studentsRepository.findCommitmentsByUpbCode(student.upbCode);
+    const commitments = await this.studentsRepository.findCommitmentsByUpbCode(
+      student.upbCode,
+    );
 
-    return commitments.map(commitment => ({
+    return commitments.map((commitment) => ({
       id: commitment.id,
       isCurrent: commitment.is_current,
       scholarship: commitment.service_details.scholarship.name,
       percentage: commitment.service_details.percentage,
-      hoursPerSemester: commitment.service_details.hours_per_semester
+      hoursPerSemester: commitment.service_details.hours_per_semester,
+    }));
+  }
+
+  async getInscriptions(upbCode: number, year: number) {
+    const student = await this.findOne(upbCode);
+    const inscriptions =
+      await this.studentsRepository.getInscriptionsByStudentAndYear(
+        student.id,
+        year,
+      );
+
+    if (!inscriptions || inscriptions.length === 0) {
+      throw new NotFoundException('No inscriptions found for this student');
+    }
+
+    return inscriptions.map((inscription) => ({
+      id: inscription.id,
+      semester: new SemesterModel(inscription.semester),
+      scholarship: inscription.commitment.service_details.scholarship.name,
+      percentage: inscription.commitment.service_details.percentage,
+      commitmentId: inscription.commitment_id,
+      createdAt: inscription.created_at,
     }));
   }
 }

@@ -275,7 +275,7 @@ export class StudentsRepository {
       where: {
         upbCode,
         is_deleted: false,
-      }
+      },
     });
   }
 
@@ -329,6 +329,35 @@ export class StudentsRepository {
             semester: true,
           },
         },
+      },
+    });
+  }
+
+  async getInscriptionsByStudentAndYear(
+    studentId: number,
+    year: number,
+  ) {
+    return this.prisma.inscription.findMany({
+      where: {
+        is_deleted: false,
+        commitment: {
+          student_id: studentId,
+        },
+        semester:{
+          year
+        },
+      },
+      include: {
+        commitment: {
+          include: {
+            service_details: {
+              include: {
+                scholarship: true,
+              },
+            },
+          },
+        },
+        semester: true,
       },
     });
   }
