@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CustomPrismaClientType, prisma } from '../../config/prisma.client';
+import { RoleEnum } from '../../constants/role.enum';
 import { UserInfo } from '../auth/models/UserInfo';
 import { BcryptUtils } from './utils/bcrypt';
-import { RoleEnum } from '../../constants/role.enum';
 
 @Injectable()
 export class UserRepository {
@@ -45,7 +45,10 @@ export class UserRepository {
 
   async findUserDetails(payload: UserInfo) {
     const user = await this.prisma.user.findFirst({
-      where: { upbCode: payload.upbCode },
+      where: {
+        upbCode: payload.upbCode,
+        is_deleted: false,
+      },
       include: {
         role: true,
         department: true,
@@ -55,50 +58,25 @@ export class UserRepository {
               where: {
                 is_deleted: false,
               },
-              select: {
+              include: {
                 inscriptions: {
-                  select: {
-                    id: true,
-                    semester: {
-                      select: {
-                        id: true,
-                        number: true,
-                        year: true,
-                        start_date: true,
-                        end_date: true,
-                      },
-                    },
-                  },
                   where: {
                     is_deleted: false,
                   },
-                  orderBy: {
-                    semester: {
-                      start_date: 'desc',
-                    },
-                  }
+                  include: {
+                    semester: true,
+                  },
+                  orderBy: { semester: { end_date: 'desc' } },
                 },
-                id: true,
-                is_current: true,
-                service_details: {
-                  select: {
-                    percentage: true,
-                    hours_per_semester: true,
-                    scholarship: {
-                      select: {
-                        name: true,
-                        description: true,
-                      },
-                    }
-                  }
-                }
-              }
+                service_details: true
+              },
             },
           },
         },
         administrative: true,
       },
     });
+
     return user;
   }
 

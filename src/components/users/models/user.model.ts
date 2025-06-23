@@ -108,7 +108,8 @@ export class UserModel {
     if (!!user.student) {
       const commitments = user.student?.commitment || [];
 
-      const semesterMap = new Map<number, { id: number; name: string }>();
+      const semesterMap = new Map<number, any>();
+
       commitments.forEach((commit) => {
         commit.inscriptions.forEach((inscription) => {
           const semesterExtended: any = inscription.semester;
@@ -121,9 +122,13 @@ export class UserModel {
           }
         });
       });
+
       this.student = {
         semester: user.student.semester,
-        inscriptions: Array.from(semesterMap.values()),
+        inscriptions: Array.from(semesterMap.values()).sort((a, b) => {
+          if (b.year !== a.year) return b.year - a.year;
+          return b.number - a.number;
+        }),
         accountKey: JWTAccountKeyUtils.generateAccountKeyToken({
           accountKey: `${user.id}-${user.upbCode}`,
         }),
@@ -138,7 +143,7 @@ export class UserModel {
           supervisorRoleId: user.supervisorRoleId,
           scholarshipOfficerRoleId: user.scholarshipOfficerRoleId,
           departments: user.departments,
-        }
+        },
       };
     }
   }
