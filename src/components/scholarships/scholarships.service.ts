@@ -122,4 +122,36 @@ export class ScholarshipsService {
     await this.scholarshipsRepository.softDeleteServiceDetails(existing.id);
     return { message: 'Service details marked as deleted' };
   }
+
+  async associateScholarship(studentUpbCode: number, percentageId: number) {
+    const student = await this.scholarshipsRepository.findStudentByUpbCode(studentUpbCode);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    const serviceDetails =
+      await this.scholarshipsRepository.findServiceDetails(percentageId);
+
+    if (!serviceDetails) {
+      throw new NotFoundException('Service details not found');
+    }
+
+    const existingCommitment =
+      await this.scholarshipsRepository.findCommitmentByServiceDetailsAndStudent(
+        student.id,
+        serviceDetails.id,
+      );
+    if (existingCommitment) {
+      throw new ConflictException('Student already has an active commitment');
+    }
+
+    await this.scholarshipsRepository.createCommitment(
+      student.id,
+      serviceDetails.id,
+    );
+
+    return {
+      message: 'Scholarship commitment created successfully',
+    }
+  }
 }

@@ -115,4 +115,17 @@ export class ScholarshipsController {
   ) {
     return this.scholarshipsService.removeServiceDetails(+detailId);
   }
+
+  @Post(':studentUpbCode/commitment')
+  @Permissions('update:students')
+  @ApiOperation({ summary: 'Create a commitment for a student' })
+  associateScholarship(
+    @Param('studentUpbCode') studentUpbCode: string,
+    @Body() createDto: { percentage_id: number },
+  ) {
+    return this.scholarshipsService.associateScholarship(
+      +studentUpbCode,
+      createDto.percentage_id,
+    );
+  }
 }

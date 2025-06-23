@@ -105,4 +105,63 @@ export class ScholarshipsRepository {
       data: { is_deleted: true },
     });
   }
+
+  async findCommitmentByServiceDetailsAndStudent(
+    serviceDetailsId: number,
+    studentId: number,
+  ) {
+    return this.prisma.commitment.findFirst({
+      where: {
+        service_details_id: serviceDetailsId,
+        student: {
+          id: studentId,
+          is_deleted: false,
+        },
+      },
+      include: {
+        service_details: {
+          include: {
+            scholarship: true,
+          },
+        },
+        student: true,
+      },
+    });
+  }
+
+  async findStudentByUpbCode(upbCode: number) {
+    const user = await this.prisma.user.findFirst({
+      where: { upbCode, is_deleted: false },
+    });
+
+    if (!user) return null;
+
+    return await this.prisma.student.findFirst({
+      where: {
+        id: user.id,
+        is_deleted: false,
+      },
+    });
+  }
+
+  async createCommitment(studentId: number, serviceDetailsId: number) {
+    await this.turnOffCurrentCommitment(studentId);
+    await this.prisma.commitment.create({
+      data: {
+        student_id: studentId,
+        service_details_id: serviceDetailsId,
+        is_current: true,
+      },
+    });
+  }
+
+  async turnOffCurrentCommitment(studentId: number) {
+    return await this.prisma.commitment.updateMany({
+      where: {
+        student_id: studentId,
+        is_current: true,
+      },
+      data: { is_current: false },
+    });
+  }
 }
