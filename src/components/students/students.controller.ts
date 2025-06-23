@@ -69,8 +69,9 @@ export class StudentsController {
   inscribe(
     @Param('upbCode') upbCode: string,
     @Param('semesterId') semesterId: string,
+    @Body('commitmentId') commitmentId: number,        
   ) {
-    return this.studentsService.inscribeStudent(+upbCode, +semesterId);
+    return this.studentsService.inscribeStudent(+upbCode, +semesterId, commitmentId);
   }
 
   @Patch(':upbCode/uninscribe/:semesterId')

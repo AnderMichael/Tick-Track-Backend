@@ -76,8 +76,8 @@ export class StudentsService {
     await this.studentsRepository.softDelete(upbCode);
   }
 
-  async inscribeStudent(upbCode: number, semester_id: number) {
-    const commitment = await this.findCurrentCommitmentByUpbCode(upbCode);
+  async inscribeStudent(upbCode: number, semester_id: number, commitmentId: number) {
+    const commitment = await this.findCommitmentById(commitmentId);
     const semester = await this.semestersService.findOne(semester_id);
 
     const inscription = await this.studentsRepository.findInscription(

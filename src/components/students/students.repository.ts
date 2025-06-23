@@ -254,6 +254,7 @@ export class StudentsRepository {
     return this.prisma.commitment.findFirst({
       where: { id: commitmentId, is_deleted: false },
       select: {
+        id: true,
         is_current: true,
         service_details: {
           select: {
