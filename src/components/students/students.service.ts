@@ -194,10 +194,6 @@ export class StudentsService {
         year,
       );
 
-    if (!inscriptions || inscriptions.length === 0) {
-      throw new NotFoundException('No inscriptions found for this student');
-    }
-
     return inscriptions.map((inscription) => ({
       id: inscription.id,
       semester: new SemesterModel(inscription.semester),

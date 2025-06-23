@@ -345,7 +345,9 @@ export class StudentsRepository {
           student_id: studentId,
         },
         semester:{
-          year
+          year:{
+            equals: year,
+          }
         },
       },
       include: {
