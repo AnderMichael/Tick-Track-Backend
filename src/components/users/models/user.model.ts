@@ -87,6 +87,7 @@ export class UserModel {
       supervisorRoleId: number;
       scholarshipOfficerRoleId: number;
       departments: { id: number; value: string }[];
+      qualifications: { id: number; value: string }[];
     };
   };
 
@@ -143,6 +144,7 @@ export class UserModel {
           supervisorRoleId: user.supervisorRoleId,
           scholarshipOfficerRoleId: user.scholarshipOfficerRoleId,
           departments: user.departments,
+          qualifications: user.qualifications,
         },
       };
     }

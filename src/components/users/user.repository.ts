@@ -124,6 +124,10 @@ export class UserRepository {
       select: { id: true, name: true },
     });
 
+    const qualifications = await this.prisma.qualification.findMany({
+      select: { id: true, name: true },
+    });
+
     return {
       studentRoleId: studentRoleId?.id,
       supervisorRoleId: supervisorRoleId?.id,
@@ -131,6 +135,10 @@ export class UserRepository {
       departments: departments.map((department) => ({
         id: department.id,
         value: department.name,
+      })),
+      qualifications: qualifications.map((qualification) => ({
+        id: qualification.id,
+        value: qualification.name,
       })),
     };
   }
