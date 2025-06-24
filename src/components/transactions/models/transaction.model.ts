@@ -34,6 +34,11 @@ export class TransactionModel {
   work_name: string;
   student_name: string;
   student_upbCode: number;
+  commitment_id: number;
+  work: {
+    work_id: number;
+    semester_id: number;
+  }
 
   constructor(transaction: Transaction) {
     this.id = transaction.id;
@@ -45,6 +50,11 @@ export class TransactionModel {
     this.work_name = transaction.work.title;
     this.student_name = `${transaction.commitment.student.user.firstName} ${transaction.commitment.student.user.fatherLastName}`;
     this.student_upbCode = transaction.commitment.student.user.upbCode;
+    this.commitment_id = transaction.commitment.id;
+    this.work = {
+      work_id: transaction.work.id,
+      semester_id: transaction.work.semester_id,
+    };
   }
 
   static fromMany(data: any[]): TransactionModel[] {

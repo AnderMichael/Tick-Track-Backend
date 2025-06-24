@@ -148,4 +148,18 @@ export class TransactionsRepository {
 
     return totalHours._sum.hours || 0;
   }
+
+  async markAsComplete(id: number) {
+    return this.prisma.inscription.update({
+      where: { id },
+      data: { is_complete: true },
+    });
+  }
+
+  async markAsIncomplete(id: number) {
+    return this.prisma.inscription.update({
+      where: { id },
+      data: { is_complete: false },
+    });
+  }
 }

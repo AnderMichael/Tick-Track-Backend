@@ -109,6 +109,11 @@ export class StudentsService {
       commitment_id,
       semester_id,
     );
+
+    if (!inscription) {
+      throw new NotFoundException('Inscription not exists');
+    }
+    
     return inscription;
   }
 

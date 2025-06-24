@@ -36,8 +36,18 @@ export class TransactionsService {
     }
 
     const created = await this.transactionsRepository.create(dto);
-    
-    const totalHours = await this.transactionsRepository.findTotalCompleteHoursByInscriptionId(inscription.id);
+
+    const totalHours =
+      await this.transactionsRepository.findTotalCompleteHoursByInscriptionId(
+        inscription.id,
+      );
+    const commitment = await this.studentsService.findCommitmentById(
+      inscription.commitment_id,
+    );
+
+    if (totalHours >= commitment.service_details.hours_per_semester && !inscription.is_complete) {
+      await this.transactionsRepository.markAsComplete(inscription.id);
+    }
 
     return {
       message: `Succesful Payment! Transaction N° ${created.id} to work \"${work.title}\"`,
@@ -63,6 +73,25 @@ export class TransactionsService {
   async remove(id: number) {
     const transaction = await this.findOne(id);
     await this.transactionsRepository.softDelete(transaction.id);
+
+    const semester_id = transaction.work.semester_id;
+    const inscription = await this.studentsService.findInscription(
+      transaction.commitment_id,
+      semester_id,
+    );
+
+    const totalHours =
+      await this.transactionsRepository.findTotalCompleteHoursByInscriptionId(
+        inscription.id,
+      );
+    const commitment = await this.studentsService.findCommitmentById(
+      inscription.commitment_id,
+    );
+
+    if (totalHours < commitment.service_details.hours_per_semester && inscription.is_complete) {
+      await this.transactionsRepository.markAsIncomplete(inscription.id);
+    }
+
     return { message: 'Transaction marked as deleted' };
   }
 
@@ -85,7 +114,7 @@ export class TransactionsService {
     const isAdmin = await this.transactionsRepository.isAdmin(
       administrative_role_id,
     );
-    
+
     if (!isAdmin) {
       if (student.department_id !== department_id) {
         throw new BadRequestException(
