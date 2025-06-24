@@ -36,6 +36,9 @@ export class TransactionsService {
     }
 
     const created = await this.transactionsRepository.create(dto);
+    
+    const totalHours = await this.transactionsRepository.findTotalCompleteHoursByInscriptionId(inscription.id);
+
     return {
       message: `Succesful Payment! Transaction N° ${created.id} to work \"${work.title}\"`,
     };

@@ -30,21 +30,20 @@ export class TransactionsRepository {
             include: {
               administrative: {
                 include: {
-                  user: true
-                }
-              }
-            }
+                  user: true,
+                },
+              },
+            },
           },
-          commitment:
-          {
+          commitment: {
             include: {
               student: {
                 include: {
-                  user: true
-                }
-              }
-            }
-          }
+                  user: true,
+                },
+              },
+            },
+          },
         },
         skip,
         take: limit,
@@ -69,21 +68,21 @@ export class TransactionsRepository {
           include: {
             administrative: {
               include: {
-                user: true
-              }
-            }
-          }
+                user: true,
+              },
+            },
+          },
         },
         commitment: {
           include: {
             student: {
               include: {
-                user: true
-              }
-            }
-          }
-        }
-      }
+                user: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -126,5 +125,27 @@ export class TransactionsRepository {
     });
 
     return transaction?.name === 'ADMIN';
+  }
+
+  async findTotalCompleteHoursByInscriptionId(
+    inscriptionId: number,
+  ): Promise<number> {
+    const totalHours = await this.prisma.transaction.aggregate({
+      _sum: {
+        hours: true,
+      },
+      where: {
+        commitment: {
+          inscriptions: {
+            some: {
+              id: inscriptionId,
+            },
+          },
+        },
+        is_deleted: false,
+      },
+    });
+
+    return totalHours._sum.hours || 0;
   }
 }

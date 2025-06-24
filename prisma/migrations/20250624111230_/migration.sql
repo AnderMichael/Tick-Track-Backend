@@ -147,6 +147,7 @@ CREATE TABLE "inscription" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "is_complete" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "inscription_pkey" PRIMARY KEY ("id")
 );
