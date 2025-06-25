@@ -396,4 +396,24 @@ export class StudentsRepository {
       },
     });
   }
+
+  async countTransactionsByInscriptionId(inscriptionId: number) {
+    const transactions = await this.prisma.transaction.count({
+      where: {
+        is_deleted: false,
+        inscription_id: inscriptionId,
+      },
+    });
+
+    return transactions;
+  }
+
+  async countCommitmentsByStudentId(studentId: number) {
+    return this.prisma.commitment.count({
+      where: {
+        is_deleted: false,
+        student_id: studentId,
+      },
+    });
+  }
 }

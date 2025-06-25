@@ -65,7 +65,15 @@ export class SemestersService {
 
   async remove(id: number) {
     const semester = await this.findOne(id);
-    const deleted = await this.semestersRepository.softDelete(semester.id);
+    const inscriptions = await this.semestersRepository.countInscriptions(semester.id);
+
+    if (inscriptions > 0) {
+      throw new BadRequestException(
+        'Cannot delete semester with existing inscriptions',
+      );
+    }
+
+    await this.semestersRepository.softDelete(semester.id);
     return { message: 'Semester marked as deleted' };
   }
 }

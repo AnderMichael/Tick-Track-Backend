@@ -82,6 +82,15 @@ export class WorksService {
 
   async remove(id: number) {
     const work = await this.findOne(id);
+    
+    const count = await this.worksRepository.countTransactions(work.id);
+    
+    if (count > 0) {
+      throw new BadRequestException(
+        'Cannot delete work with existing transactions',
+      );
+    }
+
     await this.worksRepository.softDelete(work.id);
     return { message: 'Work marked as deleted' };
   }

@@ -164,4 +164,22 @@ export class ScholarshipsRepository {
       data: { is_current: false },
     });
   }
+
+  async countCommitmentsByServiceDetails(serviceDetailsId: number) {
+    return this.prisma.commitment.count({
+      where: {
+        service_details_id: serviceDetailsId,
+        is_deleted: false,
+      },
+    });
+  }
+
+  async countServiceDetailsByScholarship(scholarshipId: number) {
+    return this.prisma.service_details.count({
+      where: {
+        scholarship_id: scholarshipId,
+        is_deleted: false,
+      },
+    });
+  }
 }

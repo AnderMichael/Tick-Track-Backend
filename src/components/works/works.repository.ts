@@ -102,4 +102,12 @@ export class WorksRepository {
       data: { is_open: true },
     });
   }
+
+  async countTransactions(id: number) {
+    const count = await this.prisma.transaction.count({
+      where: { work_id: id, is_deleted: false },
+    });
+
+    return count;
+  }
 }

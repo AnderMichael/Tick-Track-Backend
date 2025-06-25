@@ -57,20 +57,20 @@ export class StudentsService {
   }
 
   async update(upbCode: number, dto: UpdateStudentDto) {
-    const student = await this.studentsRepository.findOne(upbCode);
-
-    if (!student) {
-      throw new NotFoundException('Student not exists');
-    }
-
-    await this.studentsRepository.update(upbCode, dto);
+    const student = await this.findOne(upbCode);
+    await this.studentsRepository.update(student.upbCode, dto);
   }
 
   async remove(upbCode: number) {
-    const student = await this.studentsRepository.findOne(upbCode);
+    const student = await this.findOne(upbCode);
+    
+    const countCommitments =
+      await this.studentsRepository.countCommitmentsByStudentId(student.id);
 
-    if (!student) {
-      throw new NotFoundException('Student not exists');
+    if (countCommitments > 0) {
+      throw new BadRequestException(
+        'Cannot delete student with existing commitments',
+      );
     }
 
     await this.studentsRepository.softDelete(upbCode);
@@ -125,9 +125,22 @@ export class StudentsService {
     const semester = await this.semestersService.findOne(semester_id);
     const commitment = await this.findCommitmentById(commitment_id);
     const inscription = await this.findInscription(commitment.id, semester.id);
+
     if (!inscription) {
       throw new NotFoundException('Inscription not exists');
     }
+
+    const transactions =
+      await this.studentsRepository.countTransactionsByInscriptionId(
+        inscription.id,
+      );
+
+    if (transactions > 0) {
+      throw new BadRequestException(
+        'Cannot uninscribe student with existing transactions',
+      );
+    }
+
     return this.studentsRepository.uninscribeStudent(inscription.id);
   }
 
@@ -251,7 +264,7 @@ export class StudentsService {
       percentage: inscription.commitment.service_details.percentage,
       commitmentId: inscription.commitment_id,
       createdAt: inscription.created_at,
-      is_complete: inscription.is_complete
+      is_complete: inscription.is_complete,
     };
   }
 }

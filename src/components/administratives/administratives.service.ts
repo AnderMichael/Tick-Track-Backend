@@ -39,7 +39,7 @@ export class AdministrativesService {
   async findOne(upbCode: number) {
     const admin = await this.administrativeRepository.findOne(upbCode);
 
-    if (!admin) {
+    if (!admin || admin.is_deleted) {
       throw new NotFoundException('Administrative not exists');
     }
 
@@ -47,24 +47,41 @@ export class AdministrativesService {
   }
 
   async update(upbCode: number, dto: UpdateAdministrativeDto) {
-    const admin = await this.administrativeRepository.findOne(upbCode);
+    const admin = await this.findOne(upbCode);
 
-    if (!admin) {
-      throw new NotFoundException('Administrative not exists');
-    }
-
-    const updated = await this.administrativeRepository.update(upbCode, dto);
+    const updated = await this.administrativeRepository.update(
+      admin.upbCode,
+      dto,
+    );
     return new AdministrativeModel(updated);
   }
 
   async remove(upbCode: number) {
-    const admin = await this.administrativeRepository.findOne(upbCode);
+    const admin = await this.findOne(upbCode);
+    const worksCount =
+      await this.administrativeRepository.countWorksByAdministrative(admin.id);
 
-    if (!admin) {
-      throw new NotFoundException('Administrative not exists');
+    if (worksCount > 0) {
+      throw new BadRequestException(
+        'Cannot delete administrative with existing works',
+      );
     }
 
-    const removed = await this.administrativeRepository.softDelete(upbCode);
+    const transactionsCount =
+      await this.administrativeRepository.countTransactionsByAdministrative(
+        admin.id,
+      );
+
+    if (transactionsCount > 0) {
+      throw new BadRequestException(
+        'Cannot delete administrative with existing transactions',
+      );
+    }
+
+    const removed = await this.administrativeRepository.softDelete(
+      admin.upbCode,
+    );
+    
     return removed;
   }
 

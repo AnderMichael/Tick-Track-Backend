@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -46,6 +47,18 @@ export class ScholarshipsService {
 
   async remove(id: number) {
     const existing = await this.findOne(id);
+
+    const serviceDetailsCount =
+      await this.scholarshipsRepository.countServiceDetailsByScholarship(
+        existing.id,
+      );
+
+    if (serviceDetailsCount > 0) {
+      throw new BadRequestException(
+        'Cannot delete scholarship with existing service details (Percentages)',
+      );
+    }
+
     await this.scholarshipsRepository.softDelete(existing.id);
     return { message: 'Scholarship marked as deleted' };
   }
@@ -119,12 +132,25 @@ export class ScholarshipsService {
 
   async removeServiceDetails(serviceDetailsId: number) {
     const existing = await this.findServiceDetails(serviceDetailsId);
+
+    const commitments =
+      await this.scholarshipsRepository.countCommitmentsByServiceDetails(
+        existing.id,
+      );
+
+    if (commitments > 0) {
+      throw new BadRequestException(
+        'Cannot delete service details with existing commitments',
+      );
+    }
+
     await this.scholarshipsRepository.softDeleteServiceDetails(existing.id);
     return { message: 'Service details marked as deleted' };
   }
 
   async associateScholarship(studentUpbCode: number, percentageId: number) {
-    const student = await this.scholarshipsRepository.findStudentByUpbCode(studentUpbCode);
+    const student =
+      await this.scholarshipsRepository.findStudentByUpbCode(studentUpbCode);
     if (!student) {
       throw new NotFoundException('Student not found');
     }
@@ -142,7 +168,9 @@ export class ScholarshipsService {
         serviceDetails.id,
       );
     if (existingCommitment) {
-      throw new ConflictException('Student already has an active commitment');
+      throw new ConflictException(
+        'Student already has an active commitment, with this service details',
+      );
     }
 
     await this.scholarshipsRepository.createCommitment(
@@ -152,6 +180,6 @@ export class ScholarshipsService {
 
     return {
       message: 'Scholarship commitment created successfully',
-    }
+    };
   }
 }

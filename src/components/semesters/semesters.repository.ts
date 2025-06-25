@@ -71,4 +71,16 @@ export class SemestersRepository {
       },
     });
   }
+
+  async countInscriptions(semesterId: number) {
+    return this.prisma.inscription.count({
+      where: { semester_id: semesterId, is_deleted: false },
+    });
+  }
+
+  async countWorks(semesterId: number) {
+    return this.prisma.work.count({
+      where: { semester_id: semesterId, is_deleted: false },
+    });
+  }
 }

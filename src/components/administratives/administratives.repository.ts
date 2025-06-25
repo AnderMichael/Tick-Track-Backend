@@ -205,4 +205,22 @@ export class AdministrativeRepository {
       },
     });
   }
+
+  async countWorksByAdministrative(adminId: number) {
+    return this.prisma.work.count({
+      where: {
+        administrative_id: adminId,
+        is_deleted: false,
+      },
+    });
+  }
+
+  async countTransactionsByAdministrative(adminId: number) {
+    return this.prisma.transaction.count({
+      where: {
+        author_id: adminId,
+        is_deleted: false,
+      },
+    });
+  }
 }

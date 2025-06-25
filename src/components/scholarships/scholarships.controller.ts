@@ -110,7 +110,6 @@ export class ScholarshipsController {
     summary: 'Soft delete service details by ID for a scholarship',
   })
   removeServiceDetails(
-    @Param('id') id: string,
     @Param('detailId') detailId: string,
   ) {
     return this.scholarshipsService.removeServiceDetails(+detailId);
