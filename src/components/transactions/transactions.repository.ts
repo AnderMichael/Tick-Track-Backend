@@ -35,11 +35,15 @@ export class TransactionsRepository {
               },
             },
           },
-          commitment: {
+          inscription: {
             include: {
-              student: {
+              commitment: {
                 include: {
-                  user: true,
+                  student: {
+                    include: {
+                      user: true,
+                    },
+                  },
                 },
               },
             },
@@ -73,11 +77,15 @@ export class TransactionsRepository {
             },
           },
         },
-        commitment: {
+        inscription: {
           include: {
-            student: {
+            commitment: {
               include: {
-                user: true,
+                student: {
+                  include: {
+                    user: true,
+                  },
+                },
               },
             },
           },
@@ -135,13 +143,7 @@ export class TransactionsRepository {
         hours: true,
       },
       where: {
-        commitment: {
-          inscriptions: {
-            some: {
-              id: inscriptionId,
-            },
-          },
-        },
+        inscription_id: inscriptionId,
         is_deleted: false,
       },
     });
