@@ -159,9 +159,8 @@ export class StudentsController {
     summary: 'Get a student inscription by upbCode and inscriptionId',
   })
   findInscriptionById(
-    @Param('upbCode') upbCode: string,
     @Param('inscriptionId') inscriptionId: string,
   ) {
-    return this.studentsService.findInscriptionById(+upbCode, +inscriptionId);
+    return this.studentsService.findInscriptionById(+inscriptionId);
   }
 }

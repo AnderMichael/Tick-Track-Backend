@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CustomPrismaClientType, prisma } from '../../config/prisma.client';
 import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
-import { SemesterModel } from '../semesters/models/semester.model';
 import { BcryptUtils } from '../users/utils/bcrypt';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -152,12 +151,14 @@ export class StudentsRepository {
           },
         },
         inscriptions: true,
-        transaction: true,
       },
     });
   }
 
-  async findCommitmentBySemesterId(upbCode: number, semester_id: number) {
+  async findInscriptionByUpbcodeSemesterId(
+    upbCode: number,
+    semester_id: number,
+  ) {
     return this.prisma.inscription.findFirst({
       where: {
         is_deleted: false,
@@ -228,23 +229,14 @@ export class StudentsRepository {
     });
   }
 
-  async getTrackedHours(
-    commitment_id: number,
-    semester_id: number,
-  ): Promise<number> {
+  async getTrackedHours(inscription_id: number): Promise<number> {
     const result = await this.prisma.transaction.aggregate({
       _sum: {
         hours: true,
       },
       where: {
         is_deleted: false,
-        work: {
-          semester_id,
-        },
-        commitment: {
-          id: commitment_id,
-          is_deleted: false,
-        },
+        inscription_id,
       },
     });
 
@@ -352,15 +344,16 @@ export class StudentsRepository {
       include: {
         semester: true,
         commitment: {
-          include: {         
+          include: {
             service_details: {
               include: {
                 scholarship: true,
               },
             },
           },
-        },}
-      });
+        },
+      },
+    });
     return inscriptions;
   }
 
@@ -385,10 +378,7 @@ export class StudentsRepository {
     });
   }
 
-  async updateInscription(
-    inscriptionId: number,
-    commitment_id: number,
-  ) {
+  async updateInscription(inscriptionId: number, commitment_id: number) {
     return this.prisma.inscription.update({
       where: { id: inscriptionId },
       data: { commitment_id },

@@ -113,11 +113,15 @@ export class StudentsService {
     if (!inscription) {
       throw new NotFoundException('Inscription not exists');
     }
-    
+
     return inscription;
   }
 
-  async removeInscription(upbCode: number, semester_id: number, commitment_id : number) {
+  async removeInscription(
+    upbCode: number,
+    semester_id: number,
+    commitment_id: number,
+  ) {
     const semester = await this.semestersService.findOne(semester_id);
     const commitment = await this.findCommitmentById(commitment_id);
     const inscription = await this.findInscription(commitment.id, semester.id);
@@ -129,7 +133,7 @@ export class StudentsService {
 
   async getTrackingBySemester(upbCode: number, semesterId: number) {
     const inscription =
-      await this.studentsRepository.findCommitmentBySemesterId(
+      await this.studentsRepository.findInscriptionByUpbcodeSemesterId(
         upbCode,
         semesterId,
       );
@@ -139,8 +143,7 @@ export class StudentsService {
     }
 
     const tracked = await this.studentsRepository.getTrackedHours(
-      inscription.commitment.id,
-      semesterId,
+      inscription.id,
     );
 
     return {
@@ -233,8 +236,7 @@ export class StudentsService {
     );
   }
 
-  async findInscriptionById(upbCode: number, inscriptionId: number) {
-    await this.findOne(upbCode);
+  async findInscriptionById(inscriptionId: number) {
     const inscription =
       await this.studentsRepository.findInscriptionById(inscriptionId);
 
@@ -249,6 +251,7 @@ export class StudentsService {
       percentage: inscription.commitment.service_details.percentage,
       commitmentId: inscription.commitment_id,
       createdAt: inscription.created_at,
+      is_complete: inscription.is_complete
     };
   }
 }

@@ -1,29 +1,37 @@
 import { Prisma } from '@prisma/client';
 
-const transactionWithRelations = Prisma.validator<Prisma.transactionDefaultArgs>()({
-  include: {
-    commitment:{
-      include: {
-        student: {
-          include: {
-            user: true,
-          }
-        }
-      }
-    },
-    work: {
-      include: {
-        administrative: {
-          include: {
-            user: true,
-          }
-        }
-      }
-    }
-  }
-})
+const transactionWithRelations =
+  Prisma.validator<Prisma.transactionDefaultArgs>()({
+    include: {
+      inscription: {
+        include: {
+          commitment: {
+            include: {
+              student: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      },
 
-export type Transaction = Prisma.transactionGetPayload<typeof transactionWithRelations>;
+      work: {
+        include: {
+          administrative: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+export type Transaction = Prisma.transactionGetPayload<
+  typeof transactionWithRelations
+>;
 export class TransactionModel {
   id: number;
   hours: number;
@@ -38,7 +46,7 @@ export class TransactionModel {
   work: {
     work_id: number;
     semester_id: number;
-  }
+  };
 
   constructor(transaction: Transaction) {
     this.id = transaction.id;
@@ -48,9 +56,9 @@ export class TransactionModel {
     this.comment_administrative = transaction.comment_administrative || '';
     this.administrative_name = `${transaction.work.administrative.user.firstName} ${transaction.work.administrative.user.fatherLastName}`;
     this.work_name = transaction.work.title;
-    this.student_name = `${transaction.commitment.student.user.firstName} ${transaction.commitment.student.user.fatherLastName}`;
-    this.student_upbCode = transaction.commitment.student.user.upbCode;
-    this.commitment_id = transaction.commitment.id;
+    this.student_name = `${transaction.inscription.commitment.student.user.firstName} ${transaction.inscription.commitment.student.user.fatherLastName}`;
+    this.student_upbCode = transaction.inscription.commitment.student.user.upbCode;
+    this.commitment_id = transaction.inscription.commitment.id;
     this.work = {
       work_id: transaction.work.id,
       semester_id: transaction.work.semester_id,

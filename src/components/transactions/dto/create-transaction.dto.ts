@@ -29,7 +29,7 @@ export class CreateTransactionDto {
 
   @IsInt()
   @IsPositive()
-  commitment_id: number;
+  inscription_id: number;
 
   @IsInt()
   @IsPositive()

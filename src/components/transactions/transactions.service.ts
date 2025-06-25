@@ -26,9 +26,8 @@ export class TransactionsService {
       throw new NotFoundException('Work not found');
     }
 
-    const inscription = await this.studentsService.findInscription(
-      dto.commitment_id,
-      work.semester_id,
+    const inscription = await this.studentsService.findInscriptionById(
+      dto.inscription_id,
     );
 
     if (!inscription) {
@@ -52,7 +51,7 @@ export class TransactionsService {
         inscription.id,
       );
     const commitment = await this.studentsService.findCommitmentById(
-      inscription.commitment_id,
+      inscription.commitmentId,
     );
 
     if (

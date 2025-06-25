@@ -114,7 +114,6 @@ model commitment {
   service_details service_details @relation(fields: [service_details_id], references: [id])
   student         student         @relation(fields: [student_id], references: [id])
   inscriptions    inscription[]
-  transaction     transaction[]
 }
 
 model service_details {
@@ -163,8 +162,9 @@ model inscription {
   updated_at     DateTime @updatedAt
   is_deleted     Boolean @default(false)
   is_complete    Boolean @default(false)
-  commitment     commitment @relation(fields: [commitment_id], references: [id])
+  transactions   transaction[]
   semester       semester   @relation(fields: [semester_id], references: [id])
+  commitment     commitment   @relation(fields: [commitment_id], references: [id]) 
 }
 
 model work {
@@ -201,7 +201,7 @@ model work_history {
 model transaction {
   id                     Int     @id @default(autoincrement())
   work_id                Int
-  commitment_id          Int
+  inscription_id          Int
   date                   String
   hours                  Int
   comment_student        String?
@@ -215,7 +215,7 @@ model transaction {
   author          administrative     @relation("AuthorTransactions", fields: [author_id], references: [id])
   qualification   qualification      @relation(fields: [qualification_id], references: [id])
   work            work               @relation(fields: [work_id], references: [id])
-  commitment      commitment         @relation(fields: [commitment_id], references: [id])
+  inscription     inscription         @relation(fields: [inscription_id], references: [id])
 }
 
 model qualification {
