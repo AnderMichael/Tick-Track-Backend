@@ -35,6 +35,16 @@ export class TransactionsService {
       throw new NotFoundException('Student is not inscribed in this semester');
     }
 
+    const author =
+      await this.transactionsRepository.findAdministrativeByUpbcode(
+        dto.author_id,
+      );
+
+    if (!author) {
+      throw new NotFoundException('Author not found');
+    }
+    
+    dto.author_id = author.id;
     const created = await this.transactionsRepository.create(dto);
 
     const totalHours =
@@ -45,7 +55,10 @@ export class TransactionsService {
       inscription.commitment_id,
     );
 
-    if (totalHours >= commitment.service_details.hours_per_semester && !inscription.is_complete) {
+    if (
+      totalHours >= commitment.service_details.hours_per_semester &&
+      !inscription.is_complete
+    ) {
       await this.transactionsRepository.markAsComplete(inscription.id);
     }
 
@@ -88,7 +101,10 @@ export class TransactionsService {
       inscription.commitment_id,
     );
 
-    if (totalHours < commitment.service_details.hours_per_semester && inscription.is_complete) {
+    if (
+      totalHours < commitment.service_details.hours_per_semester &&
+      inscription.is_complete
+    ) {
       await this.transactionsRepository.markAsIncomplete(inscription.id);
     }
 

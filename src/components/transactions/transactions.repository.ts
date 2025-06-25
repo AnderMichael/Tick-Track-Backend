@@ -162,4 +162,14 @@ export class TransactionsRepository {
       data: { is_complete: false },
     });
   }
+
+  async findAdministrativeByUpbcode(adminUpbcode: number) {
+    return this.prisma.administrative.findFirst({
+      where: {
+        user: {
+          upbCode: adminUpbcode,
+        },
+      },
+    });
+  }
 }
