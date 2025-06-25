@@ -43,7 +43,7 @@ export class TransactionsService {
     if (!author) {
       throw new NotFoundException('Author not found');
     }
-    
+
     dto.author_id = author.id;
     const created = await this.transactionsRepository.create(dto);
 
@@ -115,9 +115,13 @@ export class TransactionsService {
     upbCode: number,
     department_id: number,
     administrative_role_id: number,
+    semester_id: number,
   ) {
     const commitment =
-      await this.studentsService.findCurrentCommitmentByUpbCode(upbCode);
+      await this.transactionsRepository.findCommitmentByUpbcodeAndSemester(
+        upbCode,
+        semester_id,
+      );
     if (!commitment) {
       throw new NotFoundException('Commitment not found');
     }

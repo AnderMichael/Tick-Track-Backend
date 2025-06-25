@@ -172,4 +172,26 @@ export class TransactionsRepository {
       },
     });
   }
+
+  async findCommitmentByUpbcodeAndSemester(
+    upbCode: number,
+    semester_id: number,
+  ) {
+    const commitment = await prisma.commitment.findFirst({
+      where: {
+        student: {
+          user: {
+            upbCode,
+          },
+        },
+        inscriptions: {
+          some: {
+            semester_id,
+          },
+        },
+      },
+    });
+
+    return commitment;
+  }
 }

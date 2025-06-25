@@ -26,13 +26,15 @@ import { TransactionsService } from './transactions.service';
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) { }
 
-  @Post('process-account')
+  @Post('process-account/:semesterId')
   @Permissions('create:transactions')
   @UseGuards(AccountKeyGuard)
-  getStudentFromToken(@Req() req: AccountStudentRequest) {
+  getStudentFromToken(
+    @Param('semesterId') semesterId: string,
+    @Req() req: AccountStudentRequest) {
     const { upbCode } = req.student;
     const { department_id, role_id } = req.user;
-    return this.transactionsService.getStudentHeaderInfo(upbCode, department_id, role_id);
+    return this.transactionsService.getStudentHeaderInfo(upbCode, department_id, role_id, +semesterId);
   }
 
   @Post()
