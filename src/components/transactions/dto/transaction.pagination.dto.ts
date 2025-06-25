@@ -39,20 +39,24 @@ export class TransactionPaginationDto extends PaginationDto {
     };
 
     if (this.student_upb_code || this.department_id) {
-      where.commitment = {
-        ...(where.commitment || {}),
-        student: {
-          ...(this.student_upb_code && {
-            user: {
-              upbCode: this.student_upb_code,
-            },
-          }),
-          ...(this.department_id && {
-            user: {
-              ...(this.student_upb_code ? { upbCode: this.student_upb_code } : {}),
-              department_id: this.department_id,
-            },
-          }),
+      where.inscription = {
+        ...(where.inscription || {}),
+        commitment: {
+          student: {
+            ...(this.student_upb_code && {
+              user: {
+                upbCode: this.student_upb_code,
+              },
+            }),
+            ...(this.department_id && {
+              user: {
+                ...(this.student_upb_code
+                  ? { upbCode: this.student_upb_code }
+                  : {}),
+                department_id: this.department_id,
+              },
+            }),
+          },
         },
       };
     }

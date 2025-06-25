@@ -116,13 +116,13 @@ export class TransactionsService {
     administrative_role_id: number,
     semester_id: number,
   ) {
-    const commitment =
-      await this.transactionsRepository.findCommitmentByUpbcodeAndSemester(
+    const inscription =
+      await this.transactionsRepository.findInscriptionByUpbcodeAndSemester(
         upbCode,
         semester_id,
       );
-    if (!commitment) {
-      throw new NotFoundException('Commitment not found');
+    if (!inscription) {
+      throw new NotFoundException('Inscription not found');
     }
     const student =
       await this.transactionsRepository.findStudentHeader(upbCode);
@@ -144,7 +144,7 @@ export class TransactionsService {
 
     return {
       ...student,
-      commitment_id: commitment.id,
+      inscription_id: inscription.id,
     };
   }
 

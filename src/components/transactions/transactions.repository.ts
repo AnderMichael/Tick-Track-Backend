@@ -48,6 +48,11 @@ export class TransactionsRepository {
               },
             },
           },
+          author: {
+            include: {
+              user: true,
+            },
+          },
         },
         skip,
         take: limit,
@@ -88,6 +93,11 @@ export class TransactionsRepository {
                 },
               },
             },
+          },
+        },
+        author: {
+          include: {
+            user: true,
           },
         },
       },
@@ -175,25 +185,23 @@ export class TransactionsRepository {
     });
   }
 
-  async findCommitmentByUpbcodeAndSemester(
+  async findInscriptionByUpbcodeAndSemester(
     upbCode: number,
     semester_id: number,
   ) {
-    const commitment = await prisma.commitment.findFirst({
+    const inscription = await prisma.inscription.findFirst({
       where: {
-        student: {
-          user: {
-            upbCode,
+        commitment: {
+          student: {
+            user: {
+              upbCode,
+            },
           },
         },
-        inscriptions: {
-          some: {
-            semester_id,
-          },
-        },
+        semester_id,
       },
     });
 
-    return commitment;
+    return inscription;
   }
 }

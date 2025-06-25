@@ -26,6 +26,11 @@ const transactionWithRelations =
           },
         },
       },
+      author: {
+        include: {
+          user: true,
+        },
+      }
     },
   });
 
@@ -43,6 +48,7 @@ export class TransactionModel {
   student_name: string;
   student_upbCode: number;
   commitment_id: number;
+  author_name: string;
   work: {
     work_id: number;
     semester_id: number;
@@ -59,6 +65,7 @@ export class TransactionModel {
     this.student_name = `${transaction.inscription.commitment.student.user.firstName} ${transaction.inscription.commitment.student.user.fatherLastName}`;
     this.student_upbCode = transaction.inscription.commitment.student.user.upbCode;
     this.commitment_id = transaction.inscription.commitment.id;
+    this.author_name = `${transaction.author.user.firstName} ${transaction.author.user.fatherLastName}`;
     this.work = {
       work_id: transaction.work.id,
       semester_id: transaction.work.semester_id,
