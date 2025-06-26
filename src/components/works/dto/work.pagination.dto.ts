@@ -1,5 +1,5 @@
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Min } from 'class-validator';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 
 export class WorkPaginationDto extends PaginationDto {
@@ -45,6 +45,13 @@ export class WorkPaginationDto extends PaginationDto {
           ...(where.administrative?.user || {}),
           department_id: this.department_id,
         },
+      };
+    }
+
+    if (this.search) {
+      where.title = {
+        contains: this.search,
+        mode: 'insensitive',
       };
     }
 
