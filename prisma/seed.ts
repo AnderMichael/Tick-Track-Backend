@@ -80,7 +80,7 @@ async function main() {
     'view:transactions', 'create:transactions', 'update:transactions', 'delete:transactions',
     'view:students', 'create:students', 'update:students', 'delete:students',
     'view:supervisors', 'create:supervisors', 'update:supervisors', 'delete:supervisors',
-    'view:semesters'
+    'view:semesters', 'view:tracks', 'view:scholarships'
   ]);
   await linkPermissionsToRole(adminRole.id, allPermissions.map((p) => p.name));
 

@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 const transactionWithRelations =
   Prisma.validator<Prisma.transactionDefaultArgs>()({
     include: {
+      qualification: true,
       inscription: {
         include: {
           commitment: {
@@ -30,7 +31,7 @@ const transactionWithRelations =
         include: {
           user: true,
         },
-      }
+      },
     },
   });
 
@@ -49,6 +50,7 @@ export class TransactionModel {
   student_upbCode: number;
   commitment_id: number;
   author_name: string;
+  qualification_name: string;
   work: {
     work_id: number;
     semester_id: number;
@@ -63,13 +65,15 @@ export class TransactionModel {
     this.administrative_name = `${transaction.work.administrative.user.firstName} ${transaction.work.administrative.user.fatherLastName}`;
     this.work_name = transaction.work.title;
     this.student_name = `${transaction.inscription.commitment.student.user.firstName} ${transaction.inscription.commitment.student.user.fatherLastName}`;
-    this.student_upbCode = transaction.inscription.commitment.student.user.upbCode;
+    this.student_upbCode =
+      transaction.inscription.commitment.student.user.upbCode;
     this.commitment_id = transaction.inscription.commitment.id;
     this.author_name = `${transaction.author.user.firstName} ${transaction.author.user.fatherLastName}`;
     this.work = {
       work_id: transaction.work.id,
       semester_id: transaction.work.semester_id,
     };
+    this.qualification_name = transaction.qualification.name;
   }
 
   static fromMany(data: any[]): TransactionModel[] {

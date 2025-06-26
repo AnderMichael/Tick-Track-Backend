@@ -26,6 +26,7 @@ export class TransactionsRepository {
       this.prisma.transaction.findMany({
         where,
         include: {
+          qualification: true,
           work: {
             include: {
               administrative: {
@@ -73,6 +74,7 @@ export class TransactionsRepository {
     return this.prisma.transaction.findUnique({
       where: { id },
       include: {
+        qualification: true,
         work: {
           include: {
             administrative: {
