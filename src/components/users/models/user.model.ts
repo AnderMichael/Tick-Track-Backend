@@ -118,6 +118,7 @@ export class UserModel {
           semesterExtended.semester_id = semesterExtended.id;
           semesterExtended.id = inscription.id;
           semesterExtended.name = `Semestre ${defineRomanNumbers(semesterExtended.number)} - ${semesterExtended.year}`;
+          semesterExtended.is_complete = inscription.is_complete;
           if (semesterExtended && !semesterMap.has(semesterExtended.id)) {
             semesterMap.set(semesterExtended.id, semesterExtended);
           }

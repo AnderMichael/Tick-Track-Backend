@@ -10,12 +10,14 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentModel } from './models/student.model';
 import { StudentsRepository } from './students.repository';
+import { TransactionsRepository } from '../transactions/transactions.repository';
 
 @Injectable()
 export class StudentsService {
   constructor(
     private readonly studentsRepository: StudentsRepository,
     private readonly semestersService: SemestersService,
+    private readonly transactionsRepository: TransactionsRepository,
   ) {}
 
   async create(dto: CreateStudentDto) {
@@ -63,7 +65,7 @@ export class StudentsService {
 
   async remove(upbCode: number) {
     const student = await this.findOne(upbCode);
-    
+
     const countCommitments =
       await this.studentsRepository.countCommitmentsByStudentId(student.id);
 
@@ -227,6 +229,7 @@ export class StudentsService {
       percentage: inscription.commitment.service_details.percentage,
       commitmentId: inscription.commitment_id,
       createdAt: inscription.created_at,
+      is_complete: inscription.is_complete,
     }));
   }
 
@@ -243,8 +246,31 @@ export class StudentsService {
       throw new NotFoundException('Inscription not found');
     }
 
-    return this.studentsRepository.updateInscription(
-      inscriptionId,
+    const totalHours =
+      await this.transactionsRepository.findTotalCompleteHoursByInscriptionId(
+        inscription.id,
+      );
+
+
+    const commitment = await this.findCommitmentById(commitment_id);
+
+
+    if (
+      totalHours > commitment.service_details.hours_per_semester &&
+      !inscription.is_complete
+    ) {
+      this.transactionsRepository.markAsComplete(inscription.id);
+    }
+
+    if (
+      totalHours < commitment.service_details.hours_per_semester &&
+      inscription.is_complete
+    ) {
+      this.transactionsRepository.markAsIncomplete(inscription.id);
+    }
+
+    await this.studentsRepository.updateInscription(
+      inscription.id,
       commitment_id,
     );
   }

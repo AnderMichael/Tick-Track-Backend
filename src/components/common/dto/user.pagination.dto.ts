@@ -39,11 +39,29 @@ export class UserPaginationDto extends PaginationDto {
 }
 
 export class StudentPaginationDto extends UserPaginationDto {
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  semester_id?: number;
+
   buildWhere() {
-    return {
+    const where: any = {
       ...this.buildBaseWhere(),
       student: { isNot: null },
     };
+
+    if (this.semester_id) {
+      where.student = {
+        ...where.student,
+        inscriptions: {
+          some: {
+            semesterId: this.semester_id,
+          },
+        },
+        isNot: null
+      };
+    }
+    return where;
   }
 }
 
