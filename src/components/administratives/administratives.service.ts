@@ -16,15 +16,19 @@ export class AdministrativesService {
     private readonly administrativeRepository: AdministrativeRepository,
   ) {}
 
-  async create(dto: CreateAdministrativeDto) {
+  async create(dto: CreateAdministrativeDto, administrative_id: number) {
     const { upbCode } = dto;
     const admin = await this.administrativeRepository.findOne(upbCode);
 
     if (admin) {
       throw new BadRequestException('Administrative already exists');
     }
-
     const newAdmin = await this.administrativeRepository.create(dto);
+    await this.administrativeRepository.addLog(
+      'created',
+      newAdmin.id,
+      administrative_id,
+    );
     return new AdministrativeModel(newAdmin);
   }
 
@@ -46,17 +50,28 @@ export class AdministrativesService {
     return new AdministrativeModel(admin);
   }
 
-  async update(upbCode: number, dto: UpdateAdministrativeDto) {
+  async update(
+    upbCode: number,
+    dto: UpdateAdministrativeDto,
+    administrative_id: number,
+  ) {
     const admin = await this.findOne(upbCode);
 
     const updated = await this.administrativeRepository.update(
       admin.upbCode,
       dto,
     );
+
+    await this.administrativeRepository.addLog(
+      'updated',
+      updated.id,
+      administrative_id,
+    );
+
     return new AdministrativeModel(updated);
   }
 
-  async remove(upbCode: number) {
+  async remove(upbCode: number, administrative_id: number) {
     const admin = await this.findOne(upbCode);
     const worksCount =
       await this.administrativeRepository.countWorksByAdministrative(admin.id);
@@ -81,7 +96,13 @@ export class AdministrativesService {
     const removed = await this.administrativeRepository.softDelete(
       admin.upbCode,
     );
-    
+
+    await this.administrativeRepository.addLog(
+      'deleted',
+      admin.id,
+      administrative_id,
+    );
+
     return removed;
   }
 
@@ -122,23 +143,33 @@ export class AdministrativesService {
     }));
   }
 
-  async lock(upbCode: number) {
+  async lock(upbCode: number, administrative_id: number) {
     const admin = await this.administrativeRepository.findOne(upbCode);
     if (!admin) {
       throw new NotFoundException('Administrative not exists');
     }
 
     const updated = await this.administrativeRepository.lock(upbCode);
+    await this.administrativeRepository.addLog(
+      'locked',
+      updated.id,
+      administrative_id,
+    );
     return new AdministrativeModel(updated);
   }
 
-  async unlock(upbCode: number) {
+  async unlock(upbCode: number, administrative_id: number) {
     const admin = await this.administrativeRepository.findOne(upbCode);
     if (!admin) {
       throw new NotFoundException('Administrative not exists');
     }
 
     const updated = await this.administrativeRepository.unlock(upbCode);
+    await this.administrativeRepository.addLog(
+      'unlocked',
+      updated.id,
+      administrative_id,
+    );
     return new AdministrativeModel(updated);
   }
 }

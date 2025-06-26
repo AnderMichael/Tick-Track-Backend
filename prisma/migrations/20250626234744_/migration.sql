@@ -173,8 +173,9 @@ CREATE TABLE "work" (
 CREATE TABLE "work_history" (
     "id" SERIAL NOT NULL,
     "work_id" INTEGER NOT NULL,
+    "administrative_id" INTEGER NOT NULL,
     "status" TEXT NOT NULL,
-    "date" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -214,8 +215,9 @@ CREATE TABLE "qualification" (
 CREATE TABLE "user_state_history" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
+    "administrative_id" INTEGER NOT NULL,
     "status" TEXT NOT NULL,
-    "date" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -266,6 +268,9 @@ ALTER TABLE "work" ADD CONSTRAINT "work_semester_id_fkey" FOREIGN KEY ("semester
 ALTER TABLE "work_history" ADD CONSTRAINT "work_history_work_id_fkey" FOREIGN KEY ("work_id") REFERENCES "work"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "work_history" ADD CONSTRAINT "work_history_administrative_id_fkey" FOREIGN KEY ("administrative_id") REFERENCES "administrative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "transaction" ADD CONSTRAINT "transaction_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "administrative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -276,6 +281,9 @@ ALTER TABLE "transaction" ADD CONSTRAINT "transaction_work_id_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "transaction" ADD CONSTRAINT "transaction_inscription_id_fkey" FOREIGN KEY ("inscription_id") REFERENCES "inscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_state_history" ADD CONSTRAINT "user_state_history_administrative_id_fkey" FOREIGN KEY ("administrative_id") REFERENCES "administrative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "user_state_history" ADD CONSTRAINT "user_state_history_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

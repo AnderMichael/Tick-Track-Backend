@@ -12,7 +12,10 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
-import { AuthenticatedRequest, JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import {
+  AuthenticatedRequest,
+  JwtAuthGuard,
+} from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { CreateWorkDto } from './dto/create-work.dto';
@@ -24,12 +27,15 @@ import { WorksService } from './works.service';
 @Controller('works')
 @UseGuards(JwtAuthGuard, UserAvailableGuard, PermissionsGuard)
 export class WorksController {
-  constructor(private readonly worksService: WorksService) { }
+  constructor(private readonly worksService: WorksService) {}
 
   @Post()
   @Permissions('create:works')
   @ApiOperation({ summary: 'Create new work' })
-  create(@Body() createDto: CreateWorkDto, @Req() request: AuthenticatedRequest) {
+  create(
+    @Body() createDto: CreateWorkDto,
+    @Req() request: AuthenticatedRequest,
+  ) {
     return this.worksService.create(createDto, request.user.upbCode);
   }
 
@@ -50,28 +56,37 @@ export class WorksController {
   @Patch(':id')
   @Permissions('update:works')
   @ApiOperation({ summary: 'Update a work by ID' })
-  update(@Param('id') id: string, @Body() updateDto: UpdateWorkDto) {
-    return this.worksService.update(+id, updateDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateWorkDto,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.worksService.update(+id, updateDto, administrative_id);
   }
 
   @Patch(':id/lock')
   @Permissions('update:works')
   @ApiOperation({ summary: 'Lock a work by ID' })
-  lock(@Param('id') id: string) {
-    return this.worksService.lock(+id);
+  lock(@Param('id') id: string, @Req() request: AuthenticatedRequest) {
+    const { id: administrative_id } = request.user;
+    return this.worksService.lock(+id, administrative_id);
   }
 
   @Patch(':id/unlock')
   @Permissions('update:works')
   @ApiOperation({ summary: 'Lock a work by ID' })
-  unlock(@Param('id') id: string) {
-    return this.worksService.unlock(+id);
+  unlock(@Param('id') id: string, @Req() request: AuthenticatedRequest) {
+    const { id: administrative_id } = request.user;
+
+    return this.worksService.unlock(+id, administrative_id);
   }
 
   @Delete(':id')
   @Permissions('delete:works')
   @ApiOperation({ summary: 'Soft delete a work by ID' })
-  remove(@Param('id') id: string) {
-    return this.worksService.remove(+id);
+  remove(@Param('id') id: string, @Req() request: AuthenticatedRequest) {
+    const { id: administrative_id } = request.user;
+    return this.worksService.remove(+id, administrative_id);
   }
 }

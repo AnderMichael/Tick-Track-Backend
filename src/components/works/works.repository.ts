@@ -110,4 +110,15 @@ export class WorksRepository {
 
     return count;
   }
+
+  async createLog(status: string, workId: number, adminId: number) {
+    return this.prisma.work_history.create({
+      data: {
+        status,
+        work_id: workId,
+        administrative_id: adminId,
+        date: new Date(),
+      },
+    });
+  }
 }

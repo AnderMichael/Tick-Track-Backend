@@ -8,11 +8,15 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import {
+  AuthenticatedRequest,
+  JwtAuthGuard,
+} from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { AdministrativePaginationDto } from '../common/dto/user.pagination.dto';
@@ -32,8 +36,12 @@ export class AdministrativesController {
   @Post('scholarship-officers')
   @Permissions('create:scholarship_officers')
   @ApiOperation({ summary: 'Create new Scholarship Officer' })
-  createScholarshipOfficer(@Body() createDto: CreateAdministrativeDto) {
-    return this.administrativesService.create(createDto);
+  createScholarshipOfficer(
+    @Body() createDto: CreateAdministrativeDto,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.administrativesService.create(createDto, administrative_id);
   }
 
   @Get('scholarship-officers')
@@ -59,22 +67,36 @@ export class AdministrativesController {
   updateScholarshipOfficer(
     @Param('upbCode') upbCode: string,
     @Body() updateDto: UpdateAdministrativeDto,
+    @Req() request: AuthenticatedRequest,
   ) {
-    return this.administrativesService.update(+upbCode, updateDto);
+    const { id: administrative_id } = request.user;
+    return this.administrativesService.update(
+      +upbCode,
+      updateDto,
+      administrative_id,
+    );
   }
 
   @Delete('scholarship-officers/:upbCode')
   @Permissions('delete:scholarship_officers')
   @ApiOperation({ summary: 'Delete a Scholarship Officer by upbCode' })
-  removeScholarshipOfficer(@Param('upbCode') upbCode: string) {
-    return this.administrativesService.remove(+upbCode);
+  removeScholarshipOfficer(
+    @Param('upbCode') upbCode: string,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.administrativesService.remove(+upbCode, administrative_id);
   }
 
   @Post('supervisors')
   @Permissions('create:supervisors')
   @ApiOperation({ summary: 'Create new Supervisor' })
-  createSupervisor(@Body() createDto: CreateAdministrativeDto) {
-    return this.administrativesService.create(createDto);
+  createSupervisor(
+    @Body() createDto: CreateAdministrativeDto,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.administrativesService.create(createDto, administrative_id);
   }
 
   @Get('supervisors')
@@ -97,43 +119,69 @@ export class AdministrativesController {
   updateSupervisor(
     @Param('upbCode') upbCode: string,
     @Body() updateDto: UpdateAdministrativeDto,
+    @Req() request: AuthenticatedRequest,
   ) {
-    return this.administrativesService.update(+upbCode, updateDto);
+    const { id: administrative_id } = request.user;
+    return this.administrativesService.update(
+      +upbCode,
+      updateDto,
+      administrative_id,
+    );
   }
 
   @Patch('supervisors/:upbCode/lock')
   @Permissions('update:supervisors')
   @ApiOperation({ summary: 'Lock a Supervisor by upbCode' })
-  lockSupervisor(@Param('upbCode') upbCode: string) {
-    return this.administrativesService.lock(+upbCode);
+  lockSupervisor(
+    @Param('upbCode') upbCode: string,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.administrativesService.lock(+upbCode, administrative_id);
   }
 
   @Patch('supervisors/:upbCode/unlock')
   @Permissions('update:supervisors')
   @ApiOperation({ summary: 'Unlock a Supervisor by upbCode' })
-  unlockSupervisor(@Param('upbCode') upbCode: string) {
-    return this.administrativesService.unlock(+upbCode);
+  unlockSupervisor(
+    @Param('upbCode') upbCode: string,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.administrativesService.unlock(+upbCode, administrative_id);
   }
 
   @Delete('supervisors/:upbCode')
   @Permissions('delete:supervisors')
   @ApiOperation({ summary: 'Delete a Supervisor by upbCode' })
-  removeSupervisor(@Param('upbCode') upbCode: string) {
-    return this.administrativesService.remove(+upbCode);
+  removeSupervisor(
+    @Param('upbCode') upbCode: string,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.administrativesService.remove(+upbCode, administrative_id);
   }
 
   @Patch('scholarship-officers/:upbCode/unlock')
   @Permissions('update:scholarship_officers')
   @ApiOperation({ summary: 'Unlock a Scholarship Officer by upbCode' })
-  unlockScholarshipOfficer(@Param('upbCode') upbCode: string) {
-    return this.administrativesService.unlock(+upbCode);
+  unlockScholarshipOfficer(
+    @Param('upbCode') upbCode: string,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.administrativesService.unlock(+upbCode, administrative_id);
   }
 
   @Patch('scholarship-officers/:upbCode/lock')
   @Permissions('update:scholarship_officers')
   @ApiOperation({ summary: 'Lock a Scholarship Officer by upbCode' })
-  lockScholarshipOfficer(@Param('upbCode') upbCode: string) {
-    return this.administrativesService.lock(+upbCode);
+  lockScholarshipOfficer(
+    @Param('upbCode') upbCode: string,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.administrativesService.lock(+upbCode, administrative_id);
   }
 
   @Get('tracks/:semesterId')

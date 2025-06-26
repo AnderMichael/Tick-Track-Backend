@@ -100,6 +100,8 @@ model administrative {
 
   work work[]
   transactions_authored   transaction[] @relation("AuthorTransactions")
+  user_state_histories user_state_history[]
+  work_histories work_history[]
 }
 
 model commitment {
@@ -189,13 +191,15 @@ model work {
 model work_history {
   id         Int     @id @default(autoincrement())
   work_id    Int
+  administrative_id Int
   status     String
-  date       String
+  date       DateTime
   is_deleted Boolean @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   work       work     @relation(fields: [work_id], references: [id])
+  administrative administrative @relation(fields: [administrative_id], references: [id])
 }
 
 model transaction {
@@ -229,11 +233,12 @@ model qualification {
 model user_state_history {
   id         Int     @id @default(autoincrement())
   user_id    Int
+  administrative_id Int
   status     String
-  date       String
+  date       DateTime
   is_deleted Boolean @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
+  administrative administrative @relation(fields: [administrative_id], references: [id])
   user       user     @relation(fields: [user_id], references: [id])
 }

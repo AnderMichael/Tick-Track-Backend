@@ -20,7 +20,7 @@ export class StudentsService {
     private readonly transactionsRepository: TransactionsRepository,
   ) {}
 
-  async create(dto: CreateStudentDto) {
+  async create(dto: CreateStudentDto, administrative_id: number) {
     const { upbCode } = dto;
 
     const existingUser =
@@ -37,6 +37,11 @@ export class StudentsService {
     }
 
     const newStudent = await this.studentsRepository.create(dto);
+    await this.studentsRepository.addLog(
+      'created',
+      newStudent.id,
+      administrative_id,
+    );
     return new StudentModel(newStudent);
   }
 
@@ -58,12 +63,19 @@ export class StudentsService {
     return new StudentModel(student);
   }
 
-  async update(upbCode: number, dto: UpdateStudentDto) {
+  async update(upbCode: number, dto: UpdateStudentDto, administrative_id: number) {
     const student = await this.findOne(upbCode);
-    await this.studentsRepository.update(student.upbCode, dto);
+
+    const updated = await this.studentsRepository.update(student.upbCode, dto);
+
+    await this.studentsRepository.addLog(
+      'updated',
+      updated.id,
+      administrative_id,
+    );
   }
 
-  async remove(upbCode: number) {
+  async remove(upbCode: number, administrative_id: number) {
     const student = await this.findOne(upbCode);
 
     const countCommitments =
@@ -76,6 +88,11 @@ export class StudentsService {
     }
 
     await this.studentsRepository.softDelete(upbCode);
+    await this.studentsRepository.addLog(
+      'deleted',
+      student.id,
+      administrative_id,
+    );
   }
 
   async inscribeStudent(
@@ -143,7 +160,7 @@ export class StudentsService {
       );
     }
 
-    return this.studentsRepository.uninscribeStudent(inscription.id);
+    return await this.studentsRepository.uninscribeStudent(inscription.id);
   }
 
   async getTrackingBySemester(upbCode: number, semesterId: number) {
@@ -180,21 +197,31 @@ export class StudentsService {
     return commitment;
   }
 
-  async lock(upbCode: number) {
+  async lock(upbCode: number, administrative_id: number) {
     const student = await this.studentsRepository.findOne(upbCode);
     if (!student) {
       throw new NotFoundException('Student not exists');
     }
 
-    return this.studentsRepository.lock(upbCode);
+    await this.studentsRepository.lock(upbCode);
+    await this.studentsRepository.addLog(
+      'locked',
+      student.id,
+      administrative_id,
+    );
   }
 
-  async unlock(upbCode: number) {
+  async unlock(upbCode: number, administrative_id: number) {
     const student = await this.studentsRepository.findOne(upbCode);
     if (!student) {
       throw new NotFoundException('Student not exists');
     }
-    return this.studentsRepository.unlock(upbCode);
+    await this.studentsRepository.unlock(upbCode);
+    await this.studentsRepository.addLog(
+      'unlocked',
+      student.id,
+      administrative_id,
+    );
   }
 
   async findStudentCommitments(upbCode: number) {

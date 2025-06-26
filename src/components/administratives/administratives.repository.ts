@@ -223,4 +223,15 @@ export class AdministrativeRepository {
       },
     });
   }
+
+  async addLog(status: string, userId: number, administrativeId: number) {
+    return this.prisma.user_state_history.create({
+      data: {
+        administrative_id: administrativeId,
+        status,
+        date: new Date(),
+        user_id: userId,
+      },
+    });
+  }
 }

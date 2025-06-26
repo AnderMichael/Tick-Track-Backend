@@ -7,11 +7,12 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../auth/guards/decorators/permissions.decorator';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthenticatedRequest, JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { UserAvailableGuard } from '../auth/guards/user-availability.guard';
 import { StudentPaginationDto } from '../common/dto/user.pagination.dto';
@@ -28,8 +29,12 @@ export class StudentsController {
   @Post()
   @Permissions('create:students')
   @ApiOperation({ summary: 'Create new student' })
-  create(@Body() createDto: CreateStudentDto) {
-    return this.studentsService.create(createDto);
+  create(
+    @Body() createDto: CreateStudentDto,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.studentsService.create(createDto, administrative_id);
   }
 
   @Get()
@@ -52,15 +57,21 @@ export class StudentsController {
   update(
     @Param('upbCode') upbCode: string,
     @Body() updateDto: UpdateStudentDto,
+    @Req() request: AuthenticatedRequest,
   ) {
-    return this.studentsService.update(+upbCode, updateDto);
+    const { id: administrative_id } = request.user;
+    return this.studentsService.update(+upbCode, updateDto, administrative_id);
   }
 
   @Delete(':upbCode')
   @Permissions('delete:students')
   @ApiOperation({ summary: 'Soft delete a student by upbCode' })
-  remove(@Param('upbCode') upbCode: string) {
-    return this.studentsService.remove(+upbCode);
+  remove(
+    @Param('upbCode') upbCode: string,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const { id: administrative_id } = request.user;
+    return this.studentsService.remove(+upbCode, administrative_id);
   }
 
   @Post(':upbCode/inscribe/:semesterId')
@@ -86,7 +97,11 @@ export class StudentsController {
     @Param('semesterId') semesterId: string,
     @Body('commitment_id') commitment_id: number,
   ) {
-    return this.studentsService.removeInscription(+upbCode, +semesterId, commitment_id);
+    return this.studentsService.removeInscription(
+      +upbCode,
+      +semesterId,
+      commitment_id,
+    );
   }
 
   @Get(':upbCode/tracks/:semesterId')
@@ -108,15 +123,17 @@ export class StudentsController {
   @Patch(':upbCode/lock')
   @Permissions('update:students')
   @ApiOperation({ summary: 'Lock a student by upbCode' })
-  lock(@Param('upbCode') upbCode: string) {
-    return this.studentsService.lock(+upbCode);
+  lock(@Param('upbCode') upbCode: string, @Req() request: AuthenticatedRequest) {
+    const { id: administrative_id } = request.user;
+    return this.studentsService.lock(+upbCode, administrative_id);
   }
 
   @Patch(':upbCode/unlock')
   @Permissions('update:students')
   @ApiOperation({ summary: 'Unlock a student by upbCode' })
-  unlock(@Param('upbCode') upbCode: string) {
-    return this.studentsService.unlock(+upbCode);
+  unlock(@Param('upbCode') upbCode: string, @Req() request: AuthenticatedRequest) {
+    const { id: administrative_id } = request.user;
+    return this.studentsService.unlock(+upbCode, administrative_id);
   }
 
   @Get(':upbCode/commitments')
@@ -158,9 +175,7 @@ export class StudentsController {
   @ApiOperation({
     summary: 'Get a student inscription by upbCode and inscriptionId',
   })
-  findInscriptionById(
-    @Param('inscriptionId') inscriptionId: string,
-  ) {
+  findInscriptionById(@Param('inscriptionId') inscriptionId: string) {
     return this.studentsService.findInscriptionById(+inscriptionId);
   }
 }
