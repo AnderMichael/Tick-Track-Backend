@@ -4,6 +4,9 @@ import { UserInfo } from '../models/UserInfo';
 
 const { expiresIn, secret } = configVariables.jwt;
 
+const { expiresIn: expiresInRefreshToken, secret: secretRefreshToken } =
+  configVariables.jwt_refresh_token;
+
 export class JWTUtils {
   /**
    * Generates a JWT token for a user.
@@ -17,6 +20,15 @@ export class JWTUtils {
     });
   }
 
+  public generateRefreshToken(payload: UserInfo) {
+    return [
+      jwt.sign(payload, secretRefreshToken, {
+        expiresIn: parseInt(expiresInRefreshToken, 10),
+        encoding: 'utf8',
+      }) as string,
+      parseInt(expiresInRefreshToken, 10) as number,
+    ];
+  }
   /**
    * Verifies a JWT token and returns the decoded payload.
    * @param token - The JWT token to verify.

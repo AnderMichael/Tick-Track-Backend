@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CustomPrismaClientType, prisma } from 'src/config/prisma.client';
+import { CustomPrismaClientType, prisma } from '../../config/prisma.client';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { TransactionPaginationDto } from './dto/transaction.pagination.dto';
 
