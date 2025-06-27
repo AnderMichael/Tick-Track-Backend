@@ -43,6 +43,7 @@ model user {
   administrative administrative?
 
   user_state_history user_state_history[]
+  refresh_tokens refresh_token[]
 }
 
 model role {
@@ -241,4 +242,15 @@ model user_state_history {
   updated_at DateTime @updatedAt
   administrative administrative @relation(fields: [administrative_id], references: [id])
   user       user     @relation(fields: [user_id], references: [id])
+}
+
+model refresh_token {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  user_id    Int
+  user       user     @relation(fields: [user_id], references: [id])
+  expires_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  is_deleted Boolean  @default(false)
 }

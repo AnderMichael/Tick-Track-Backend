@@ -35,4 +35,12 @@ export class UserService {
   async resetPassword(upbCode: number) {
     await this.userRepository.resetPassword(upbCode);
   }
+
+  async addRefreshToken(
+    userId: number,
+    refreshToken: string,
+    expiresIn: number
+  ) {
+    await this.userRepository.addRefreshToken(userId, refreshToken, expiresIn);
+  }
 }

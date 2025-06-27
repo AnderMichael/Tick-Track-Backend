@@ -17,4 +17,8 @@ export const configVariables = {
     secret: process.env.ACCOUNT_KEY_JWT_SECRET || 'default_account_key_secret',
     expiresIn: process.env.ACCOUNT_KEY_JWT_EXPIRES_IN || '3600',
   },
+  jwt_refresh_token: {
+    secret: process.env.REFRESH_TOKEN_SECRET || 'default_refresh_token_secret',
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || '604800',
+  },
 };
