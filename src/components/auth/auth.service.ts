@@ -55,23 +55,25 @@ export class AuthService {
         ),
       });
 
-      const [refreshToken, expiresIn] = this.jwtUtils.generateRefreshToken({
-        id: user.id,
-        department_id: user.department_id,
-        role_id: user.role_id,
-        upbCode: user.upbCode,
-        permissions: user.role.role_permission.map(
-          (rolePermission) => rolePermission.permission.name,
-        ),
-      });
-
-      await this.userService.addRefreshToken(
-        user.id,
-        refreshToken as string,
-        expiresIn as number,
-      );
-
-      return token;
+      let currentRefreshToken = await this.userService.getRefreshToken(user.id);
+      if (!currentRefreshToken) {
+        const [refreshToken, expiresIn] = this.jwtUtils.generateRefreshToken({
+          id: user.id,
+          department_id: user.department_id,
+          role_id: user.role_id,
+          upbCode: user.upbCode,
+          permissions: user.role.role_permission.map(
+            (rolePermission) => rolePermission.permission.name,
+          ),
+        });
+        await this.userService.addRefreshToken(
+          user.id,
+          refreshToken as string,
+          expiresIn as number,
+        );
+        currentRefreshToken = refreshToken as string;
+      }
+      return { token, currentRefreshToken };
     } catch (error) {
       throw new BadRequestException('Invalid credentials, check them again');
     }

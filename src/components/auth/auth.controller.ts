@@ -22,7 +22,7 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const token = await this.authService.obtainToken(loginDto);
-    return { token: token };
+    return token ;
   }
 
   @UseGuards(JwtAuthGuard, UserAvailableGuard)

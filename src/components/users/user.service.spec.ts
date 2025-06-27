@@ -13,6 +13,8 @@ describe('UserService', () => {
     checkAvailability: jest.fn(),
     updatePassword: jest.fn(),
     resetPassword: jest.fn(),
+    addRefreshToken: jest.fn(),
+    getRefreshToken: jest.fn(),
   };
 
   beforeEach(() => {
@@ -30,40 +32,40 @@ describe('UserService', () => {
   });
 
   it('getBasicUserInfo: debe retornar user model combinado con utilidades', async () => {
-  repository.findUserDetails.mockResolvedValue({
-    id: 1,
-    upbCode: 123,
-    email: 'test@example.com',
-    firstName: 'Juan',
-    fatherLastName: 'Pérez',
-    motherLastName: 'Gómez',
-    secondName: 'Carlos',
-    role: { id: 2, name: 'Student' },
-    department: { id: 3, name: 'Ingeniería' },
-    is_confirmed: true,
-    phone: '123456789',
-    isAvailable: true,
-    student: {
-      commitment: [],
-    },
-    administrative: {
-      upb_role: 'Admin',
-    },
-  } as any);
+    repository.findUserDetails.mockResolvedValue({
+      id: 1,
+      upbCode: 123,
+      email: 'test@example.com',
+      firstName: 'Juan',
+      fatherLastName: 'Pérez',
+      motherLastName: 'Gómez',
+      secondName: 'Carlos',
+      role: { id: 2, name: 'Student' },
+      department: { id: 3, name: 'Ingeniería' },
+      is_confirmed: true,
+      phone: '123456789',
+      isAvailable: true,
+      student: {
+        commitment: [],
+      },
+      administrative: {
+        upb_role: 'Admin',
+      },
+    } as any);
 
-  repository.getUserUtils.mockResolvedValue({
-    studentRoleId: 1,
-    supervisorRoleId: 2,
-    scholarshipOfficerRoleId: 3,
-    departments: [{ id: 1, value: 'Dep 1' }],
-    qualifications: [{ id: 1, value: 'Qual 1' }],
+    repository.getUserUtils.mockResolvedValue({
+      studentRoleId: 1,
+      supervisorRoleId: 2,
+      scholarshipOfficerRoleId: 3,
+      departments: [{ id: 1, value: 'Dep 1' }],
+      qualifications: [{ id: 1, value: 'Qual 1' }],
+    });
+
+    const result = await service.getBasicUserInfo({ upbCode: 123 } as any);
+    expect(result.fullName).toBe('Juan Pérez');
+    expect(result.department_id).toBe(3);
+    expect(result.administrative?.utils.studentRoleId).toBe(1);
   });
-
-  const result = await service.getBasicUserInfo({ upbCode: 123 } as any);
-  expect(result.fullName).toBe('Juan Pérez');
-  expect(result.department_id).toBe(3);
-  expect(result.administrative?.utils.studentRoleId).toBe(1);
-});
 
   it('checkAvailability: debe retornar true o false', async () => {
     repository.checkAvailability.mockResolvedValue(true);
@@ -87,5 +89,17 @@ describe('UserService', () => {
   it('resetPassword: debe delegar a repository', async () => {
     await service.resetPassword(999);
     expect(repository.resetPassword).toHaveBeenCalledWith(999);
+  });
+
+  it('addRefreshToken: debe delegar al repositorio', async () => {
+    await service.addRefreshToken(1, 'ref-token', 100000);
+    expect(repository.addRefreshToken).toHaveBeenCalledWith(1, 'ref-token', 100000);
+  });
+
+  it('getRefreshToken: debe retornar el refresh token desde el repositorio', async () => {
+    repository.getRefreshToken.mockResolvedValue('refresh-token');
+    const result = await service.getRefreshToken(1);
+    expect(result).toBe('refresh-token');
+    expect(repository.getRefreshToken).toHaveBeenCalledWith(1);
   });
 });

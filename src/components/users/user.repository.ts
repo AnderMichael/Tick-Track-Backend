@@ -3,7 +3,6 @@ import { CustomPrismaClientType, prisma } from '../../config/prisma.client';
 import { RoleEnum } from '../../constants/role.enum';
 import { UserInfo } from '../auth/models/UserInfo';
 import { BcryptUtils } from './utils/bcrypt';
-import e from 'express';
 
 @Injectable()
 export class UserRepository {
@@ -145,12 +144,30 @@ export class UserRepository {
   }
 
   async addRefreshToken(userId: number, refreshToken: string, expiresIn: number) {
-    await this.prisma.refresh_token.create({
+    const instance = await this.prisma.refresh_token.create({
       data: {
         user_id: userId,
         token: refreshToken,
         expires_at: new Date(Date.now() + expiresIn),
       },
     });
+    return instance.token;
+  }
+
+  async getRefreshToken(userId: number) {
+    const refreshToken = await this.prisma.refresh_token.findFirst({
+      where: { user_id: userId },
+      orderBy: { expires_at: 'desc' },
+    });
+
+    if (!refreshToken) {
+      return null;
+    }
+
+    if (new Date() > refreshToken.expires_at) {
+      return null;
+    }
+
+    return refreshToken.token;
   }
 }

@@ -50,9 +50,11 @@ describe('UserRepository', () => {
 
   it('findByUpbCode: should call prisma with correct include', async () => {
     await repository.findByUpbCode(456);
-    expect(prisma.user.findFirst).toHaveBeenCalledWith(expect.objectContaining({
-      where: { upbCode: 456 },
-    }));
+    expect(prisma.user.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { upbCode: 456 },
+      }),
+    );
   });
 
   it('findUserDetails: should return user with nested relations', async () => {
@@ -84,7 +86,8 @@ describe('UserRepository', () => {
   });
 
   it('getUserUtils: should return role IDs and mapped departments/qualifications', async () => {
-    (prisma.role.findFirst as jest.Mock).mockResolvedValueOnce({ id: 1 }) // student
+    (prisma.role.findFirst as jest.Mock)
+      .mockResolvedValueOnce({ id: 1 }) // student
       .mockResolvedValueOnce({ id: 2 }) // supervisor
       .mockResolvedValueOnce({ id: 3 }); // scholarship
 
@@ -105,5 +108,69 @@ describe('UserRepository', () => {
       departments: [{ id: 10, value: 'Dept A' }],
       qualifications: [{ id: 20, value: 'Qual A' }],
     });
+  });
+
+  it('addRefreshToken: should create a new refresh token and return it', async () => {
+    const mockToken = { token: 'refresh-token-123' };
+    prisma.refresh_token = {
+      create: jest.fn().mockResolvedValueOnce(mockToken),
+    } as any;
+
+    const result = await repository.addRefreshToken(
+      1,
+      'refresh-token-123',
+      10000,
+    );
+    expect(prisma.refresh_token.create).toHaveBeenCalledWith({
+      data: {
+        user_id: 1,
+        token: 'refresh-token-123',
+        expires_at: expect.any(Date),
+      },
+    });
+    expect(result).toBe('refresh-token-123');
+  });
+
+  it('getRefreshToken: should return token if it is valid and not expired', async () => {
+    const futureDate = new Date(Date.now() + 60000);
+    prisma.refresh_token = {
+      findFirst: jest
+        .fn()
+        .mockResolvedValueOnce({
+          token: 'valid-token',
+          expires_at: futureDate,
+        }),
+    } as any;
+
+    const result = await repository.getRefreshToken(1);
+    expect(prisma.refresh_token.findFirst).toHaveBeenCalledWith({
+      where: { user_id: 1 },
+      orderBy: { expires_at: 'desc' },
+    });
+    expect(result).toBe('valid-token');
+  });
+
+  it('getRefreshToken: should return null if no token is found', async () => {
+    prisma.refresh_token = {
+      findFirst: jest.fn().mockResolvedValueOnce(null),
+    } as any;
+
+    const result = await repository.getRefreshToken(1);
+    expect(result).toBeNull();
+  });
+
+  it('getRefreshToken: should return null if token is expired', async () => {
+    const pastDate = new Date(Date.now() - 60000);
+    prisma.refresh_token = {
+      findFirst: jest
+        .fn()
+        .mockResolvedValueOnce({
+          token: 'expired-token',
+          expires_at: pastDate,
+        }),
+    } as any;
+
+    const result = await repository.getRefreshToken(1);
+    expect(result).toBeNull();
   });
 });

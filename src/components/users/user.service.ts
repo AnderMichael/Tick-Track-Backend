@@ -43,4 +43,9 @@ export class UserService {
   ) {
     await this.userRepository.addRefreshToken(userId, refreshToken, expiresIn);
   }
+
+  async getRefreshToken(userId: number) {
+    const refreshToken = await this.userRepository.getRefreshToken(userId);
+    return refreshToken;
+  }
 }

@@ -14,6 +14,8 @@ const mockUserService = {
   getBasicUserInfo: jest.fn(),
   confirmPassword: jest.fn(),
   resetPassword: jest.fn(),
+  getRefreshToken: jest.fn(),
+  addRefreshToken: jest.fn(),
 };
 
 describe('AuthService', () => {
@@ -29,7 +31,7 @@ describe('AuthService', () => {
     (service as any).jwtUtils = jwtUtils;
   });
 
-  it('should obtain token with valid credentials', async () => {
+  it('should obtain token and refresh token with valid credentials', async () => {
     const loginDto: LoginDto = { upbCode: 1, password: 'secret' };
     mockUserService.checkAvailability.mockResolvedValue(true);
     mockUserService.findAuthorizationByUpbCode.mockResolvedValue({
@@ -40,11 +42,33 @@ describe('AuthService', () => {
       upbCode: 1,
       role: { role_permission: [{ permission: { name: 'view:users' } }] },
     });
+    mockUserService.getRefreshToken.mockResolvedValue(null);
+    mockUserService.addRefreshToken.mockResolvedValue(undefined);
+    bcryptUtils.comparePassword = jest.fn().mockResolvedValue(true);
+    jwtUtils.generateToken = jest.fn().mockReturnValue('token123');
+    jwtUtils.generateRefreshToken = jest.fn().mockReturnValue(['refresh123', 999999]);
+
+    const result = await service.obtainToken(loginDto);
+    expect(result).toEqual({ token: 'token123', currentRefreshToken: 'refresh123' });
+  });
+
+  it('should return existing refresh token if already present', async () => {
+    const loginDto: LoginDto = { upbCode: 1, password: 'secret' };
+    mockUserService.checkAvailability.mockResolvedValue(true);
+    mockUserService.findAuthorizationByUpbCode.mockResolvedValue({
+      id: 1,
+      hashed_password: 'hashed',
+      role_id: 2,
+      department_id: 3,
+      upbCode: 1,
+      role: { role_permission: [{ permission: { name: 'view:users' } }] },
+    });
+    mockUserService.getRefreshToken.mockResolvedValue('existingRefresh');
     bcryptUtils.comparePassword = jest.fn().mockResolvedValue(true);
     jwtUtils.generateToken = jest.fn().mockReturnValue('token123');
 
     const result = await service.obtainToken(loginDto);
-    expect(result).toBe('token123');
+    expect(result).toEqual({ token: 'token123', currentRefreshToken: 'existingRefresh' });
   });
 
   it('should throw BadRequest if credentials invalid', async () => {
@@ -55,17 +79,13 @@ describe('AuthService', () => {
     });
     bcryptUtils.comparePassword = jest.fn().mockResolvedValue(false);
 
-    await expect(service.obtainToken(loginDto)).rejects.toThrow(
-      BadRequestException,
-    );
+    await expect(service.obtainToken(loginDto)).rejects.toThrow(BadRequestException);
   });
 
   it('should throw BadRequest if user not available', async () => {
     const loginDto: LoginDto = { upbCode: 1, password: 'secret' };
     mockUserService.checkAvailability.mockResolvedValue(false);
-    await expect(service.obtainToken(loginDto)).rejects.toThrow(
-      BadRequestException,
-    );
+    await expect(service.obtainToken(loginDto)).rejects.toThrow(BadRequestException);
   });
 
   it('should verify valid token', async () => {
@@ -79,9 +99,7 @@ describe('AuthService', () => {
     jwtUtils.verifyToken = jest.fn(() => {
       throw new Error('invalid');
     });
-    await expect(service.verifyToken('invalid')).rejects.toThrow(
-      UnauthorizedException,
-    );
+    await expect(service.verifyToken('invalid')).rejects.toThrow(UnauthorizedException);
   });
 
   it('should get user details', async () => {

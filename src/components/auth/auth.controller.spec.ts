@@ -42,14 +42,15 @@ describe('AuthController', () => {
   });
 
   describe('login', () => {
-    it('should return token on valid login', async () => {
+    it('should return token and refresh token on valid login', async () => {
       const dto: LoginDto = { upbCode: 45679, password: '123456' };
-      mockAuthService.obtainToken.mockResolvedValue('mocked-token');
+      const response = { token: 'mocked-token', currentRefreshToken: 'refresh-token' };
+      mockAuthService.obtainToken.mockResolvedValue(response);
 
       const result = await controller.login(dto);
 
       expect(mockAuthService.obtainToken).toHaveBeenCalledWith(dto);
-      expect(result).toEqual({ token: 'mocked-token' });
+      expect(result).toEqual(response);
     });
   });
 
@@ -66,8 +67,13 @@ describe('AuthController', () => {
 
   describe('confirmUser', () => {
     it('should confirm user credentials', async () => {
-      const confirmDto: ConfirmDto = { password: '123456', confirmPassword: '123456' };
-      mockAuthService.confirmCredentials.mockResolvedValue({ success: true });
+      const confirmDto: ConfirmDto = {
+        password: '123456',
+        confirmPassword: '123456',
+      };
+      mockAuthService.confirmCredentials.mockResolvedValue({
+        message: 'Password updated successfully',
+      });
 
       const result = await controller.confirmUser(
         mockRequest as any,
@@ -78,13 +84,15 @@ describe('AuthController', () => {
         mockUser.upbCode,
         confirmDto,
       );
-      expect(result).toEqual({ success: true });
+      expect(result).toEqual({ message: 'Password updated successfully' });
     });
   });
 
   describe('resetPassword', () => {
     it('should reset password for given upbCode', async () => {
-      mockAuthService.resetCredentials.mockResolvedValue({ success: true });
+      mockAuthService.resetCredentials.mockResolvedValue({
+        message: 'Password reset successfully',
+      });
 
       const result = await controller.resetPassword(mockRequest as any, 123);
 
@@ -92,7 +100,7 @@ describe('AuthController', () => {
         mockUser,
         123,
       );
-      expect(result).toEqual({ success: true });
+      expect(result).toEqual({ message: 'Password reset successfully' });
     });
   });
 });
